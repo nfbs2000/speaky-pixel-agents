@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Pixel Agents의 Claude Code 관찰 경로, AgentRuntime, 팀과 서브에이전트, Canvas 2D 오피스를 실제 소스 기준으로 설명하는 한국어 가이드">
+  <meta property="og:title" content="Pixel Agents 한국어 프로젝트 가이드">
+  <meta property="og:description" content="터미널의 에이전트 활동이 작은 픽셀 오피스의 캐릭터 행동이 되는 과정을 소스에서 읽습니다.">
+  <meta property="og:image" content="assets/screenshot.jpg">
+  <title>Pixel Agents 한국어 프로젝트 가이드</title>
+  <link rel="icon" href="assets/icon.png">
+  <link rel="stylesheet" href="styles/foundation.css">
+  <link rel="stylesheet" href="styles/architecture.css">
+  <link rel="stylesheet" href="styles/content.css">
+  <link rel="stylesheet" href="styles/responsive.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Pixel Agents 가이드 맨 위로">
+      <img src="assets/icon.png" alt="">
+      <span>Pixel Agents <small>한국어 프로젝트 가이드</small></span>
+    </a>
+    <nav aria-label="주요 링크">
+      <a href="#observation">관찰</a>
+      <a href="#runtime">런타임</a>
+      <a href="#office">오피스</a>
+      <a href="#truth">경계</a>
+      <a href="https://marketplace.visualstudio.com/items?itemName=pablodelucca.pixel-agents">설치</a>
+      <a href="https://github.com/nfbs2000/speaky-pixel-agents">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <img class="hero__media" src="assets/screenshot.jpg" alt="여러 Claude Code 에이전트 캐릭터가 책상과 회의실이 있는 픽셀 오피스에서 움직이는 Pixel Agents 화면">
+      <div class="hero__shade"></div>
+      <div class="hero__content">
+        <p class="eyebrow">PLAY A GAME, BUILD A PRODUCT · v1.4.0</p>
+        <h1 id="hero-title">Pixel Agents</h1>
+        <p class="hero__lead">
+          터미널에서 일하는 Claude Code 세션을 관찰해,
+          읽기·쓰기·도구 실행·승인 대기·팀 활동을
+          <strong>작은 오피스의 캐릭터 행동</strong>으로 표현합니다.
+        </p>
+        <div class="hero__actions">
+          <a class="button button--primary" href="https://marketplace.visualstudio.com/items?itemName=pablodelucca.pixel-agents">VS Code에 설치</a>
+          <a class="button" href="https://github.com/pixel-agents-hq/pixel-agents">원 프로젝트 보기</a>
+        </div>
+      </div>
+      <div class="hero__facts" aria-label="프로젝트 기술 요약">
+        <span><b>SURFACES</b>VS Code + standalone</span>
+        <span><b>RUNTIME</b>Node.js 20 · Fastify</span>
+        <span><b>VIEW</b>React 19 · Canvas 2D</span>
+        <span><b>LICENSE</b>MIT · asset credits separate</span>
+      </div>
+    </section>
+
+    <section class="thesis" id="project">
+      <div class="section-heading">
+        <p class="section-index">01 / THE PROJECT</p>
+        <h2>에이전트를 조종하는 게임이 아니라<br>에이전트의 일을 읽게 하는 표면</h2>
+      </div>
+      <div class="thesis__body">
+        <p>
+          Pixel Agents는 코딩 에이전트의 판단이나 도구 결과를 바꾸지 않습니다.
+          Claude Code가 이미 내보낸 hook event와 JSONL transcript를 관찰하고,
+          이를 공통 <code>AgentEvent</code>로 정규화해 캐릭터의 활동 상태로 표현합니다.
+          쓰기 도구를 사용하면 책상에서 타이핑하고, 읽기 도구를 사용하면 읽는 동작을 하며,
+          입력이나 승인이 필요하면 말풍선을 띄웁니다.
+        </p>
+        <blockquote>
+          핵심 제품은 픽셀 아트가 아니라,
+          보이지 않던 여러 에이전트의 상태를 한 화면의 공간적 문법으로 바꾸는 런타임입니다.
+        </blockquote>
+      </div>
+    </section>
+
+    <section class="surfaces" aria-labelledby="surface-title">
+      <p class="section-index">TWO PRODUCT SURFACES</p>
+      <h2 id="surface-title">같은 오피스, 서로 다른 호스트</h2>
+      <div class="surface-grid">
+        <article>
+          <span class="surface-no">01</span>
+          <h3>VS Code extension</h3>
+          <p>
+            Extension Development Host 또는 설치된 확장 안에서 panel webview로 실행됩니다.
+            에이전트를 새 terminal에 시작하고, VS Code 상태 저장소와
+            <code>postMessage</code> transport를 사용합니다.
+          </p>
+          <small>adapter: <code>adapters/vscode</code></small>
+        </article>
+        <article>
+          <span class="surface-no">02</span>
+          <h3>Standalone CLI</h3>
+          <p>
+            <code>npx pixel-agents</code>가 Fastify 서버와 정적 React 앱을 열고,
+            브라우저는 WebSocket으로 같은 메시지 계약을 소비합니다.
+            Claude 자체는 별도 terminal에서 사용자가 실행합니다.
+          </p>
+          <small>host: <code>server/src/cli.ts</code></small>
+        </article>
+      </div>
+    </section>
+
+    <section class="observation" id="observation">
+      <div class="section-heading">
+        <p class="section-index">02 / OBSERVATION</p>
+        <h2>두 관찰 경로를 하나의<br>AgentEvent로 정규화한다</h2>
+      </div>
+      <div class="observation__body">
+        <p>
+          기본 경로는 Claude Code hook입니다. 설치된 hook script가
+          <code>SessionStart</code>, <code>PreToolUse</code>, <code>PermissionRequest</code>,
+          <code>Stop</code> 같은 event를 로컬 서버로 POST합니다.
+          JSONL transcript 감시는 hook이 주지 않는 안정적인 tool ID, 진행 정보와
+          외부 세션 탐색을 보완합니다.
+        </p>
+        <p>
+          원시 Claude 필드인 <code>tool_name</code>, <code>tool_input</code>,
+          <code>agent_type</code>은 provider 경계에서만 읽습니다.
+          이후 런타임은 <code>toolStart</code>, <code>toolEnd</code>,
+          <code>turnEnd</code>, <code>permissionRequest</code> 같은 공통 event만 다룹니다.
+        </p>
+      </div>
+      <div class="dual-source">
+        <article>
+          <b>HOOKS · PRIMARY</b>
+          <span>즉시성 높은 lifecycle 신호</span>
+          <code>Claude → claude-hook.js → HTTP POST</code>
+        </article>
+        <article>
+          <b>TRANSCRIPT · COMPLEMENT</b>
+          <span>tool ID, progress, session 파일</span>
+          <code>~/.claude/projects/**.jsonl</code>
+        </article>
+      </div>
+      <p class="source-line">
+        근거:
+        <a href="https://github.com/nfbs2000/speaky-pixel-agents/blob/main/server/src/providers/hook/claude/claude.ts">claude.ts</a>
+        ·
+        <a href="https://github.com/nfbs2000/speaky-pixel-agents/blob/main/server/src/transcriptParser.ts">transcriptParser.ts</a>
+      </p>
+    </section>
+
+    <section class="runtime" id="runtime">
+      <p class="section-index">03 / RUNTIME PIPELINE</p>
+      <h2>관찰에서 Canvas까지 이어지는 실제 경로</h2>
+      <p class="section-lead">
+        provider별 입력은 정규화 이후 하나의 lifecycle core로 들어갑니다.
+        VS Code와 standalone은 host transport만 다르고,
+        webview가 받는 <code>ServerMessage</code>와 오피스 엔진은 같습니다.
+      </p>
+      <div class="pipeline" role="img" aria-label="Claude Code 이벤트가 Pixel Agents Canvas 캐릭터 상태가 되는 7단계">
+        <div><span>01</span><b>Claude Code</b><small>hook · transcript</small></div>
+        <i>→</i>
+        <div><span>02</span><b>HookProvider</b><small>normalize</small></div>
+        <i>→</i>
+        <div><span>03</span><b>SessionRouter</b><small>map · buffer</small></div>
+        <i>→</i>
+        <div><span>04</span><b>AgentRuntime</b><small>lifecycle · timers</small></div>
+        <i>→</i>
+        <div><span>05</span><b>AgentStateStore</b><small>state · broadcast</small></div>
+        <i>→</i>
+        <div><span>06</span><b>Transport</b><small>postMessage · WS</small></div>
+        <i>→</i>
+        <div><span>07</span><b>OfficeState</b><small>Canvas character</small></div>
+      </div>
+      <div class="runtime-notes">
+        <article>
+          <h3>SessionRouter</h3>
+          <p>session ID를 agent ID에 연결하고, agent 등록보다 먼저 도착한 event를 잠시 buffer합니다.</p>
+        </article>
+        <article>
+          <h3>AgentRuntime</h3>
+          <p>hook handler, file watcher, stale session scan, permission·waiting timer와 제거 순서를 공유합니다.</p>
+        </article>
+        <article>
+          <h3>AgentStateStore</h3>
+          <p>현재 agent state를 보유하고 host adapter와 WebSocket client에 typed message를 broadcast합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="protocol">
+      <div class="section-heading">
+        <p class="section-index">04 / PROTOCOL</p>
+        <h2>화면은 원시 hook JSON을<br>직접 해석하지 않는다</h2>
+      </div>
+      <div class="protocol__body">
+        <p>
+          wire contract의 원전은 <code>core/asyncapi.yaml</code>입니다.
+          생성된 <code>ServerMessage</code>에는 agent 생성·종료, tool 시작·완료,
+          permission, team metadata, token usage, layout과 asset load가 포함됩니다.
+          반대 방향의 <code>ClientMessage</code>는 agent 실행·focus·종료,
+          layout 저장, 설정과 asset directory 변경을 표현합니다.
+        </p>
+        <p>
+          VS Code는 항상 연결된 <code>PostMessageTransport</code>를 사용하고,
+          standalone은 연결 상태와 재접속, 전송 대기 queue를 가진
+          <code>WebSocketTransport</code>를 사용합니다.
+        </p>
+      </div>
+      <div class="code-contract">
+        <header><span>NORMALIZED EVENT</span><b>provider가 만드는 의미</b></header>
+        <pre><code>toolStart · toolEnd
+turnEnd(awaitingInput?)
+permissionRequest
+sessionStart · sessionEnd
+subagentStart · subagentEnd
+subagentTurnEnd(idle | completed)</code></pre>
+      </div>
+    </section>
+
+    <section class="teams" id="teams">
+      <p class="section-index">05 / TEAM & SUBAGENT</p>
+      <h2>짧은 subagent와 지속되는 teammate를 구분한다</h2>
+      <div class="team-grid">
+        <article>
+          <span>WITHIN A TURN</span>
+          <h3>Ephemeral subagent</h3>
+          <p>
+            <code>Task</code> 또는 일반 <code>Agent</code> tool에 묶인 임시 캐릭터입니다.
+            parent tool ID를 identity로 사용하고 tool이 끝나면 함께 정리됩니다.
+          </p>
+        </article>
+        <article>
+          <span>ACROSS TURNS</span>
+          <h3>Persistent teammate</h3>
+          <p>
+            background teammate spawn과 Claude team metadata를 확인해 별도 agent로 연결합니다.
+            lead, teammate name, team lifecycle을 유지하며 한 turn의 tool 정리와 분리합니다.
+          </p>
+        </article>
+      </div>
+      <div class="team-rule">
+        <b>중복 캐릭터 방지</b>
+        <p>
+          background Agent 호출이 실제 teammate인 경우에는 일반 subagent 캐릭터를 동시에 만들지 않습니다.
+          같은 tool 이름이라도 <code>run_in_background</code>와 team metadata를 함께 봅니다.
+        </p>
+      </div>
+      <p class="source-line">
+        근거:
+        <a href="https://github.com/nfbs2000/speaky-pixel-agents/blob/main/core/src/teamProvider.ts">TeamProvider</a>
+        ·
+        <a href="https://github.com/nfbs2000/speaky-pixel-agents/blob/main/server/src/providers/hook/claude/claudeTeamProvider.ts">Claude team implementation</a>
+        ·
+        <a href="https://github.com/nfbs2000/speaky-pixel-agents/blob/main/webview-ui/src/hooks/useExtensionMessages.ts">webview routing</a>
+      </p>
+    </section>
+
+    <section class="office" id="office">
+      <div class="section-heading">
+        <p class="section-index">06 / OFFICE ENGINE</p>
+        <h2>캐릭터는 상태표가 아니라<br>작은 2D world 안에서 움직인다</h2>
+      </div>
+      <div class="office__body">
+        <p>
+          오피스는 DOM sprite 목록이 아니라 매 frame 갱신되는 Canvas 2D scene입니다.
+          <code>requestAnimationFrame</code> loop가 <code>OfficeState.update()</code>와
+          <code>renderFrame()</code>을 호출합니다. 16px tile grid에서 wall·void·furniture를
+          피하는 4방향 BFS pathfinding으로 자리와 이동 경로를 계산합니다.
+        </p>
+        <p>
+          캐릭터 상태는 <code>IDLE</code>, <code>WALK</code>, <code>TYPE</code> 세 가지입니다.
+          agent가 active가 되면 지정된 seat로 이동하고, 현재 tool이 읽기 계열이면
+          typing 대신 reading sprite를 사용합니다. idle 상태에서는 오피스를 돌아다니다 쉽니다.
+        </p>
+      </div>
+      <div class="state-strip" aria-label="캐릭터 상태 흐름">
+        <span><b>IDLE</b>대기 · 배회</span>
+        <i>→ activity</i>
+        <span><b>WALK</b>BFS로 자리 이동</span>
+        <i>→ seated</i>
+        <span><b>TYPE</b>읽기 · 쓰기 animation</span>
+        <i>→ turn end</i>
+        <span><b>WAITING</b>말풍선 · 알림</span>
+      </div>
+      <p class="source-line">
+        근거:
+        <a href="https://github.com/nfbs2000/speaky-pixel-agents/blob/main/webview-ui/src/office/engine/gameLoop.ts">gameLoop.ts</a>
+        ·
+        <a href="https://github.com/nfbs2000/speaky-pixel-agents/blob/main/webview-ui/src/office/layout/tileMap.ts">tileMap.ts</a>
+        ·
+        <a href="https://github.com/nfbs2000/speaky-pixel-agents/blob/main/webview-ui/src/office/engine/characters.ts">characters.ts</a>
+      </p>
+    </section>
+
+    <section class="gallery" aria-labelledby="gallery-title">
+      <p class="section-index">07 / PRODUCT SURFACES</p>
+      <h2 id="gallery-title">상태, 공간, 캐릭터가 한 장면에 모인다</h2>
+      <div class="gallery__grid">
+        <figure class="gallery__wide">
+          <img src="assets/office.png" alt="책상, 회의실, 주방과 여섯 캐릭터가 배치된 Pixel Agents 오피스" loading="lazy">
+          <figcaption><b>Office scene</b><span>자리, 이동, 작업 상태를 같은 공간에서 읽습니다.</span></figcaption>
+        </figure>
+        <figure>
+          <img src="assets/characters.png" alt="Pixel Agents가 제공하는 여섯 종류의 캐릭터 sprite" loading="lazy">
+          <figcaption><b>Character palette</b><span>agent마다 시각 identity를 배정합니다.</span></figcaption>
+        </figure>
+        <figure class="gallery__brand">
+          <img src="assets/banner.png" alt="여섯 캐릭터와 Pixel Agents 로고" loading="lazy">
+          <figcaption><b>Shared visual language</b><span>extension과 browser가 같은 asset을 사용합니다.</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="customization">
+      <div class="section-heading">
+        <p class="section-index">08 / LAYOUT & ASSETS</p>
+        <h2>오피스는 저장 가능한<br>작업 공간 데이터다</h2>
+      </div>
+      <div class="customization__body">
+        <p>
+          layout은 tile, furniture, 색상과 크기를 가진 JSON으로 직렬화됩니다.
+          editor는 floor·wall·carpet·furniture·pet·area를 편집하고 undo/redo와
+          import/export를 지원합니다. map은 최대 64×64 tile까지 확장됩니다.
+        </p>
+        <p>
+          external asset directory의 manifest는 sprite file, footprint,
+          회전·상태·animation group과 배치 제약을 기술합니다.
+          Workspace Area는 folder 이름을 색칠된 office zone에 연결하고
+          agent의 seat 배치에 사용됩니다.
+        </p>
+      </div>
+      <div class="custom-grid">
+        <article><b>Layout</b><span>tile · furniture · color</span></article>
+        <article><b>Manifest</b><span>sprite · footprint · rotation</span></article>
+        <article><b>Areas</b><span>folder → office zone</span></article>
+        <article><b>Persistence</b><span>config · seats · import/export</span></article>
+      </div>
+    </section>
+
+    <section class="truth" id="truth">
+      <p class="section-index">09 / TRUTH BOUNDARY</p>
+      <h2>현재 구현과 제품 비전을 구분해서 읽는다</h2>
+      <div class="truth-grid">
+        <article>
+          <h3>현재 소스에서 확인됨</h3>
+          <ul>
+            <li>Claude Code hook와 transcript의 공통 AgentEvent 정규화</li>
+            <li>VS Code extension과 standalone CLI의 공유 runtime</li>
+            <li>tool, waiting, permission과 team/subagent 시각화</li>
+            <li>typed AsyncAPI message와 두 transport 구현</li>
+            <li>Canvas 2D, BFS pathfinding, layout editor와 asset manifest</li>
+          </ul>
+        </article>
+        <article>
+          <h3>페이지가 주장하지 않음</h3>
+          <ul>
+            <li>Codex·Gemini 등 두 번째 실제 provider가 이미 제공된다는 주장</li>
+            <li>Pixel Agents가 Claude의 판단이나 tool result를 조작한다는 주장</li>
+            <li>말풍선에서 Claude permission을 승인·거절한다는 주장</li>
+            <li>standalone이 Claude process를 대신 시작한다는 주장</li>
+            <li>모든 외부 asset의 라이선스가 프로젝트 MIT와 같다는 주장</li>
+          </ul>
+        </article>
+      </div>
+      <aside class="truth-note">
+        <b>현재 provider 현실</b>
+        <p>
+          공통 <code>HookProvider</code> 계약은 존재하지만 bundled provider는 Claude Code 하나입니다.
+          소스 주석도 실제 두 번째 provider가 도착하기 전에 speculative abstraction을 늘리지 않겠다고 명시합니다.
+        </p>
+      </aside>
+    </section>
+
+    <section class="source-map">
+      <p class="section-index">10 / READING ORDER</p>
+      <h2>소스를 읽는 가장 짧은 순서</h2>
+      <ol>
+        <li><span>01</span><div><b>Provider 의미 계약</b><a href="https://github.com/nfbs2000/speaky-pixel-agents/blob/main/core/src/provider.ts">core/src/provider.ts</a></div><p>원시 CLI event가 어떤 공통 AgentEvent가 되는지 확인합니다.</p></li>
+        <li><span>02</span><div><b>Claude 정규화</b><a href="https://github.com/nfbs2000/speaky-pixel-agents/blob/main/server/src/providers/hook/claude/claude.ts">providers/hook/claude/claude.ts</a></div><p>Claude hook field를 읽는 유일한 provider 경계를 봅니다.</p></li>
+        <li><span>03</span><div><b>Hook 전달</b><a href="https://github.com/nfbs2000/speaky-pixel-agents/blob/main/server/src/providers/hook/claude/hooks/claude-hook.ts">hooks/claude-hook.ts</a></div><p>서버 registry와 여러 실행 표면으로의 fan-out을 추적합니다.</p></li>
+        <li><span>04</span><div><b>Session routing</b><a href="https://github.com/nfbs2000/speaky-pixel-agents/blob/main/server/src/sessionRouter.ts">server/src/sessionRouter.ts</a></div><p>session ID mapping, pending external session과 event buffer를 읽습니다.</p></li>
+        <li><span>05</span><div><b>공유 lifecycle</b><a href="https://github.com/nfbs2000/speaky-pixel-agents/blob/main/server/src/agentRuntime.ts">server/src/agentRuntime.ts</a></div><p>VS Code와 standalone이 공유하는 watcher·timer·cleanup을 확인합니다.</p></li>
+        <li><span>06</span><div><b>Wire protocol</b><a href="https://github.com/nfbs2000/speaky-pixel-agents/blob/main/core/asyncapi.yaml">core/asyncapi.yaml</a></div><p>host와 webview 사이의 message source of truth를 봅니다.</p></li>
+        <li><span>07</span><div><b>Webview projection</b><a href="https://github.com/nfbs2000/speaky-pixel-agents/blob/main/webview-ui/src/hooks/useExtensionMessages.ts">useExtensionMessages.ts</a></div><p>typed message가 UI state와 character call로 바뀌는 지점입니다.</p></li>
+        <li><span>08</span><div><b>Office world state</b><a href="https://github.com/nfbs2000/speaky-pixel-agents/blob/main/webview-ui/src/office/engine/officeState.ts">officeState.ts</a></div><p>character, seat, team, pet, bubble와 camera state를 읽습니다.</p></li>
+        <li><span>09</span><div><b>이동과 animation</b><a href="https://github.com/nfbs2000/speaky-pixel-agents/blob/main/webview-ui/src/office/engine/characters.ts">characters.ts</a></div><p>activity가 IDLE·WALK·TYPE 전이로 바뀌는 과정을 봅니다.</p></li>
+        <li><span>10</span><div><b>Canvas rendering</b><a href="https://github.com/nfbs2000/speaky-pixel-agents/blob/main/webview-ui/src/office/components/OfficeCanvas.tsx">OfficeCanvas.tsx</a></div><p>zoom, pan, editor interaction과 frame rendering을 연결합니다.</p></li>
+      </ol>
+    </section>
+
+    <section class="run-source">
+      <div>
+        <p class="section-index">11 / RUN & SOURCE</p>
+        <h2>실행과 출처</h2>
+      </div>
+      <div class="run-source__body">
+        <p>
+          가장 간단한 경로는 VS Code Marketplace 확장입니다.
+          standalone은 Node.js 20 이상에서 프로젝트 디렉터리에서 실행하고,
+          같은 workspace의 Claude Code는 별도 terminal에서 시작합니다.
+        </p>
+        <pre><code>cd /path/to/project
+npx pixel-agents</code></pre>
+        <div class="run-links">
+          <a href="https://marketplace.visualstudio.com/items?itemName=pablodelucca.pixel-agents"><b>INSTALL</b><span>VS Code Marketplace</span></a>
+          <a href="https://www.npmjs.com/package/pixel-agents"><b>STANDALONE</b><span>npm package</span></a>
+          <a href="https://github.com/pixel-agents-hq/pixel-agents"><b>UPSTREAM</b><span>pixel-agents-hq/pixel-agents</span></a>
+          <a href="https://github.com/nfbs2000/speaky-pixel-agents"><b>KOREAN GUIDE FORK</b><span>nfbs2000/speaky-pixel-agents</span></a>
+        </div>
+        <p class="license-note">
+          프로젝트 코드는 Pablo De Lucca의 MIT License를 따릅니다.
+          bundled character는 README에 명시된 JIK-A-4 Metro City 작업을 기반으로 하며,
+          외부 asset pack은 각 원저작자의 라이선스를 별도로 확인해야 합니다.
+          이 페이지는 공개 포크의 한국어 소스 해설이며 upstream의 공식 문서는 아닙니다.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <b>Pixel Agents 한국어 프로젝트 가이드</b>
+      <p>보이는 픽셀 장면과 실제 runtime event 사이를 소스 코드로 연결합니다.</p>
+    </div>
+    <a href="#top">맨 위로</a>
+  </footer>
+</body>
+</html>

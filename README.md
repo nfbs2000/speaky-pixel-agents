@@ -4,6 +4,8 @@
   </a>
 </h1>
 
+[한국어 프로젝트 가이드와 소스 아키텍처 해설](https://nfbs2000.github.io/speaky-pixel-agents/)에서 Pixel Agents가 Claude Code의 hook과 transcript를 캐릭터 행동으로 바꾸는 실제 경로를 읽을 수 있습니다.
+
 <h2 align="center">The most playful way to orchestrate your agents</h2>
 
 <div align="center">
