@@ -1,0 +1,1122 @@
+{
+  "schemaVersion": "pixel-book-evidence.v1",
+  "generatedAt": "2026-08-03T22:00:00.085Z",
+  "title": "11장 large result: raw archive와 active context 분리",
+  "description": "Education Shell의 검증된 Book SDK 실행을 Pixel Agents 상태 문법으로 재생한 공개 projection",
+  "boundary": "Pixel Agents 제품이 이 실행을 수집했다는 뜻이 아니며, renderer는 source 판정을 변경하지 않는다.",
+  "source": {
+    "courseId": "book-sdk-ko",
+    "chapterSlug": "ch11",
+    "campaignId": "book-sdk-live-20260803",
+    "traceId": "recorded:book-sdk-ko:ch11:book-sdk-live-20260803:2026-08-03T22:50:00.000Z",
+    "traceSha256": "c9775b090bcc86fe636e40456a3a9565f944bf7b7937ebe5a7f82670489ceb8a",
+    "summarySha256": "5000ffb0f4d2febba337153d05c80b22a93fb568661782fee55e907251475ac1",
+    "sourceEventCount": 82,
+    "publicEventCount": 53,
+    "model": "claude-opus-5",
+    "attemptIds": [
+      "112453-6f7401e1"
+    ],
+    "proofGate": "accepted_with_notes",
+    "secretScan": "passed"
+  },
+  "actors": [
+    {
+      "id": "user",
+      "label": "검증 프롬프트",
+      "role": "briefing",
+      "station": 0
+    },
+    {
+      "id": "runtime",
+      "label": "Python SDK 런타임",
+      "role": "control",
+      "station": 1
+    },
+    {
+      "id": "claude",
+      "label": "Claude Opus 5",
+      "role": "model",
+      "station": 2
+    },
+    {
+      "id": "tool",
+      "label": "SDK 도구 실행",
+      "role": "execution",
+      "station": 3
+    },
+    {
+      "id": "evaluator",
+      "label": "증거 판정기",
+      "role": "verification",
+      "station": 4
+    }
+  ],
+  "counts": {
+    "observedClaims": 9,
+    "correctionRequired": 12,
+    "additionalObservationRequired": 6,
+    "invalidAttempts": 0
+  },
+  "claims": [
+    {
+      "id": "attempt-integrity-files-match",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "integrity manifest가 열거한 manifest, verdict, raw 4종, OTel의 SHA-256 7개를 현재 파일에서 다시 계산해 모두 일치했다.",
+      "sourceRefs": [
+        "spec:claims:attempt-integrity-files-match"
+      ]
+    },
+    {
+      "id": "one-session-three-sequential-phases",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "init seq 2, 33, 63은 같은 session ID와 Opus 5 model을 사용했고 manifest는 manual compact false, provider concurrency 1을 기록했다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:2",
+        "attempt:112453-6f7401e1:sdk-message:33",
+        "attempt:112453-6f7401e1:sdk-message:63",
+        "attempt:112453-6f7401e1:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "large-payload-tool-chains-and-text-lengths",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "ALPHA/BETA ToolUse와 ToolResult는 15/18, 45/50으로 연결되고 실제 MCP text는 24,088/24,085자다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:15",
+        "attempt:112453-6f7401e1:process-event:16",
+        "attempt:112453-6f7401e1:sdk-message:18",
+        "attempt:112453-6f7401e1:sdk-message:45",
+        "attempt:112453-6f7401e1:process-event:46",
+        "attempt:112453-6f7401e1:sdk-message:50"
+      ]
+    },
+    {
+      "id": "recorder-archive-retains-both-payloads",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "152,378-byte raw SDK JSONL은 두 full payload text와 각 head/tail marker를 보존한다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:18",
+        "attempt:112453-6f7401e1:sdk-message:50"
+      ]
+    },
+    {
+      "id": "no-direct-compact-or-micro-pruning-event",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "SystemMessage는 init 3건과 status 5건이고 compact_boundary 또는 식별 가능한 micro-pruning event는 0건이다.",
+      "sourceRefs": [
+        "spec:claims:no-direct-compact-or-micro-pruning-event"
+      ]
+    },
+    {
+      "id": "final-tool-lane-empty-and-four-markers-output",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "final phase seq 62 이후 ToolUse/ToolResult는 없고 assistant seq 75와 Result seq 79는 네 marker를 모두 출력했다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:process-event:62",
+        "attempt:112453-6f7401e1:sdk-message:75",
+        "attempt:112453-6f7401e1:sdk-message:79"
+      ]
+    },
+    {
+      "id": "final-answer-omits-large-filler",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "final answer는 네 marker와 event 판정만 쓰고 두 payload의 약 48KB filler를 출력하지 않았다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:18",
+        "attempt:112453-6f7401e1:sdk-message:50",
+        "attempt:112453-6f7401e1:sdk-message:75"
+      ]
+    },
+    {
+      "id": "three-success-results-and-usage-recorded",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "Result seq 30, 60, 79는 모두 success이며 per-query usage와 누적 model_usage가 있고 final cumulative usage에는 Opus 5와 Haiku 4.5가 함께 있다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:30",
+        "attempt:112453-6f7401e1:sdk-message:60",
+        "attempt:112453-6f7401e1:sdk-message:79"
+      ]
+    },
+    {
+      "id": "raw-and-otel-sequences-align",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "raw SDK 72개와 OTel sdk.message 72개의 sequence가 일치하고 OTel 86개 span은 하나의 trace에 속한다.",
+      "sourceRefs": [
+        "spec:claims:raw-and-otel-sequences-align"
+      ]
+    },
+    {
+      "id": "python-repr-length-is-not-payload-length",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "기존 24,122/24,119는 Python list repr 길이이며 실제 MCP payload text 24,088/24,085와 구분해야 한다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:process-event:16",
+        "attempt:112453-6f7401e1:sdk-message:18",
+        "attempt:112453-6f7401e1:process-event:46",
+        "attempt:112453-6f7401e1:sdk-message:50"
+      ]
+    },
+    {
+      "id": "raw-archive-retention-is-not-active-context-retention",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "recorder raw archive에 payload가 존재해도 provider의 final active context가 full payload를 보존했다고 단정할 수 없다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:18",
+        "attempt:112453-6f7401e1:sdk-message:50",
+        "attempt:112453-6f7401e1:sdk-message:75"
+      ]
+    },
+    {
+      "id": "marker-recall-is-confounded-by-assistant-summaries",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "final marker는 seq 26/56의 짧은 assistant 답변에도 이미 있어 seq 75 회상만으로 large payload provenance나 full retention을 증명할 수 없다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:26",
+        "attempt:112453-6f7401e1:sdk-message:56",
+        "attempt:112453-6f7401e1:sdk-message:75"
+      ]
+    },
+    {
+      "id": "answer-omission-is-not-pruning",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "final output의 filler 생략은 output selection이며 tool result pruning의 직접 사건이 아니다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:18",
+        "attempt:112453-6f7401e1:sdk-message:50",
+        "attempt:112453-6f7401e1:sdk-message:75"
+      ]
+    },
+    {
+      "id": "usage-numbers-do-not-name-an-algorithm",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "cache creation/read와 token 변화는 관찰 수치지만 cache_edits, idle pruning, server clearing 중 원인 알고리즘을 식별하지 않는다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:30",
+        "attempt:112453-6f7401e1:sdk-message:60",
+        "attempt:112453-6f7401e1:sdk-message:79"
+      ]
+    },
+    {
+      "id": "event-absence-is-not-mechanism-impossibility",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "direct event 0건은 현재 event surface와 workload에서 비관찰됐다는 뜻이지 내부 mechanism이 절대로 없다는 뜻이 아니다.",
+      "sourceRefs": [
+        "spec:claims:event-absence-is-not-mechanism-impossibility"
+      ]
+    },
+    {
+      "id": "messages-api-context-editing-is-not-agent-sdk-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "Messages API의 context_management, clear_tool_uses_20250919, applied_edits는 현재 Agent SDK attempt의 동작 증거가 아니다.",
+      "sourceRefs": [
+        "spec:claims:messages-api-context-editing-is-not-agent-sdk-proof"
+      ]
+    },
+    {
+      "id": "dedicated-boundary-class-is-not-current-python-type",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "Python Agent SDK 0.2.128은 SDKCompactBoundaryMessage를 export하지 않으므로 generic SystemMessage payload를 읽어야 한다.",
+      "sourceRefs": [
+        "spec:claims:dedicated-boundary-class-is-not-current-python-type"
+      ]
+    },
+    {
+      "id": "primary-opus-is-not-only-provider-usage",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "primary assistant model은 Opus 5지만 terminal model_usage에는 Haiku 4.5도 있어 전체 provider usage를 Opus 하나로 쓰면 안 된다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:30",
+        "attempt:112453-6f7401e1:sdk-message:60",
+        "attempt:112453-6f7401e1:sdk-message:79"
+      ]
+    },
+    {
+      "id": "captured-is-not-claim-pass",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "OTel CAPTURED, assertion count 0, verdict TODO, passed null은 raw 수집 완료 표식이며 micro-compaction claim pass가 아니다.",
+      "sourceRefs": [
+        "spec:claims:captured-is-not-claim-pass"
+      ]
+    },
+    {
+      "id": "otel-is-not-independent-provider-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "같은 recorder가 raw와 host event를 OTel로 투영했으므로 이 trace를 독립 provider 관측기로 부르면 안 된다.",
+      "sourceRefs": [
+        "spec:claims:otel-is-not-independent-provider-proof"
+      ]
+    },
+    {
+      "id": "probe-runtime-source-is-not-provenance-bound",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "manifest는 실행 당시 장 source와 prompt hash를 묶지만 exact probe, case, runtime source hash를 묶지 않았다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "unrepeated-nonce-retention-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "중간 assistant 답변에 노출하지 않은 nonce를 large result에 넣고 final에서 조회하는 controlled attempt가 필요하다.",
+      "sourceRefs": [
+        "spec:claims:unrepeated-nonce-retention-not-observed"
+      ]
+    },
+    {
+      "id": "direct-agent-sdk-micro-pruning-surface-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "Agent SDK에서 direct clearing/micro-pruning event를 노출하는 documented surface 또는 threshold workload는 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:direct-agent-sdk-micro-pruning-surface-not-observed"
+      ]
+    },
+    {
+      "id": "post-clearing-reacquisition-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "알려진 clearing 뒤 모델이 같은 tool evidence를 다시 획득하는 ToolUse/ToolResult chain은 별도 실행이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:post-clearing-reacquisition-not-observed"
+      ]
+    },
+    {
+      "id": "time-based-idle-pruning-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "긴 idle 뒤 오래된 tool result가 바뀌는 time-based 동작은 이번 짧은 실행에서 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:time-based-idle-pruning-not-observed"
+      ]
+    },
+    {
+      "id": "messages-api-context-editing-live-run-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "Messages API에서 clear_tool_uses_20250919를 실제 실행해 applied_edits와 cleared token을 읽는 증거는 별도 API-family attempt로 남겨야 한다.",
+      "sourceRefs": [
+        "spec:claims:messages-api-context-editing-live-run-not-observed"
+      ]
+    },
+    {
+      "id": "full-source-provenance-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "chapter, probe, case, runtime source hash를 모두 attempt에 묶는 새 provenance manifest가 필요하다.",
+      "sourceRefs": [
+        "spec:claims:full-source-provenance-not-observed"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "book-sdk-live-20260803:prompt",
+      "sequence": 0,
+      "timestampOffsetMs": 0,
+      "actor": "user",
+      "eventType": "prompt.submitted",
+      "pixelState": "briefing",
+      "evidenceLevel": "Configured",
+      "summary": "한 persistent Agent SDK session에서 두 large MCP result를 순차 수집하고 final tool-free turn을 실행한다. 실제 payload text, recorder raw archive, 중간 assistant marker summary, final recall, system event와 usage를 분리해 micro-compaction의 직접 관찰 여부를 판정한다.",
+      "sourceRefs": [
+        "publication-spec:public_prompt"
+      ]
+    },
+    {
+      "id": "112453-6f7401e1:process:0",
+      "sequence": 1,
+      "timestampOffsetMs": 1000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:process-event:0"
+      ],
+      "attemptId": "112453-6f7401e1"
+    },
+    {
+      "id": "112453-6f7401e1:process:1",
+      "sequence": 2,
+      "timestampOffsetMs": 1950,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.started",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:process-event:1"
+      ],
+      "attemptId": "112453-6f7401e1"
+    },
+    {
+      "id": "112453-6f7401e1:sdk.init",
+      "sequence": 3,
+      "timestampOffsetMs": 1984,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "large result 두 건과 direct pruning event 비관찰: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:2"
+      ],
+      "attemptId": "112453-6f7401e1",
+      "caseId": "large-results-no-manual-compact"
+    },
+    {
+      "id": "112453-6f7401e1:toolu_013nxXhj6RP1UYfKXj48EKth",
+      "sequence": 4,
+      "timestampOffsetMs": 5271,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__context_evidence__emit_large_result {}",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:15"
+      ],
+      "attemptId": "112453-6f7401e1",
+      "caseId": "large-results-no-manual-compact",
+      "toolName": "mcp__context_evidence__emit_large_result",
+      "toolUseId": "112453-6f7401e1:toolu_013nxXhj6RP1UYfKXj48EKth"
+    },
+    {
+      "id": "112453-6f7401e1:process:16",
+      "sequence": 5,
+      "timestampOffsetMs": 5273,
+      "actor": "tool",
+      "eventType": "tool.execution",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host executed mcp__context_evidence__emit_large_result: returned-24088-characters",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:process-event:16"
+      ],
+      "attemptId": "112453-6f7401e1",
+      "toolName": "mcp__context_evidence__emit_large_result",
+      "outcome": "returned-24088-characters"
+    },
+    {
+      "id": "112453-6f7401e1:toolu_013nxXhj6RP1UYfKXj48EKth:result",
+      "sequence": 6,
+      "timestampOffsetMs": 5278,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__context_evidence__emit_large_result: result received",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:18"
+      ],
+      "attemptId": "112453-6f7401e1",
+      "toolName": "mcp__context_evidence__emit_large_result",
+      "toolUseId": "112453-6f7401e1:toolu_013nxXhj6RP1UYfKXj48EKth"
+    },
+    {
+      "id": "112453-6f7401e1:message_stop",
+      "sequence": 7,
+      "timestampOffsetMs": 5283,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:20"
+      ],
+      "attemptId": "112453-6f7401e1"
+    },
+    {
+      "id": "112453-6f7401e1:message_stop",
+      "sequence": 8,
+      "timestampOffsetMs": 7088,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:29"
+      ],
+      "attemptId": "112453-6f7401e1"
+    },
+    {
+      "id": "112453-6f7401e1:result",
+      "sequence": 9,
+      "timestampOffsetMs": 7091,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:30"
+      ],
+      "attemptId": "112453-6f7401e1"
+    },
+    {
+      "id": "112453-6f7401e1:process:31",
+      "sequence": 10,
+      "timestampOffsetMs": 7092,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.finished",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:process-event:31"
+      ],
+      "attemptId": "112453-6f7401e1"
+    },
+    {
+      "id": "112453-6f7401e1:process:32",
+      "sequence": 11,
+      "timestampOffsetMs": 7092,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.started",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:process-event:32"
+      ],
+      "attemptId": "112453-6f7401e1"
+    },
+    {
+      "id": "112453-6f7401e1:sdk.init:33",
+      "sequence": 12,
+      "timestampOffsetMs": 7095,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "large result 두 건과 direct pruning event 비관찰: init boundary 2, claude-opus-5",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:33"
+      ],
+      "attemptId": "112453-6f7401e1",
+      "caseId": "large-results-no-manual-compact"
+    },
+    {
+      "id": "112453-6f7401e1:toolu_01KtDKUPbAtFLkvXnR15RSU7",
+      "sequence": 13,
+      "timestampOffsetMs": 10210,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__context_evidence__emit_large_result {}",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:45"
+      ],
+      "attemptId": "112453-6f7401e1",
+      "caseId": "large-results-no-manual-compact",
+      "toolName": "mcp__context_evidence__emit_large_result",
+      "toolUseId": "112453-6f7401e1:toolu_01KtDKUPbAtFLkvXnR15RSU7"
+    },
+    {
+      "id": "112453-6f7401e1:process:46",
+      "sequence": 14,
+      "timestampOffsetMs": 10211,
+      "actor": "tool",
+      "eventType": "tool.execution",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host executed mcp__context_evidence__emit_large_result: returned-24085-characters",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:process-event:46"
+      ],
+      "attemptId": "112453-6f7401e1",
+      "toolName": "mcp__context_evidence__emit_large_result",
+      "outcome": "returned-24085-characters"
+    },
+    {
+      "id": "112453-6f7401e1:message_stop",
+      "sequence": 15,
+      "timestampOffsetMs": 10213,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:49"
+      ],
+      "attemptId": "112453-6f7401e1"
+    },
+    {
+      "id": "112453-6f7401e1:toolu_01KtDKUPbAtFLkvXnR15RSU7:result",
+      "sequence": 16,
+      "timestampOffsetMs": 10216,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__context_evidence__emit_large_result: result received",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:50"
+      ],
+      "attemptId": "112453-6f7401e1",
+      "toolName": "mcp__context_evidence__emit_large_result",
+      "toolUseId": "112453-6f7401e1:toolu_01KtDKUPbAtFLkvXnR15RSU7"
+    },
+    {
+      "id": "112453-6f7401e1:message_stop",
+      "sequence": 17,
+      "timestampOffsetMs": 14419,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:59"
+      ],
+      "attemptId": "112453-6f7401e1"
+    },
+    {
+      "id": "112453-6f7401e1:process:61",
+      "sequence": 18,
+      "timestampOffsetMs": 14422,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.finished",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:process-event:61"
+      ],
+      "attemptId": "112453-6f7401e1"
+    },
+    {
+      "id": "112453-6f7401e1:result",
+      "sequence": 19,
+      "timestampOffsetMs": 14422,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:60"
+      ],
+      "attemptId": "112453-6f7401e1"
+    },
+    {
+      "id": "112453-6f7401e1:process:62",
+      "sequence": 20,
+      "timestampOffsetMs": 14423,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.started",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:process-event:62"
+      ],
+      "attemptId": "112453-6f7401e1"
+    },
+    {
+      "id": "112453-6f7401e1:sdk.init:63",
+      "sequence": 21,
+      "timestampOffsetMs": 14425,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "large result 두 건과 direct pruning event 비관찰: init boundary 3, claude-opus-5",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:63"
+      ],
+      "attemptId": "112453-6f7401e1",
+      "caseId": "large-results-no-manual-compact"
+    },
+    {
+      "id": "112453-6f7401e1:message_stop",
+      "sequence": 22,
+      "timestampOffsetMs": 18610,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:78"
+      ],
+      "attemptId": "112453-6f7401e1"
+    },
+    {
+      "id": "112453-6f7401e1:result",
+      "sequence": 23,
+      "timestampOffsetMs": 18611,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:79"
+      ],
+      "attemptId": "112453-6f7401e1"
+    },
+    {
+      "id": "112453-6f7401e1:process:80",
+      "sequence": 24,
+      "timestampOffsetMs": 18612,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.finished",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:process-event:80"
+      ],
+      "attemptId": "112453-6f7401e1"
+    },
+    {
+      "id": "112453-6f7401e1:process:81",
+      "sequence": 25,
+      "timestampOffsetMs": 18911,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:process-event:81"
+      ],
+      "attemptId": "112453-6f7401e1"
+    },
+    {
+      "id": "claim:attempt-integrity-files-match",
+      "sequence": 26,
+      "timestampOffsetMs": 19611,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "integrity manifest가 열거한 manifest, verdict, raw 4종, OTel의 SHA-256 7개를 현재 파일에서 다시 계산해 모두 일치했다.",
+      "sourceRefs": [
+        "spec:claims:attempt-integrity-files-match"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:one-session-three-sequential-phases",
+      "sequence": 27,
+      "timestampOffsetMs": 20011,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "init seq 2, 33, 63은 같은 session ID와 Opus 5 model을 사용했고 manifest는 manual compact false, provider concurrency 1을 기록했다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:2",
+        "attempt:112453-6f7401e1:sdk-message:33",
+        "attempt:112453-6f7401e1:sdk-message:63",
+        "attempt:112453-6f7401e1:manifest:option_summary"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:large-payload-tool-chains-and-text-lengths",
+      "sequence": 28,
+      "timestampOffsetMs": 20411,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "ALPHA/BETA ToolUse와 ToolResult는 15/18, 45/50으로 연결되고 실제 MCP text는 24,088/24,085자다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:15",
+        "attempt:112453-6f7401e1:process-event:16",
+        "attempt:112453-6f7401e1:sdk-message:18",
+        "attempt:112453-6f7401e1:sdk-message:45",
+        "attempt:112453-6f7401e1:process-event:46",
+        "attempt:112453-6f7401e1:sdk-message:50"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:recorder-archive-retains-both-payloads",
+      "sequence": 29,
+      "timestampOffsetMs": 20811,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "152,378-byte raw SDK JSONL은 두 full payload text와 각 head/tail marker를 보존한다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:18",
+        "attempt:112453-6f7401e1:sdk-message:50"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:no-direct-compact-or-micro-pruning-event",
+      "sequence": 30,
+      "timestampOffsetMs": 21211,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "SystemMessage는 init 3건과 status 5건이고 compact_boundary 또는 식별 가능한 micro-pruning event는 0건이다.",
+      "sourceRefs": [
+        "spec:claims:no-direct-compact-or-micro-pruning-event"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:final-tool-lane-empty-and-four-markers-output",
+      "sequence": 31,
+      "timestampOffsetMs": 21611,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "final phase seq 62 이후 ToolUse/ToolResult는 없고 assistant seq 75와 Result seq 79는 네 marker를 모두 출력했다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:process-event:62",
+        "attempt:112453-6f7401e1:sdk-message:75",
+        "attempt:112453-6f7401e1:sdk-message:79"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:final-answer-omits-large-filler",
+      "sequence": 32,
+      "timestampOffsetMs": 22011,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "final answer는 네 marker와 event 판정만 쓰고 두 payload의 약 48KB filler를 출력하지 않았다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:18",
+        "attempt:112453-6f7401e1:sdk-message:50",
+        "attempt:112453-6f7401e1:sdk-message:75"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:three-success-results-and-usage-recorded",
+      "sequence": 33,
+      "timestampOffsetMs": 22411,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "Result seq 30, 60, 79는 모두 success이며 per-query usage와 누적 model_usage가 있고 final cumulative usage에는 Opus 5와 Haiku 4.5가 함께 있다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:30",
+        "attempt:112453-6f7401e1:sdk-message:60",
+        "attempt:112453-6f7401e1:sdk-message:79"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:raw-and-otel-sequences-align",
+      "sequence": 34,
+      "timestampOffsetMs": 22811,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "raw SDK 72개와 OTel sdk.message 72개의 sequence가 일치하고 OTel 86개 span은 하나의 trace에 속한다.",
+      "sourceRefs": [
+        "spec:claims:raw-and-otel-sequences-align"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:python-repr-length-is-not-payload-length",
+      "sequence": 35,
+      "timestampOffsetMs": 23211,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "기존 24,122/24,119는 Python list repr 길이이며 실제 MCP payload text 24,088/24,085와 구분해야 한다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:process-event:16",
+        "attempt:112453-6f7401e1:sdk-message:18",
+        "attempt:112453-6f7401e1:process-event:46",
+        "attempt:112453-6f7401e1:sdk-message:50"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:raw-archive-retention-is-not-active-context-retention",
+      "sequence": 36,
+      "timestampOffsetMs": 23611,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "recorder raw archive에 payload가 존재해도 provider의 final active context가 full payload를 보존했다고 단정할 수 없다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:18",
+        "attempt:112453-6f7401e1:sdk-message:50",
+        "attempt:112453-6f7401e1:sdk-message:75"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:marker-recall-is-confounded-by-assistant-summaries",
+      "sequence": 37,
+      "timestampOffsetMs": 24011,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "final marker는 seq 26/56의 짧은 assistant 답변에도 이미 있어 seq 75 회상만으로 large payload provenance나 full retention을 증명할 수 없다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:26",
+        "attempt:112453-6f7401e1:sdk-message:56",
+        "attempt:112453-6f7401e1:sdk-message:75"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:answer-omission-is-not-pruning",
+      "sequence": 38,
+      "timestampOffsetMs": 24411,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "final output의 filler 생략은 output selection이며 tool result pruning의 직접 사건이 아니다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:18",
+        "attempt:112453-6f7401e1:sdk-message:50",
+        "attempt:112453-6f7401e1:sdk-message:75"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:usage-numbers-do-not-name-an-algorithm",
+      "sequence": 39,
+      "timestampOffsetMs": 24811,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "cache creation/read와 token 변화는 관찰 수치지만 cache_edits, idle pruning, server clearing 중 원인 알고리즘을 식별하지 않는다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:30",
+        "attempt:112453-6f7401e1:sdk-message:60",
+        "attempt:112453-6f7401e1:sdk-message:79"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:event-absence-is-not-mechanism-impossibility",
+      "sequence": 40,
+      "timestampOffsetMs": 25211,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "direct event 0건은 현재 event surface와 workload에서 비관찰됐다는 뜻이지 내부 mechanism이 절대로 없다는 뜻이 아니다.",
+      "sourceRefs": [
+        "spec:claims:event-absence-is-not-mechanism-impossibility"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:messages-api-context-editing-is-not-agent-sdk-proof",
+      "sequence": 41,
+      "timestampOffsetMs": 25611,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "Messages API의 context_management, clear_tool_uses_20250919, applied_edits는 현재 Agent SDK attempt의 동작 증거가 아니다.",
+      "sourceRefs": [
+        "spec:claims:messages-api-context-editing-is-not-agent-sdk-proof"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:dedicated-boundary-class-is-not-current-python-type",
+      "sequence": 42,
+      "timestampOffsetMs": 26011,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "Python Agent SDK 0.2.128은 SDKCompactBoundaryMessage를 export하지 않으므로 generic SystemMessage payload를 읽어야 한다.",
+      "sourceRefs": [
+        "spec:claims:dedicated-boundary-class-is-not-current-python-type"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:primary-opus-is-not-only-provider-usage",
+      "sequence": 43,
+      "timestampOffsetMs": 26411,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "primary assistant model은 Opus 5지만 terminal model_usage에는 Haiku 4.5도 있어 전체 provider usage를 Opus 하나로 쓰면 안 된다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:sdk-message:30",
+        "attempt:112453-6f7401e1:sdk-message:60",
+        "attempt:112453-6f7401e1:sdk-message:79"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:captured-is-not-claim-pass",
+      "sequence": 44,
+      "timestampOffsetMs": 26811,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "OTel CAPTURED, assertion count 0, verdict TODO, passed null은 raw 수집 완료 표식이며 micro-compaction claim pass가 아니다.",
+      "sourceRefs": [
+        "spec:claims:captured-is-not-claim-pass"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:otel-is-not-independent-provider-proof",
+      "sequence": 45,
+      "timestampOffsetMs": 27211,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "같은 recorder가 raw와 host event를 OTel로 투영했으므로 이 trace를 독립 provider 관측기로 부르면 안 된다.",
+      "sourceRefs": [
+        "spec:claims:otel-is-not-independent-provider-proof"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:probe-runtime-source-is-not-provenance-bound",
+      "sequence": 46,
+      "timestampOffsetMs": 27611,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "manifest는 실행 당시 장 source와 prompt hash를 묶지만 exact probe, case, runtime source hash를 묶지 않았다.",
+      "sourceRefs": [
+        "attempt:112453-6f7401e1:manifest:option_summary"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:unrepeated-nonce-retention-not-observed",
+      "sequence": 47,
+      "timestampOffsetMs": 28011,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "중간 assistant 답변에 노출하지 않은 nonce를 large result에 넣고 final에서 조회하는 controlled attempt가 필요하다.",
+      "sourceRefs": [
+        "spec:claims:unrepeated-nonce-retention-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:direct-agent-sdk-micro-pruning-surface-not-observed",
+      "sequence": 48,
+      "timestampOffsetMs": 28411,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "Agent SDK에서 direct clearing/micro-pruning event를 노출하는 documented surface 또는 threshold workload는 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:direct-agent-sdk-micro-pruning-surface-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:post-clearing-reacquisition-not-observed",
+      "sequence": 49,
+      "timestampOffsetMs": 28811,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "알려진 clearing 뒤 모델이 같은 tool evidence를 다시 획득하는 ToolUse/ToolResult chain은 별도 실행이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:post-clearing-reacquisition-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:time-based-idle-pruning-not-observed",
+      "sequence": 50,
+      "timestampOffsetMs": 29211,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "긴 idle 뒤 오래된 tool result가 바뀌는 time-based 동작은 이번 짧은 실행에서 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:time-based-idle-pruning-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:messages-api-context-editing-live-run-not-observed",
+      "sequence": 51,
+      "timestampOffsetMs": 29611,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "Messages API에서 clear_tool_uses_20250919를 실제 실행해 applied_edits와 cleared token을 읽는 증거는 별도 API-family attempt로 남겨야 한다.",
+      "sourceRefs": [
+        "spec:claims:messages-api-context-editing-live-run-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:full-source-provenance-not-observed",
+      "sequence": 52,
+      "timestampOffsetMs": 30011,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "chapter, probe, case, runtime source hash를 모두 attempt에 묶는 새 provenance manifest가 필요하다.",
+      "sourceRefs": [
+        "spec:claims:full-source-provenance-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    }
+  ]
+}
