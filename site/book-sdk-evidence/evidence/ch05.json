@@ -1,0 +1,922 @@
+{
+  "schemaVersion": "pixel-book-evidence.v1",
+  "generatedAt": "2026-08-03T18:04:07.686Z",
+  "title": "5장 시스템 프롬프트: configured, observed, inferred의 경계",
+  "description": "Education Shell의 검증된 Book SDK 실행을 Pixel Agents 상태 문법으로 재생한 공개 projection",
+  "boundary": "Pixel Agents 제품이 이 실행을 수집했다는 뜻이 아니며, renderer는 source 판정을 변경하지 않는다.",
+  "source": {
+    "courseId": "book-sdk-ko",
+    "chapterSlug": "ch05",
+    "campaignId": "book-sdk-live-20260803",
+    "traceId": "recorded:book-sdk-ko:ch05:book-sdk-live-20260803:2026-08-03T17:44:32.300Z",
+    "traceSha256": "bdc90adf2f44b788ed1e6e013cfa6e6dbf8882fe93ef45cd1f9572ba2d4edeca",
+    "summarySha256": "bc3d8474a6b773dc38865b7d9f3b0e9cb1f8c4e26c5b4d70032739836fb0abd9",
+    "sourceEventCount": 151,
+    "publicEventCount": 48,
+    "model": "claude-opus-5",
+    "attemptIds": [
+      "102115-1592cc3c",
+      "102206-ff8fd397",
+      "102245-348d28d3"
+    ],
+    "proofGate": "accepted_with_notes",
+    "secretScan": "passed"
+  },
+  "actors": [
+    {
+      "id": "user",
+      "label": "검증 프롬프트",
+      "role": "briefing",
+      "station": 0
+    },
+    {
+      "id": "runtime",
+      "label": "Python SDK 런타임",
+      "role": "control",
+      "station": 1
+    },
+    {
+      "id": "claude",
+      "label": "Claude Opus 5",
+      "role": "model",
+      "station": 2
+    },
+    {
+      "id": "tool",
+      "label": "SDK 도구 실행",
+      "role": "execution",
+      "station": 3
+    },
+    {
+      "id": "evaluator",
+      "label": "증거 판정기",
+      "role": "verification",
+      "station": 4
+    }
+  ],
+  "counts": {
+    "observedClaims": 7,
+    "correctionRequired": 1,
+    "additionalObservationRequired": 3,
+    "invalidAttempts": 0
+  },
+  "claims": [
+    {
+      "id": "custom-prompt-read-and-recovery-executed",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "custom string 설정 뒤 첫 Read 오류, 오류가 제공한 cwd를 이용한 재시도, marker tool result와 최종 설명이 실제 sequence로 연결됐다.",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:process-event:0",
+        "attempt:102115-1592cc3c:sdk-message:15",
+        "attempt:102115-1592cc3c:sdk-message:17",
+        "attempt:102115-1592cc3c:sdk-message:35",
+        "attempt:102115-1592cc3c:sdk-message:37",
+        "attempt:102115-1592cc3c:sdk-message:56",
+        "attempt:102115-1592cc3c:sdk-message:60"
+      ]
+    },
+    {
+      "id": "preset-append-read-executed",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "Claude Code preset와 append policy가 configured로 남았고, Opus 5 init 뒤 Read, tool result, final text, 성공 Result가 순서대로 관찰됐다.",
+      "sourceRefs": [
+        "attempt:102206-ff8fd397:process-event:0",
+        "attempt:102206-ff8fd397:sdk-message:3",
+        "attempt:102206-ff8fd397:sdk-message:20",
+        "attempt:102206-ff8fd397:sdk-message:22",
+        "attempt:102206-ff8fd397:sdk-message:37",
+        "attempt:102206-ff8fd397:sdk-message:41"
+      ]
+    },
+    {
+      "id": "exclude-dynamic-option-executed-not-inspected",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "Python exclude_dynamic_sections=True 설정과 성공 run은 관찰됐다. 이 claim은 내부 prompt 이동이 보였다는 뜻이 아니다.",
+      "sourceRefs": [
+        "attempt:102245-348d28d3:manifest:option_summary",
+        "attempt:102245-348d28d3:sdk-message:3",
+        "attempt:102245-348d28d3:sdk-message:17",
+        "attempt:102245-348d28d3:sdk-message:19",
+        "attempt:102245-348d28d3:sdk-message:41"
+      ]
+    },
+    {
+      "id": "init-exposes-runtime-surface-not-prompt-body",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "세 init은 cwd, model, permission mode, tools, skills, plugins, MCP와 agents를 노출했지만 조립된 system prompt 전문은 노출하지 않았다.",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:sdk-message:3",
+        "attempt:102206-ff8fd397:sdk-message:3",
+        "attempt:102245-348d28d3:sdk-message:3"
+      ]
+    },
+    {
+      "id": "read-result-precedes-final-claim",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "세 case 모두 성공 Read와 matching tool result가 marker를 인용한 assistant final text보다 먼저 발생했다.",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:sdk-message:35",
+        "attempt:102115-1592cc3c:sdk-message:37",
+        "attempt:102115-1592cc3c:sdk-message:56",
+        "attempt:102206-ff8fd397:sdk-message:20",
+        "attempt:102206-ff8fd397:sdk-message:22",
+        "attempt:102206-ff8fd397:sdk-message:37",
+        "attempt:102245-348d28d3:sdk-message:17",
+        "attempt:102245-348d28d3:sdk-message:19",
+        "attempt:102245-348d28d3:sdk-message:37"
+      ]
+    },
+    {
+      "id": "setting-sources-is-not-skills-off",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "setting_sources=[]인 세 run의 init에 16개 skill이 남았다. filesystem setting 격리와 skills=[] 비활성화는 별도 제어다.",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:manifest:option_summary",
+        "attempt:102115-1592cc3c:sdk-message:3",
+        "attempt:102206-ff8fd397:sdk-message:3",
+        "attempt:102245-348d28d3:sdk-message:3",
+        "python-sdk:0.2.128:types.py:ClaudeAgentOptions.skills:sha256:de495a6fa20136b0dd0528865e94c5f429eef5ad5ba197e214a2e597e4601e2a"
+      ]
+    },
+    {
+      "id": "prompt-contracts-are-language-version-specific",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "TypeScript 0.3.177은 string array와 dynamic boundary를 공개하지만 Python 0.2.128은 custom/preset/file과 snake_case option을 공개한다.",
+      "sourceRefs": [
+        "typescript-sdk:0.3.177:sdk.d.ts:Options.systemPrompt:sha256:3dcd0551702fc970c7dc78adc115f6083ebdd23cddba1bd087fec3713182cb18",
+        "python-sdk:0.2.128:types.py:ClaudeAgentOptions.system_prompt:sha256:de495a6fa20136b0dd0528865e94c5f429eef5ad5ba197e214a2e597e4601e2a"
+      ]
+    },
+    {
+      "id": "primary-model-is-not-only-provider-usage",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "세 primary assistant model은 Opus 5였지만 두 preset Result의 model_usage에는 Haiku 4.5 보조 사용도 있다. 모든 provider 사용이 Opus뿐이었다고 쓰면 안 된다.",
+      "sourceRefs": [
+        "attempt:102206-ff8fd397:sdk-message:41",
+        "attempt:102245-348d28d3:sdk-message:41"
+      ]
+    },
+    {
+      "id": "dynamic-section-relocation-and-cache-effect",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "option 계약은 확인했지만 조립 전후 prompt와 고정 반복 cache 비교가 없어 user-message 이동과 cache 개선은 아직 직접 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:dynamic-section-relocation-and-cache-effect"
+      ]
+    },
+    {
+      "id": "typescript-array-boundary-live-run",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "TypeScript 0.3.177의 array와 boundary는 정적 타입으로 확인했지만 실제 SDK run의 evidence tape는 아직 없다.",
+      "sourceRefs": [
+        "spec:claims:typescript-array-boundary-live-run"
+      ]
+    },
+    {
+      "id": "prompt-causes-read-and-preset-improves-cwd",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "정책 제거 대조군과 반복 표본이 없으므로 prompt의 유일 인과와 preset의 일반적 cwd 우월성을 단정할 수 없다.",
+      "sourceRefs": [
+        "spec:claims:prompt-causes-read-and-preset-improves-cwd"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "book-sdk-live-20260803:prompt",
+      "sequence": 0,
+      "timestampOffsetMs": 0,
+      "actor": "user",
+      "eventType": "prompt.submitted",
+      "pixelState": "briefing",
+      "evidenceLevel": "Configured",
+      "summary": "Python Agent SDK의 custom, preset+append, exclude dynamic 입력을 실제 Opus 5 세션에서 비교하고, 설정된 prompt와 관찰된 Read 행동, 보이지 않는 내부 조립을 분리한다.",
+      "sourceRefs": [
+        "publication-spec:public_prompt"
+      ]
+    },
+    {
+      "id": "102115-1592cc3c:process:0",
+      "sequence": 1,
+      "timestampOffsetMs": 1000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:process-event:0"
+      ],
+      "attemptId": "102115-1592cc3c"
+    },
+    {
+      "id": "102115-1592cc3c:process:1",
+      "sequence": 2,
+      "timestampOffsetMs": 1002,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "workspace.fixture.created",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:process-event:1"
+      ],
+      "attemptId": "102115-1592cc3c"
+    },
+    {
+      "id": "102115-1592cc3c:process:2",
+      "sequence": 3,
+      "timestampOffsetMs": 2074,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.started",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:process-event:2"
+      ],
+      "attemptId": "102115-1592cc3c"
+    },
+    {
+      "id": "102115-1592cc3c:sdk.init",
+      "sequence": 4,
+      "timestampOffsetMs": 2088,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "custom string과 실패 후 cwd 복구 Read: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:sdk-message:3"
+      ],
+      "attemptId": "102115-1592cc3c",
+      "caseId": "custom-system-prompt-read-policy"
+    },
+    {
+      "id": "102115-1592cc3c:toolu_017kNRZ3i2mVWY6vTXouwjGu",
+      "sequence": 5,
+      "timestampOffsetMs": 5183,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:sdk-message:15"
+      ],
+      "attemptId": "102115-1592cc3c",
+      "caseId": "custom-system-prompt-read-policy",
+      "toolName": "Read",
+      "toolUseId": "102115-1592cc3c:toolu_017kNRZ3i2mVWY6vTXouwjGu"
+    },
+    {
+      "id": "102115-1592cc3c:toolu_017kNRZ3i2mVWY6vTXouwjGu:result",
+      "sequence": 6,
+      "timestampOffsetMs": 5188,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: error",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:sdk-message:17"
+      ],
+      "attemptId": "102115-1592cc3c",
+      "toolName": "Read",
+      "toolUseId": "102115-1592cc3c:toolu_017kNRZ3i2mVWY6vTXouwjGu"
+    },
+    {
+      "id": "102115-1592cc3c:message_stop",
+      "sequence": 7,
+      "timestampOffsetMs": 5219,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:sdk-message:19"
+      ],
+      "attemptId": "102115-1592cc3c"
+    },
+    {
+      "id": "102115-1592cc3c:toolu_01TfqSx5yEYaLDwZqJN4wCkD",
+      "sequence": 8,
+      "timestampOffsetMs": 8195,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:sdk-message:35"
+      ],
+      "attemptId": "102115-1592cc3c",
+      "caseId": "custom-system-prompt-read-policy",
+      "toolName": "Read",
+      "toolUseId": "102115-1592cc3c:toolu_01TfqSx5yEYaLDwZqJN4wCkD"
+    },
+    {
+      "id": "102115-1592cc3c:toolu_01TfqSx5yEYaLDwZqJN4wCkD:result",
+      "sequence": 9,
+      "timestampOffsetMs": 8198,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:sdk-message:37"
+      ],
+      "attemptId": "102115-1592cc3c",
+      "toolName": "Read",
+      "toolUseId": "102115-1592cc3c:toolu_01TfqSx5yEYaLDwZqJN4wCkD"
+    },
+    {
+      "id": "102115-1592cc3c:message_stop",
+      "sequence": 10,
+      "timestampOffsetMs": 8203,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:sdk-message:39"
+      ],
+      "attemptId": "102115-1592cc3c"
+    },
+    {
+      "id": "102206-ff8fd397:process:0",
+      "sequence": 11,
+      "timestampOffsetMs": 11000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:102206-ff8fd397:process-event:0"
+      ],
+      "attemptId": "102206-ff8fd397"
+    },
+    {
+      "id": "102206-ff8fd397:process:1",
+      "sequence": 12,
+      "timestampOffsetMs": 11001,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "workspace.fixture.created",
+      "sourceRefs": [
+        "attempt:102206-ff8fd397:process-event:1"
+      ],
+      "attemptId": "102206-ff8fd397"
+    },
+    {
+      "id": "102206-ff8fd397:process:2",
+      "sequence": 13,
+      "timestampOffsetMs": 11862,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.started",
+      "sourceRefs": [
+        "attempt:102206-ff8fd397:process-event:2"
+      ],
+      "attemptId": "102206-ff8fd397"
+    },
+    {
+      "id": "102206-ff8fd397:sdk.init",
+      "sequence": 14,
+      "timestampOffsetMs": 11876,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "Claude Code preset + append와 첫 Read 성공: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:102206-ff8fd397:sdk-message:3"
+      ],
+      "attemptId": "102206-ff8fd397",
+      "caseId": "preset-append-read-policy"
+    },
+    {
+      "id": "102206-ff8fd397:toolu_01RedTxBiLYKYmVzbpvVhnqP",
+      "sequence": 15,
+      "timestampOffsetMs": 15800,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:102206-ff8fd397:sdk-message:20"
+      ],
+      "attemptId": "102206-ff8fd397",
+      "caseId": "preset-append-read-policy",
+      "toolName": "Read",
+      "toolUseId": "102206-ff8fd397:toolu_01RedTxBiLYKYmVzbpvVhnqP"
+    },
+    {
+      "id": "102206-ff8fd397:toolu_01RedTxBiLYKYmVzbpvVhnqP:result",
+      "sequence": 16,
+      "timestampOffsetMs": 15809,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:102206-ff8fd397:sdk-message:22"
+      ],
+      "attemptId": "102206-ff8fd397",
+      "toolName": "Read",
+      "toolUseId": "102206-ff8fd397:toolu_01RedTxBiLYKYmVzbpvVhnqP"
+    },
+    {
+      "id": "102115-1592cc3c:message_stop",
+      "sequence": 17,
+      "timestampOffsetMs": 15816,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:sdk-message:59"
+      ],
+      "attemptId": "102115-1592cc3c"
+    },
+    {
+      "id": "102115-1592cc3c:result",
+      "sequence": 18,
+      "timestampOffsetMs": 15837,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:sdk-message:60"
+      ],
+      "attemptId": "102115-1592cc3c"
+    },
+    {
+      "id": "102115-1592cc3c:process:61",
+      "sequence": 19,
+      "timestampOffsetMs": 15838,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.finished",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:process-event:61"
+      ],
+      "attemptId": "102115-1592cc3c"
+    },
+    {
+      "id": "102206-ff8fd397:message_stop",
+      "sequence": 20,
+      "timestampOffsetMs": 15853,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:102206-ff8fd397:sdk-message:24"
+      ],
+      "attemptId": "102206-ff8fd397"
+    },
+    {
+      "id": "102115-1592cc3c:process:62",
+      "sequence": 21,
+      "timestampOffsetMs": 16368,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:process-event:62"
+      ],
+      "attemptId": "102115-1592cc3c"
+    },
+    {
+      "id": "102245-348d28d3:process:0",
+      "sequence": 22,
+      "timestampOffsetMs": 21000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:102245-348d28d3:process-event:0"
+      ],
+      "attemptId": "102245-348d28d3"
+    },
+    {
+      "id": "102245-348d28d3:process:1",
+      "sequence": 23,
+      "timestampOffsetMs": 21001,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "workspace.fixture.created",
+      "sourceRefs": [
+        "attempt:102245-348d28d3:process-event:1"
+      ],
+      "attemptId": "102245-348d28d3"
+    },
+    {
+      "id": "102206-ff8fd397:message_stop",
+      "sequence": 24,
+      "timestampOffsetMs": 21418,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:102206-ff8fd397:sdk-message:40"
+      ],
+      "attemptId": "102206-ff8fd397"
+    },
+    {
+      "id": "102206-ff8fd397:result",
+      "sequence": 25,
+      "timestampOffsetMs": 21427,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:102206-ff8fd397:sdk-message:41"
+      ],
+      "attemptId": "102206-ff8fd397"
+    },
+    {
+      "id": "102206-ff8fd397:process:42",
+      "sequence": 26,
+      "timestampOffsetMs": 21429,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.finished",
+      "sourceRefs": [
+        "attempt:102206-ff8fd397:process-event:42"
+      ],
+      "attemptId": "102206-ff8fd397"
+    },
+    {
+      "id": "102245-348d28d3:process:2",
+      "sequence": 27,
+      "timestampOffsetMs": 21944,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.started",
+      "sourceRefs": [
+        "attempt:102245-348d28d3:process-event:2"
+      ],
+      "attemptId": "102245-348d28d3"
+    },
+    {
+      "id": "102245-348d28d3:sdk.init",
+      "sequence": 28,
+      "timestampOffsetMs": 21959,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "exclude dynamic option의 configured와 비관찰 경계: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:102245-348d28d3:sdk-message:3"
+      ],
+      "attemptId": "102245-348d28d3",
+      "caseId": "preset-exclude-dynamic-sections"
+    },
+    {
+      "id": "102206-ff8fd397:process:43",
+      "sequence": 29,
+      "timestampOffsetMs": 21960,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:102206-ff8fd397:process-event:43"
+      ],
+      "attemptId": "102206-ff8fd397"
+    },
+    {
+      "id": "102245-348d28d3:toolu_01EQBppGEfW99U2s3XXHxUaB",
+      "sequence": 30,
+      "timestampOffsetMs": 25490,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:102245-348d28d3:sdk-message:17"
+      ],
+      "attemptId": "102245-348d28d3",
+      "caseId": "preset-exclude-dynamic-sections",
+      "toolName": "Read",
+      "toolUseId": "102245-348d28d3:toolu_01EQBppGEfW99U2s3XXHxUaB"
+    },
+    {
+      "id": "102245-348d28d3:toolu_01EQBppGEfW99U2s3XXHxUaB:result",
+      "sequence": 31,
+      "timestampOffsetMs": 25503,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:102245-348d28d3:sdk-message:19"
+      ],
+      "attemptId": "102245-348d28d3",
+      "toolName": "Read",
+      "toolUseId": "102245-348d28d3:toolu_01EQBppGEfW99U2s3XXHxUaB"
+    },
+    {
+      "id": "102245-348d28d3:message_stop",
+      "sequence": 32,
+      "timestampOffsetMs": 25508,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:102245-348d28d3:sdk-message:21"
+      ],
+      "attemptId": "102245-348d28d3"
+    },
+    {
+      "id": "102245-348d28d3:message_stop",
+      "sequence": 33,
+      "timestampOffsetMs": 32703,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:102245-348d28d3:sdk-message:40"
+      ],
+      "attemptId": "102245-348d28d3"
+    },
+    {
+      "id": "102245-348d28d3:result",
+      "sequence": 34,
+      "timestampOffsetMs": 32708,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:102245-348d28d3:sdk-message:41"
+      ],
+      "attemptId": "102245-348d28d3"
+    },
+    {
+      "id": "102245-348d28d3:process:42",
+      "sequence": 35,
+      "timestampOffsetMs": 32710,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.finished",
+      "sourceRefs": [
+        "attempt:102245-348d28d3:process-event:42"
+      ],
+      "attemptId": "102245-348d28d3"
+    },
+    {
+      "id": "102245-348d28d3:process:43",
+      "sequence": 36,
+      "timestampOffsetMs": 33242,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:102245-348d28d3:process-event:43"
+      ],
+      "attemptId": "102245-348d28d3"
+    },
+    {
+      "id": "claim:custom-prompt-read-and-recovery-executed",
+      "sequence": 37,
+      "timestampOffsetMs": 33942,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "custom string 설정 뒤 첫 Read 오류, 오류가 제공한 cwd를 이용한 재시도, marker tool result와 최종 설명이 실제 sequence로 연결됐다.",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:process-event:0",
+        "attempt:102115-1592cc3c:sdk-message:15",
+        "attempt:102115-1592cc3c:sdk-message:17",
+        "attempt:102115-1592cc3c:sdk-message:35",
+        "attempt:102115-1592cc3c:sdk-message:37",
+        "attempt:102115-1592cc3c:sdk-message:56",
+        "attempt:102115-1592cc3c:sdk-message:60"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:preset-append-read-executed",
+      "sequence": 38,
+      "timestampOffsetMs": 34342,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "Claude Code preset와 append policy가 configured로 남았고, Opus 5 init 뒤 Read, tool result, final text, 성공 Result가 순서대로 관찰됐다.",
+      "sourceRefs": [
+        "attempt:102206-ff8fd397:process-event:0",
+        "attempt:102206-ff8fd397:sdk-message:3",
+        "attempt:102206-ff8fd397:sdk-message:20",
+        "attempt:102206-ff8fd397:sdk-message:22",
+        "attempt:102206-ff8fd397:sdk-message:37",
+        "attempt:102206-ff8fd397:sdk-message:41"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:exclude-dynamic-option-executed-not-inspected",
+      "sequence": 39,
+      "timestampOffsetMs": 34742,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "Python exclude_dynamic_sections=True 설정과 성공 run은 관찰됐다. 이 claim은 내부 prompt 이동이 보였다는 뜻이 아니다.",
+      "sourceRefs": [
+        "attempt:102245-348d28d3:manifest:option_summary",
+        "attempt:102245-348d28d3:sdk-message:3",
+        "attempt:102245-348d28d3:sdk-message:17",
+        "attempt:102245-348d28d3:sdk-message:19",
+        "attempt:102245-348d28d3:sdk-message:41"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:init-exposes-runtime-surface-not-prompt-body",
+      "sequence": 40,
+      "timestampOffsetMs": 35142,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "세 init은 cwd, model, permission mode, tools, skills, plugins, MCP와 agents를 노출했지만 조립된 system prompt 전문은 노출하지 않았다.",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:sdk-message:3",
+        "attempt:102206-ff8fd397:sdk-message:3",
+        "attempt:102245-348d28d3:sdk-message:3"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:read-result-precedes-final-claim",
+      "sequence": 41,
+      "timestampOffsetMs": 35542,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "세 case 모두 성공 Read와 matching tool result가 marker를 인용한 assistant final text보다 먼저 발생했다.",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:sdk-message:35",
+        "attempt:102115-1592cc3c:sdk-message:37",
+        "attempt:102115-1592cc3c:sdk-message:56",
+        "attempt:102206-ff8fd397:sdk-message:20",
+        "attempt:102206-ff8fd397:sdk-message:22",
+        "attempt:102206-ff8fd397:sdk-message:37",
+        "attempt:102245-348d28d3:sdk-message:17",
+        "attempt:102245-348d28d3:sdk-message:19",
+        "attempt:102245-348d28d3:sdk-message:37"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:setting-sources-is-not-skills-off",
+      "sequence": 42,
+      "timestampOffsetMs": 35942,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "setting_sources=[]인 세 run의 init에 16개 skill이 남았다. filesystem setting 격리와 skills=[] 비활성화는 별도 제어다.",
+      "sourceRefs": [
+        "attempt:102115-1592cc3c:manifest:option_summary",
+        "attempt:102115-1592cc3c:sdk-message:3",
+        "attempt:102206-ff8fd397:sdk-message:3",
+        "attempt:102245-348d28d3:sdk-message:3",
+        "python-sdk:0.2.128:types.py:ClaudeAgentOptions.skills:sha256:de495a6fa20136b0dd0528865e94c5f429eef5ad5ba197e214a2e597e4601e2a"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:prompt-contracts-are-language-version-specific",
+      "sequence": 43,
+      "timestampOffsetMs": 36342,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "TypeScript 0.3.177은 string array와 dynamic boundary를 공개하지만 Python 0.2.128은 custom/preset/file과 snake_case option을 공개한다.",
+      "sourceRefs": [
+        "typescript-sdk:0.3.177:sdk.d.ts:Options.systemPrompt:sha256:3dcd0551702fc970c7dc78adc115f6083ebdd23cddba1bd087fec3713182cb18",
+        "python-sdk:0.2.128:types.py:ClaudeAgentOptions.system_prompt:sha256:de495a6fa20136b0dd0528865e94c5f429eef5ad5ba197e214a2e597e4601e2a"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:primary-model-is-not-only-provider-usage",
+      "sequence": 44,
+      "timestampOffsetMs": 36742,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "세 primary assistant model은 Opus 5였지만 두 preset Result의 model_usage에는 Haiku 4.5 보조 사용도 있다. 모든 provider 사용이 Opus뿐이었다고 쓰면 안 된다.",
+      "sourceRefs": [
+        "attempt:102206-ff8fd397:sdk-message:41",
+        "attempt:102245-348d28d3:sdk-message:41"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:dynamic-section-relocation-and-cache-effect",
+      "sequence": 45,
+      "timestampOffsetMs": 37142,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "option 계약은 확인했지만 조립 전후 prompt와 고정 반복 cache 비교가 없어 user-message 이동과 cache 개선은 아직 직접 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:dynamic-section-relocation-and-cache-effect"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:typescript-array-boundary-live-run",
+      "sequence": 46,
+      "timestampOffsetMs": 37542,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "TypeScript 0.3.177의 array와 boundary는 정적 타입으로 확인했지만 실제 SDK run의 evidence tape는 아직 없다.",
+      "sourceRefs": [
+        "spec:claims:typescript-array-boundary-live-run"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:prompt-causes-read-and-preset-improves-cwd",
+      "sequence": 47,
+      "timestampOffsetMs": 37942,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "정책 제거 대조군과 반복 표본이 없으므로 prompt의 유일 인과와 preset의 일반적 cwd 우월성을 단정할 수 없다.",
+      "sourceRefs": [
+        "spec:claims:prompt-causes-read-and-preset-improves-cwd"
+      ],
+      "claimStatus": "additional_observation_required"
+    }
+  ]
+}
