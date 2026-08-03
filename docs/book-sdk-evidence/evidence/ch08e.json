@@ -1,0 +1,1169 @@
+{
+  "schemaVersion": "pixel-book-evidence.v1",
+  "generatedAt": "2026-08-03T20:32:54.449Z",
+  "title": "8e장 도구 설명: 실제 built-in 입력과 인과 판정의 경계",
+  "description": "Education Shell의 검증된 Book SDK 실행을 Pixel Agents 상태 문법으로 재생한 공개 projection",
+  "boundary": "Pixel Agents 제품이 이 실행을 수집했다는 뜻이 아니며, renderer는 source 판정을 변경하지 않는다.",
+  "source": {
+    "courseId": "book-sdk-ko",
+    "chapterSlug": "ch08e",
+    "campaignId": "book-sdk-live-20260803",
+    "traceId": "recorded:book-sdk-ko:ch08e:book-sdk-live-20260803:2026-08-03T20:45:00.000Z",
+    "traceSha256": "210151fce9d762657152ea1772c8f3185034f918b72ccd96086c03e5ab2203c4",
+    "summarySha256": "6bba92c8b0dd4342302635f741a9cac3af494d943ebec2545b1a08dfc78dfa14",
+    "sourceEventCount": 616,
+    "publicEventCount": 57,
+    "model": "claude-opus-5",
+    "attemptIds": [
+      "105914-4dbec404",
+      "105957-c4d885c3",
+      "110040-d85664b5",
+      "104326-a2a8922b",
+      "104443-c119bcec",
+      "104843-e6d50d01"
+    ],
+    "proofGate": "accepted_with_notes",
+    "secretScan": "passed"
+  },
+  "actors": [
+    {
+      "id": "user",
+      "label": "검증 프롬프트",
+      "role": "briefing",
+      "station": 0
+    },
+    {
+      "id": "runtime",
+      "label": "Python SDK 런타임",
+      "role": "control",
+      "station": 1
+    },
+    {
+      "id": "claude",
+      "label": "Claude Opus 5",
+      "role": "model",
+      "station": 2
+    },
+    {
+      "id": "tool",
+      "label": "SDK 도구 실행",
+      "role": "execution",
+      "station": 3
+    },
+    {
+      "id": "evaluator",
+      "label": "증거 판정기",
+      "role": "verification",
+      "station": 4
+    }
+  ],
+  "counts": {
+    "observedClaims": 7,
+    "correctionRequired": 10,
+    "additionalObservationRequired": 6,
+    "invalidAttempts": 0
+  },
+  "claims": [
+    {
+      "id": "all-attempt-integrity-matches",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "세 8e attempt의 integrity manifest에 기록된 모든 evidence file SHA-256이 현재 파일과 일치했다.",
+      "sourceRefs": [
+        "spec:claims:all-attempt-integrity-matches"
+      ]
+    },
+    {
+      "id": "targeted-read-input-and-marker-result",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "Read input은 offset 170, limit 21이었고 연결된 ToolResult와 final에 같은 window marker가 나타났다.",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:sdk-message:17",
+        "attempt:105914-4dbec404:sdk-message:19",
+        "attempt:105914-4dbec404:sdk-message:28"
+      ]
+    },
+    {
+      "id": "exact-grep-followed-by-matching-read",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "exact SDKAPIRetryMessage Grep이 한 줄 match를 반환했고 matching types.ts Read와 controlled status 결과가 이어졌다.",
+      "sourceRefs": [
+        "attempt:105957-c4d885c3:sdk-message:21",
+        "attempt:105957-c4d885c3:sdk-message:24",
+        "attempt:105957-c4d885c3:sdk-message:40",
+        "attempt:105957-c4d885c3:sdk-message:44",
+        "attempt:105957-c4d885c3:sdk-message:53"
+      ]
+    },
+    {
+      "id": "bash-denial-and-bare-command-recovery",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "source Read 뒤 복합 Bash는 오류 ToolResult로 거부됐고 bare python3 verify.py 재시도는 실제 PASS ToolResult를 반환했다.",
+      "sourceRefs": [
+        "attempt:110040-d85664b5:sdk-message:15",
+        "attempt:110040-d85664b5:sdk-message:17",
+        "attempt:110040-d85664b5:sdk-message:28",
+        "attempt:110040-d85664b5:sdk-message:30",
+        "attempt:110040-d85664b5:sdk-message:47",
+        "attempt:110040-d85664b5:sdk-message:51"
+      ]
+    },
+    {
+      "id": "terminal-results-and-metrics-observed",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "세 run은 각각 2, 3, 4 turns의 success Result로 닫혔고 duration, API duration, 비용, model usage가 raw에 남았다.",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:sdk-message:32",
+        "attempt:105957-c4d885c3:sdk-message:57",
+        "attempt:110040-d85664b5:sdk-message:64"
+      ]
+    },
+    {
+      "id": "supporting-description-pair-paths-observed",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "8장 보조 출처의 같은 fixture와 user prompt에서 vague 10회와 rich 4회의 서로 다른 custom search 경로가 실제로 기록됐다.",
+      "sourceRefs": [
+        "attempt:104326-a2a8922b:sdk-message:202",
+        "attempt:104443-c119bcec:sdk-message:95"
+      ]
+    },
+    {
+      "id": "supporting-agent-role-and-nested-read-observed",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "8장 보조 출처에서 parent가 evidence-reviewer를 선택했고 같은 parent tool 아래 nested Read와 specialist result가 나타났다.",
+      "sourceRefs": [
+        "attempt:104843-e6d50d01:sdk-message:21",
+        "attempt:104843-e6d50d01:sdk-message:28",
+        "attempt:104843-e6d50d01:sdk-message:29",
+        "attempt:104843-e6d50d01:sdk-message:31",
+        "attempt:104843-e6d50d01:sdk-message:32",
+        "attempt:104843-e6d50d01:sdk-message:127"
+      ]
+    },
+    {
+      "id": "prompt-confounds-built-in-description-causality",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "세 prompt가 원하는 Read/Grep/Bash 경로를 직접 지시했으므로 관찰된 입력만으로 built-in description의 단독 인과 효과를 선언하면 안 된다.",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:manifest:option_summary",
+        "attempt:105957-c4d885c3:manifest:option_summary",
+        "attempt:110040-d85664b5:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "permission-hook-declined-is-unsupported",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "Bash 거부는 오류 ToolResult와 Result.permission_denials에 있지만 hook/permission callback은 0건이어서 permission hook이 거부했다고 쓰면 안 된다.",
+      "sourceRefs": [
+        "attempt:110040-d85664b5:sdk-message:30",
+        "attempt:110040-d85664b5:sdk-message:60",
+        "attempt:110040-d85664b5:sdk-message:64"
+      ]
+    },
+    {
+      "id": "filtered-snapshot-is-not-total-filesystem-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "changed_paths snapshot은 .git과 __pycache__를 제외하므로 빈 목록을 전체 filesystem 무변경 증거로 확장하면 안 된다.",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:manifest:option_summary",
+        "attempt:105957-c4d885c3:manifest:option_summary",
+        "attempt:110040-d85664b5:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "grep-num-files-zero-is-not-no-match",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "Grep ToolResult content와 numLines는 한 줄 match를 보이지만 부가 metadata numFiles는 0이므로 numFiles만으로 no-match라 판정하면 안 된다.",
+      "sourceRefs": [
+        "attempt:105957-c4d885c3:sdk-message:24"
+      ]
+    },
+    {
+      "id": "primary-opus-is-not-only-provider-usage",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "세 init과 primary assistant는 Opus 5지만 세 Result model_usage에는 Haiku 4.5 보조 사용도 기록됐다.",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:sdk-message:32",
+        "attempt:105957-c4d885c3:sdk-message:57",
+        "attempt:110040-d85664b5:sdk-message:64"
+      ]
+    },
+    {
+      "id": "captured-is-not-claim-pass",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "OTel oracle.verdict CAPTURED와 assertion count 0은 raw 수집 완료 표식이지 도구 설명 주장 합격이 아니다.",
+      "sourceRefs": [
+        "spec:claims:captured-is-not-claim-pass"
+      ]
+    },
+    {
+      "id": "built-in-otel-has-no-tool-execution-span",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "세 trace에는 sdk.message, process.event, root, oracle span만 있고 built-in Read/Grep/Bash별 tool.execution span은 없다.",
+      "sourceRefs": [
+        "spec:claims:built-in-otel-has-no-tool-execution-span"
+      ]
+    },
+    {
+      "id": "probe-fixture-not-provenance-bound",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "manifest는 장 source와 option summary를 묶지만 exact prompt, probe source, fixture, verification script를 묶지 않았다.",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:manifest:option_summary",
+        "attempt:105957-c4d885c3:manifest:option_summary",
+        "attempt:110040-d85664b5:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "single-description-pair-does-not-prove-causality",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "8장의 vague/rich 실행은 fixed-order 한 번씩이라 10회 대 4회의 관찰값을 description/schema의 일반 인과나 승자로 만들 수 없다.",
+      "sourceRefs": [
+        "attempt:104326-a2a8922b:sdk-message:202",
+        "attempt:104443-c119bcec:sdk-message:95"
+      ]
+    },
+    {
+      "id": "agent-init-task-and-use-agent-are-one-surface-boundary",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "보조 Agent 실행의 init은 Task, 완성 ToolUseBlock은 Agent 이름을 사용하므로 서로 다른 위임 두 개로 중복 집계하지 않는다.",
+      "sourceRefs": [
+        "attempt:104843-e6d50d01:sdk-message:1",
+        "attempt:104843-e6d50d01:sdk-message:21"
+      ]
+    },
+    {
+      "id": "exact-built-in-description-receipt-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "raw init에 built-in Read/Grep/Bash의 exact description 전문이나 provider 직렬화 receipt가 없다.",
+      "sourceRefs": [
+        "spec:claims:exact-built-in-description-receipt-not-observed"
+      ]
+    },
+    {
+      "id": "description-only-counterbalanced-test-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "사용자 지시와 fixture는 같게 두고 description만 바꾼 반복·counterbalanced built-in 대조군을 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:description-only-counterbalanced-test-not-observed"
+      ]
+    },
+    {
+      "id": "actual-permission-callback-ui-decision-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "세 attempt의 permission callback은 0건이라 실제 사용자 승인 UI와 SDK callback decision을 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:actual-permission-callback-ui-decision-not-observed"
+      ]
+    },
+    {
+      "id": "toolsearch-deferred-schema-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "ToolSearch query, schema loaded, actual tool use의 deferred schema 흐름은 Python 0.2.128 실행에서 구성하거나 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:toolsearch-deferred-schema-not-observed"
+      ]
+    },
+    {
+      "id": "typescript-agent-options-not-observed-in-python",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "forwardSubagentText와 agentProgressSummaries는 이 Python 0.2.128 실행에서 option으로 사용하거나 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:typescript-agent-options-not-observed-in-python"
+      ]
+    },
+    {
+      "id": "description-only-read-vs-bash-choice-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "Read와 Bash가 모두 보이는 조건에서 사용자 지시를 중립화하고 description만으로 선택이 달라지는지 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:description-only-read-vs-bash-choice-not-observed"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "book-sdk-live-20260803:prompt",
+      "sequence": 0,
+      "timestampOffsetMs": 0,
+      "actor": "user",
+      "eventType": "prompt.submitted",
+      "pixelState": "briefing",
+      "evidenceLevel": "Configured",
+      "summary": "실제 Opus 5 SDK 실행의 bounded Read, exact Grep 뒤 Read, Bash 거부와 최소 command 복구를 원본 순서로 읽고, 관찰된 입력과 built-in description의 미증명 인과를 분리한다.",
+      "sourceRefs": [
+        "publication-spec:public_prompt"
+      ]
+    },
+    {
+      "id": "105914-4dbec404:process:0",
+      "sequence": 1,
+      "timestampOffsetMs": 1000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:process-event:0"
+      ],
+      "attemptId": "105914-4dbec404"
+    },
+    {
+      "id": "105914-4dbec404:sdk.init",
+      "sequence": 2,
+      "timestampOffsetMs": 2337,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "170~190줄 bounded Read: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:sdk-message:1"
+      ],
+      "attemptId": "105914-4dbec404",
+      "caseId": "read-targeted-window"
+    },
+    {
+      "id": "105914-4dbec404:toolu_013tkV3C2rbAYWXAh5QYdnAu",
+      "sequence": 3,
+      "timestampOffsetMs": 6470,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {'limit': 21, 'offset': 170}",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:sdk-message:17"
+      ],
+      "attemptId": "105914-4dbec404",
+      "caseId": "read-targeted-window",
+      "toolName": "Read",
+      "toolUseId": "105914-4dbec404:toolu_013tkV3C2rbAYWXAh5QYdnAu"
+    },
+    {
+      "id": "105914-4dbec404:toolu_013tkV3C2rbAYWXAh5QYdnAu:result",
+      "sequence": 4,
+      "timestampOffsetMs": 6474,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:sdk-message:19"
+      ],
+      "attemptId": "105914-4dbec404",
+      "toolName": "Read",
+      "toolUseId": "105914-4dbec404:toolu_013tkV3C2rbAYWXAh5QYdnAu"
+    },
+    {
+      "id": "105914-4dbec404:message_stop",
+      "sequence": 5,
+      "timestampOffsetMs": 6501,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:sdk-message:21"
+      ],
+      "attemptId": "105914-4dbec404"
+    },
+    {
+      "id": "105914-4dbec404:message_stop",
+      "sequence": 6,
+      "timestampOffsetMs": 9259,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:sdk-message:31"
+      ],
+      "attemptId": "105914-4dbec404"
+    },
+    {
+      "id": "105914-4dbec404:result",
+      "sequence": 7,
+      "timestampOffsetMs": 9261,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:sdk-message:32"
+      ],
+      "attemptId": "105914-4dbec404"
+    },
+    {
+      "id": "105914-4dbec404:process:33",
+      "sequence": 8,
+      "timestampOffsetMs": 9777,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:process-event:33"
+      ],
+      "attemptId": "105914-4dbec404"
+    },
+    {
+      "id": "105957-c4d885c3:process:0",
+      "sequence": 9,
+      "timestampOffsetMs": 11000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:105957-c4d885c3:process-event:0"
+      ],
+      "attemptId": "105957-c4d885c3"
+    },
+    {
+      "id": "105957-c4d885c3:sdk.init",
+      "sequence": 10,
+      "timestampOffsetMs": 11935,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "exact type Grep 뒤 matching file Read: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:105957-c4d885c3:sdk-message:1"
+      ],
+      "attemptId": "105957-c4d885c3",
+      "caseId": "grep-exact-sdk-keyword"
+    },
+    {
+      "id": "105957-c4d885c3:toolu_01CteK1A8Mucnko16rQDfVWF",
+      "sequence": 11,
+      "timestampOffsetMs": 17388,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Grep {'-n': True, 'output_mode': 'content', 'pattern': 'SDKAPIRetryMessage'}",
+      "sourceRefs": [
+        "attempt:105957-c4d885c3:sdk-message:21"
+      ],
+      "attemptId": "105957-c4d885c3",
+      "caseId": "grep-exact-sdk-keyword",
+      "toolName": "Grep",
+      "toolUseId": "105957-c4d885c3:toolu_01CteK1A8Mucnko16rQDfVWF"
+    },
+    {
+      "id": "105957-c4d885c3:toolu_01CteK1A8Mucnko16rQDfVWF:result",
+      "sequence": 12,
+      "timestampOffsetMs": 17403,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Grep: result received",
+      "sourceRefs": [
+        "attempt:105957-c4d885c3:sdk-message:24"
+      ],
+      "attemptId": "105957-c4d885c3",
+      "toolName": "Grep",
+      "toolUseId": "105957-c4d885c3:toolu_01CteK1A8Mucnko16rQDfVWF"
+    },
+    {
+      "id": "105957-c4d885c3:message_stop",
+      "sequence": 13,
+      "timestampOffsetMs": 17404,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:105957-c4d885c3:sdk-message:25"
+      ],
+      "attemptId": "105957-c4d885c3"
+    },
+    {
+      "id": "105957-c4d885c3:toolu_01SQ4fYjeBQmEjGWKxQqEn2A",
+      "sequence": 14,
+      "timestampOffsetMs": 20275,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:105957-c4d885c3:sdk-message:40"
+      ],
+      "attemptId": "105957-c4d885c3",
+      "caseId": "grep-exact-sdk-keyword",
+      "toolName": "Read",
+      "toolUseId": "105957-c4d885c3:toolu_01SQ4fYjeBQmEjGWKxQqEn2A"
+    },
+    {
+      "id": "105957-c4d885c3:message_stop",
+      "sequence": 15,
+      "timestampOffsetMs": 20277,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:105957-c4d885c3:sdk-message:43"
+      ],
+      "attemptId": "105957-c4d885c3"
+    },
+    {
+      "id": "105957-c4d885c3:toolu_01SQ4fYjeBQmEjGWKxQqEn2A:result",
+      "sequence": 16,
+      "timestampOffsetMs": 20278,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:105957-c4d885c3:sdk-message:44"
+      ],
+      "attemptId": "105957-c4d885c3",
+      "toolName": "Read",
+      "toolUseId": "105957-c4d885c3:toolu_01SQ4fYjeBQmEjGWKxQqEn2A"
+    },
+    {
+      "id": "110040-d85664b5:process:0",
+      "sequence": 17,
+      "timestampOffsetMs": 21000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:110040-d85664b5:process-event:0"
+      ],
+      "attemptId": "110040-d85664b5"
+    },
+    {
+      "id": "110040-d85664b5:sdk.init",
+      "sequence": 18,
+      "timestampOffsetMs": 22116,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "복합 Bash 거부와 bare 검증 복구: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:110040-d85664b5:sdk-message:1"
+      ],
+      "attemptId": "110040-d85664b5",
+      "caseId": "bash-for-verification-only"
+    },
+    {
+      "id": "105957-c4d885c3:message_stop",
+      "sequence": 19,
+      "timestampOffsetMs": 24469,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:105957-c4d885c3:sdk-message:56"
+      ],
+      "attemptId": "105957-c4d885c3"
+    },
+    {
+      "id": "105957-c4d885c3:result",
+      "sequence": 20,
+      "timestampOffsetMs": 24470,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:105957-c4d885c3:sdk-message:57"
+      ],
+      "attemptId": "105957-c4d885c3"
+    },
+    {
+      "id": "105957-c4d885c3:process:58",
+      "sequence": 21,
+      "timestampOffsetMs": 24987,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:105957-c4d885c3:process-event:58"
+      ],
+      "attemptId": "105957-c4d885c3"
+    },
+    {
+      "id": "110040-d85664b5:toolu_01AvcNTfXFTran6b9VYDfpXL",
+      "sequence": 22,
+      "timestampOffsetMs": 25290,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:110040-d85664b5:sdk-message:15"
+      ],
+      "attemptId": "110040-d85664b5",
+      "caseId": "bash-for-verification-only",
+      "toolName": "Read",
+      "toolUseId": "110040-d85664b5:toolu_01AvcNTfXFTran6b9VYDfpXL"
+    },
+    {
+      "id": "110040-d85664b5:toolu_01AvcNTfXFTran6b9VYDfpXL:result",
+      "sequence": 23,
+      "timestampOffsetMs": 25294,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:110040-d85664b5:sdk-message:17"
+      ],
+      "attemptId": "110040-d85664b5",
+      "toolName": "Read",
+      "toolUseId": "110040-d85664b5:toolu_01AvcNTfXFTran6b9VYDfpXL"
+    },
+    {
+      "id": "110040-d85664b5:message_stop",
+      "sequence": 24,
+      "timestampOffsetMs": 25335,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:110040-d85664b5:sdk-message:19"
+      ],
+      "attemptId": "110040-d85664b5"
+    },
+    {
+      "id": "110040-d85664b5:toolu_01EFb8cBrPvUa5NEnw34UgcL",
+      "sequence": 25,
+      "timestampOffsetMs": 28568,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Bash {'command': 'python3 verify.py; echo \"EXIT: $?\"'}",
+      "sourceRefs": [
+        "attempt:110040-d85664b5:sdk-message:28"
+      ],
+      "attemptId": "110040-d85664b5",
+      "caseId": "bash-for-verification-only",
+      "toolName": "Bash",
+      "toolUseId": "110040-d85664b5:toolu_01EFb8cBrPvUa5NEnw34UgcL"
+    },
+    {
+      "id": "110040-d85664b5:toolu_01EFb8cBrPvUa5NEnw34UgcL:result",
+      "sequence": 26,
+      "timestampOffsetMs": 28575,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Bash: error",
+      "sourceRefs": [
+        "attempt:110040-d85664b5:sdk-message:30"
+      ],
+      "attemptId": "110040-d85664b5",
+      "toolName": "Bash",
+      "toolUseId": "110040-d85664b5:toolu_01EFb8cBrPvUa5NEnw34UgcL"
+    },
+    {
+      "id": "110040-d85664b5:message_stop",
+      "sequence": 27,
+      "timestampOffsetMs": 28577,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:110040-d85664b5:sdk-message:32"
+      ],
+      "attemptId": "110040-d85664b5"
+    },
+    {
+      "id": "110040-d85664b5:toolu_01A3updXLTcxo1phspd59bkY",
+      "sequence": 28,
+      "timestampOffsetMs": 32163,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Bash {'command': 'python3 verify.py'}",
+      "sourceRefs": [
+        "attempt:110040-d85664b5:sdk-message:47"
+      ],
+      "attemptId": "110040-d85664b5",
+      "caseId": "bash-for-verification-only",
+      "toolName": "Bash",
+      "toolUseId": "110040-d85664b5:toolu_01A3updXLTcxo1phspd59bkY"
+    },
+    {
+      "id": "110040-d85664b5:message_stop",
+      "sequence": 29,
+      "timestampOffsetMs": 32220,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:110040-d85664b5:sdk-message:50"
+      ],
+      "attemptId": "110040-d85664b5"
+    },
+    {
+      "id": "110040-d85664b5:toolu_01A3updXLTcxo1phspd59bkY:result",
+      "sequence": 30,
+      "timestampOffsetMs": 32253,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Bash: result received",
+      "sourceRefs": [
+        "attempt:110040-d85664b5:sdk-message:51"
+      ],
+      "attemptId": "110040-d85664b5",
+      "toolName": "Bash",
+      "toolUseId": "110040-d85664b5:toolu_01A3updXLTcxo1phspd59bkY"
+    },
+    {
+      "id": "110040-d85664b5:message_stop",
+      "sequence": 31,
+      "timestampOffsetMs": 35953,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:110040-d85664b5:sdk-message:63"
+      ],
+      "attemptId": "110040-d85664b5"
+    },
+    {
+      "id": "110040-d85664b5:result",
+      "sequence": 32,
+      "timestampOffsetMs": 35954,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:110040-d85664b5:sdk-message:64"
+      ],
+      "attemptId": "110040-d85664b5"
+    },
+    {
+      "id": "110040-d85664b5:process:65",
+      "sequence": 33,
+      "timestampOffsetMs": 36470,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:110040-d85664b5:process-event:65"
+      ],
+      "attemptId": "110040-d85664b5"
+    },
+    {
+      "id": "claim:all-attempt-integrity-matches",
+      "sequence": 34,
+      "timestampOffsetMs": 37170,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "세 8e attempt의 integrity manifest에 기록된 모든 evidence file SHA-256이 현재 파일과 일치했다.",
+      "sourceRefs": [
+        "spec:claims:all-attempt-integrity-matches"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:targeted-read-input-and-marker-result",
+      "sequence": 35,
+      "timestampOffsetMs": 37570,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "Read input은 offset 170, limit 21이었고 연결된 ToolResult와 final에 같은 window marker가 나타났다.",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:sdk-message:17",
+        "attempt:105914-4dbec404:sdk-message:19",
+        "attempt:105914-4dbec404:sdk-message:28"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:exact-grep-followed-by-matching-read",
+      "sequence": 36,
+      "timestampOffsetMs": 37970,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "exact SDKAPIRetryMessage Grep이 한 줄 match를 반환했고 matching types.ts Read와 controlled status 결과가 이어졌다.",
+      "sourceRefs": [
+        "attempt:105957-c4d885c3:sdk-message:21",
+        "attempt:105957-c4d885c3:sdk-message:24",
+        "attempt:105957-c4d885c3:sdk-message:40",
+        "attempt:105957-c4d885c3:sdk-message:44",
+        "attempt:105957-c4d885c3:sdk-message:53"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:bash-denial-and-bare-command-recovery",
+      "sequence": 37,
+      "timestampOffsetMs": 38370,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "source Read 뒤 복합 Bash는 오류 ToolResult로 거부됐고 bare python3 verify.py 재시도는 실제 PASS ToolResult를 반환했다.",
+      "sourceRefs": [
+        "attempt:110040-d85664b5:sdk-message:15",
+        "attempt:110040-d85664b5:sdk-message:17",
+        "attempt:110040-d85664b5:sdk-message:28",
+        "attempt:110040-d85664b5:sdk-message:30",
+        "attempt:110040-d85664b5:sdk-message:47",
+        "attempt:110040-d85664b5:sdk-message:51"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:terminal-results-and-metrics-observed",
+      "sequence": 38,
+      "timestampOffsetMs": 38770,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "세 run은 각각 2, 3, 4 turns의 success Result로 닫혔고 duration, API duration, 비용, model usage가 raw에 남았다.",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:sdk-message:32",
+        "attempt:105957-c4d885c3:sdk-message:57",
+        "attempt:110040-d85664b5:sdk-message:64"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:supporting-description-pair-paths-observed",
+      "sequence": 39,
+      "timestampOffsetMs": 39170,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "8장 보조 출처의 같은 fixture와 user prompt에서 vague 10회와 rich 4회의 서로 다른 custom search 경로가 실제로 기록됐다.",
+      "sourceRefs": [
+        "attempt:104326-a2a8922b:sdk-message:202",
+        "attempt:104443-c119bcec:sdk-message:95"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:supporting-agent-role-and-nested-read-observed",
+      "sequence": 40,
+      "timestampOffsetMs": 39570,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "8장 보조 출처에서 parent가 evidence-reviewer를 선택했고 같은 parent tool 아래 nested Read와 specialist result가 나타났다.",
+      "sourceRefs": [
+        "attempt:104843-e6d50d01:sdk-message:21",
+        "attempt:104843-e6d50d01:sdk-message:28",
+        "attempt:104843-e6d50d01:sdk-message:29",
+        "attempt:104843-e6d50d01:sdk-message:31",
+        "attempt:104843-e6d50d01:sdk-message:32",
+        "attempt:104843-e6d50d01:sdk-message:127"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:prompt-confounds-built-in-description-causality",
+      "sequence": 41,
+      "timestampOffsetMs": 39970,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "세 prompt가 원하는 Read/Grep/Bash 경로를 직접 지시했으므로 관찰된 입력만으로 built-in description의 단독 인과 효과를 선언하면 안 된다.",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:manifest:option_summary",
+        "attempt:105957-c4d885c3:manifest:option_summary",
+        "attempt:110040-d85664b5:manifest:option_summary"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:permission-hook-declined-is-unsupported",
+      "sequence": 42,
+      "timestampOffsetMs": 40370,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "Bash 거부는 오류 ToolResult와 Result.permission_denials에 있지만 hook/permission callback은 0건이어서 permission hook이 거부했다고 쓰면 안 된다.",
+      "sourceRefs": [
+        "attempt:110040-d85664b5:sdk-message:30",
+        "attempt:110040-d85664b5:sdk-message:60",
+        "attempt:110040-d85664b5:sdk-message:64"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:filtered-snapshot-is-not-total-filesystem-proof",
+      "sequence": 43,
+      "timestampOffsetMs": 40770,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "changed_paths snapshot은 .git과 __pycache__를 제외하므로 빈 목록을 전체 filesystem 무변경 증거로 확장하면 안 된다.",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:manifest:option_summary",
+        "attempt:105957-c4d885c3:manifest:option_summary",
+        "attempt:110040-d85664b5:manifest:option_summary"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:grep-num-files-zero-is-not-no-match",
+      "sequence": 44,
+      "timestampOffsetMs": 41170,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "Grep ToolResult content와 numLines는 한 줄 match를 보이지만 부가 metadata numFiles는 0이므로 numFiles만으로 no-match라 판정하면 안 된다.",
+      "sourceRefs": [
+        "attempt:105957-c4d885c3:sdk-message:24"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:primary-opus-is-not-only-provider-usage",
+      "sequence": 45,
+      "timestampOffsetMs": 41570,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "세 init과 primary assistant는 Opus 5지만 세 Result model_usage에는 Haiku 4.5 보조 사용도 기록됐다.",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:sdk-message:32",
+        "attempt:105957-c4d885c3:sdk-message:57",
+        "attempt:110040-d85664b5:sdk-message:64"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:captured-is-not-claim-pass",
+      "sequence": 46,
+      "timestampOffsetMs": 41970,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "OTel oracle.verdict CAPTURED와 assertion count 0은 raw 수집 완료 표식이지 도구 설명 주장 합격이 아니다.",
+      "sourceRefs": [
+        "spec:claims:captured-is-not-claim-pass"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:built-in-otel-has-no-tool-execution-span",
+      "sequence": 47,
+      "timestampOffsetMs": 42370,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "세 trace에는 sdk.message, process.event, root, oracle span만 있고 built-in Read/Grep/Bash별 tool.execution span은 없다.",
+      "sourceRefs": [
+        "spec:claims:built-in-otel-has-no-tool-execution-span"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:probe-fixture-not-provenance-bound",
+      "sequence": 48,
+      "timestampOffsetMs": 42770,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "manifest는 장 source와 option summary를 묶지만 exact prompt, probe source, fixture, verification script를 묶지 않았다.",
+      "sourceRefs": [
+        "attempt:105914-4dbec404:manifest:option_summary",
+        "attempt:105957-c4d885c3:manifest:option_summary",
+        "attempt:110040-d85664b5:manifest:option_summary"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:single-description-pair-does-not-prove-causality",
+      "sequence": 49,
+      "timestampOffsetMs": 43170,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "8장의 vague/rich 실행은 fixed-order 한 번씩이라 10회 대 4회의 관찰값을 description/schema의 일반 인과나 승자로 만들 수 없다.",
+      "sourceRefs": [
+        "attempt:104326-a2a8922b:sdk-message:202",
+        "attempt:104443-c119bcec:sdk-message:95"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:agent-init-task-and-use-agent-are-one-surface-boundary",
+      "sequence": 50,
+      "timestampOffsetMs": 43570,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "보조 Agent 실행의 init은 Task, 완성 ToolUseBlock은 Agent 이름을 사용하므로 서로 다른 위임 두 개로 중복 집계하지 않는다.",
+      "sourceRefs": [
+        "attempt:104843-e6d50d01:sdk-message:1",
+        "attempt:104843-e6d50d01:sdk-message:21"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:exact-built-in-description-receipt-not-observed",
+      "sequence": 51,
+      "timestampOffsetMs": 43970,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "raw init에 built-in Read/Grep/Bash의 exact description 전문이나 provider 직렬화 receipt가 없다.",
+      "sourceRefs": [
+        "spec:claims:exact-built-in-description-receipt-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:description-only-counterbalanced-test-not-observed",
+      "sequence": 52,
+      "timestampOffsetMs": 44370,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "사용자 지시와 fixture는 같게 두고 description만 바꾼 반복·counterbalanced built-in 대조군을 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:description-only-counterbalanced-test-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:actual-permission-callback-ui-decision-not-observed",
+      "sequence": 53,
+      "timestampOffsetMs": 44770,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "세 attempt의 permission callback은 0건이라 실제 사용자 승인 UI와 SDK callback decision을 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:actual-permission-callback-ui-decision-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:toolsearch-deferred-schema-not-observed",
+      "sequence": 54,
+      "timestampOffsetMs": 45170,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "ToolSearch query, schema loaded, actual tool use의 deferred schema 흐름은 Python 0.2.128 실행에서 구성하거나 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:toolsearch-deferred-schema-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:typescript-agent-options-not-observed-in-python",
+      "sequence": 55,
+      "timestampOffsetMs": 45570,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "forwardSubagentText와 agentProgressSummaries는 이 Python 0.2.128 실행에서 option으로 사용하거나 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:typescript-agent-options-not-observed-in-python"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:description-only-read-vs-bash-choice-not-observed",
+      "sequence": 56,
+      "timestampOffsetMs": 45970,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "Read와 Bash가 모두 보이는 조건에서 사용자 지시를 중립화하고 description만으로 선택이 달라지는지 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:description-only-read-vs-bash-choice-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    }
+  ]
+}
