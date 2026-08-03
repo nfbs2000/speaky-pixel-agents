@@ -1,0 +1,916 @@
+{
+  "schemaVersion": "pixel-book-evidence.v1",
+  "generatedAt": "2026-08-03T19:13:49.109Z",
+  "title": "7장 모델별 튜닝: 같은 Opus 5 prompt-policy A/B의 실제 증거",
+  "description": "Education Shell의 검증된 Book SDK 실행을 Pixel Agents 상태 문법으로 재생한 공개 projection",
+  "boundary": "Pixel Agents 제품이 이 실행을 수집했다는 뜻이 아니며, renderer는 source 판정을 변경하지 않는다.",
+  "source": {
+    "courseId": "book-sdk-ko",
+    "chapterSlug": "ch07",
+    "campaignId": "book-sdk-live-20260803",
+    "traceId": "recorded:book-sdk-ko:ch07:book-sdk-live-20260803:2026-08-03T19:08:00.000Z",
+    "traceSha256": "95af65433b8b95eb9078465917b7c5d34696e3a2cd55aae0859a05c953d6c2b8",
+    "summarySha256": "7ab6e7152344f41c5dda6585c918f93298d9d6486bb3c2194e500918d841b871",
+    "sourceEventCount": 216,
+    "publicEventCount": 46,
+    "model": "claude-opus-5",
+    "attemptIds": [
+      "104030-78617aa1",
+      "104110-7a6f1e3e"
+    ],
+    "proofGate": "accepted_with_notes",
+    "secretScan": "passed"
+  },
+  "actors": [
+    {
+      "id": "user",
+      "label": "검증 프롬프트",
+      "role": "briefing",
+      "station": 0
+    },
+    {
+      "id": "runtime",
+      "label": "Python SDK 런타임",
+      "role": "control",
+      "station": 1
+    },
+    {
+      "id": "claude",
+      "label": "Claude Opus 5",
+      "role": "model",
+      "station": 2
+    },
+    {
+      "id": "tool",
+      "label": "SDK 도구 실행",
+      "role": "execution",
+      "station": 3
+    },
+    {
+      "id": "evaluator",
+      "label": "증거 판정기",
+      "role": "verification",
+      "station": 4
+    }
+  ],
+  "counts": {
+    "observedClaims": 5,
+    "correctionRequired": 4,
+    "additionalObservationRequired": 4,
+    "invalidAttempts": 0
+  },
+  "claims": [
+    {
+      "id": "fixed-input-system-policy-only-diff",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "fixture, user prompt, requested/actual model, 도구와 최대 턴은 같고 system prompt hash만 달랐다.",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:manifest:option_summary",
+        "attempt:104110-7a6f1e3e:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "baseline-grounded-before-final",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "baseline도 두 키워드 Grep과 정책 파일 Read를 최종 주장 전에 수행하고 성공 Result로 끝났다.",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:24",
+        "attempt:104030-78617aa1:sdk-message:27",
+        "attempt:104030-78617aa1:sdk-message:34",
+        "attempt:104030-78617aa1:sdk-message:36",
+        "attempt:104030-78617aa1:sdk-message:52",
+        "attempt:104030-78617aa1:sdk-message:56",
+        "attempt:104030-78617aa1:sdk-message:115",
+        "attempt:104030-78617aa1:sdk-message:119"
+      ]
+    },
+    {
+      "id": "patched-read-error-and-recovery",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "patched run은 잘못된 절대경로 Read의 error result를 받은 뒤 cwd를 반영한 Read로 복구하고 성공했다.",
+      "sourceRefs": [
+        "attempt:104110-7a6f1e3e:sdk-message:47",
+        "attempt:104110-7a6f1e3e:sdk-message:49",
+        "attempt:104110-7a6f1e3e:sdk-message:59",
+        "attempt:104110-7a6f1e3e:sdk-message:61",
+        "attempt:104110-7a6f1e3e:sdk-message:89",
+        "attempt:104110-7a6f1e3e:sdk-message:93"
+      ]
+    },
+    {
+      "id": "single-pair-metrics-differed",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "patched attempt는 이 한 쌍에서 175단어 짧고 API duration과 total cost가 작았으며 두 run 모두 5턴 성공이었다.",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:115",
+        "attempt:104030-78617aa1:sdk-message:119",
+        "attempt:104110-7a6f1e3e:sdk-message:89",
+        "attempt:104110-7a6f1e3e:sdk-message:93"
+      ]
+    },
+    {
+      "id": "both-finals-separated-evidence-and-inference",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "두 최종 답변 모두 정책 파일에서 확인한 값과 저장소가 확립하지 않은 추론을 구분해 보고했다.",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:115",
+        "attempt:104110-7a6f1e3e:sdk-message:89"
+      ]
+    },
+    {
+      "id": "primary-opus-is-not-only-provider-usage",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "init과 assistant primary는 Opus 5지만 두 Result model_usage에는 Haiku 4.5 보조 사용도 기록됐다.",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:119",
+        "attempt:104110-7a6f1e3e:sdk-message:93"
+      ]
+    },
+    {
+      "id": "same-model-policy-ab-is-not-cross-model-ab",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "두 attempt의 actual model은 모두 claude-opus-5이므로 이 tape는 cross-model A/B가 아니라 same-model prompt-policy A/B다.",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:1",
+        "attempt:104110-7a6f1e3e:sdk-message:1"
+      ]
+    },
+    {
+      "id": "single-pair-does-not-prove-patch-superiority",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "baseline도 근거를 읽었고 독립 반복이 없으므로 한 쌍의 비용과 길이 차이를 patch의 일반적 인과 우월성으로 선언하면 안 된다.",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:52",
+        "attempt:104030-78617aa1:sdk-message:56",
+        "attempt:104110-7a6f1e3e:sdk-message:59",
+        "attempt:104110-7a6f1e3e:sdk-message:61"
+      ]
+    },
+    {
+      "id": "duration-api-is-not-ui-latency",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "Result의 duration_api_ms는 관찰됐지만 제품 UI timestamp를 수집하지 않아 UI 체감 지연이라고 부를 수 없다.",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:119",
+        "attempt:104110-7a6f1e3e:sdk-message:93"
+      ]
+    },
+    {
+      "id": "prompt-patch-general-effect-needs-repetition",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "prompt patch의 행동, 비용, 길이 효과 분포를 말하려면 같은 조건의 독립 fresh-session 반복이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:prompt-patch-general-effect-needs-repetition"
+      ]
+    },
+    {
+      "id": "cross-model-behavior-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "서로 다른 실제 model을 같은 fixture와 policy로 실행하지 않았으므로 모델별 성향 차이는 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:cross-model-behavior-not-observed"
+      ]
+    },
+    {
+      "id": "permission-behavior-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "두 run은 auto-approved Grep과 Read만 사용했고 permission callback은 0개이므로 위험 작업 승인 행동은 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:permission-behavior-not-observed"
+      ]
+    },
+    {
+      "id": "rate-limit-event-influence-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "두 RateLimitEvent의 allowed_warning과 utilization 0.76은 보였지만 결과 차이에 미친 인과 영향은 계측하지 않았다.",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:3",
+        "attempt:104110-7a6f1e3e:sdk-message:3"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "book-sdk-live-20260803:prompt",
+      "sequence": 0,
+      "timestampOffsetMs": 0,
+      "actor": "user",
+      "eventType": "prompt.submitted",
+      "pixelState": "briefing",
+      "evidenceLevel": "Configured",
+      "summary": "같은 fixture, user prompt, Opus 5, 도구 조건에서 system prompt policy만 바꾼 두 실제 실행을 나란히 읽고, 행동 차이와 cross-model 및 인과 미관찰 경계를 분리한다.",
+      "sourceRefs": [
+        "publication-spec:public_prompt"
+      ]
+    },
+    {
+      "id": "104030-78617aa1:process:0",
+      "sequence": 1,
+      "timestampOffsetMs": 1000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:process-event:0"
+      ],
+      "attemptId": "104030-78617aa1"
+    },
+    {
+      "id": "104030-78617aa1:sdk.init",
+      "sequence": 2,
+      "timestampOffsetMs": 1892,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "같은 Opus 5 baseline policy: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:1"
+      ],
+      "attemptId": "104030-78617aa1",
+      "caseId": "baseline-policy"
+    },
+    {
+      "id": "104030-78617aa1:toolu_01WPTQPduAhzCTTPsKi8Bkxp",
+      "sequence": 3,
+      "timestampOffsetMs": 7102,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Grep {'head_limit': 50, 'output_mode': 'files_with_matches', 'pattern': 'retry|retries|max_attempts|maxAttempts'}",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:24"
+      ],
+      "attemptId": "104030-78617aa1",
+      "caseId": "baseline-policy",
+      "toolName": "Grep",
+      "toolUseId": "104030-78617aa1:toolu_01WPTQPduAhzCTTPsKi8Bkxp"
+    },
+    {
+      "id": "104030-78617aa1:toolu_01WPTQPduAhzCTTPsKi8Bkxp:result",
+      "sequence": 4,
+      "timestampOffsetMs": 7117,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Grep: result received",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:27"
+      ],
+      "attemptId": "104030-78617aa1",
+      "toolName": "Grep",
+      "toolUseId": "104030-78617aa1:toolu_01WPTQPduAhzCTTPsKi8Bkxp"
+    },
+    {
+      "id": "104030-78617aa1:toolu_01F6etkcHDPks2Jb8ocUPpFr",
+      "sequence": 5,
+      "timestampOffsetMs": 7982,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Grep {'head_limit': 50, 'output_mode': 'files_with_matches', 'pattern': 'destructive|approval|confirm before|irreversible'}",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:34"
+      ],
+      "attemptId": "104030-78617aa1",
+      "caseId": "baseline-policy",
+      "toolName": "Grep",
+      "toolUseId": "104030-78617aa1:toolu_01F6etkcHDPks2Jb8ocUPpFr"
+    },
+    {
+      "id": "104030-78617aa1:toolu_01F6etkcHDPks2Jb8ocUPpFr:result",
+      "sequence": 6,
+      "timestampOffsetMs": 7995,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Grep: result received",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:36"
+      ],
+      "attemptId": "104030-78617aa1",
+      "toolName": "Grep",
+      "toolUseId": "104030-78617aa1:toolu_01F6etkcHDPks2Jb8ocUPpFr"
+    },
+    {
+      "id": "104030-78617aa1:message_stop",
+      "sequence": 7,
+      "timestampOffsetMs": 8072,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:38"
+      ],
+      "attemptId": "104030-78617aa1"
+    },
+    {
+      "id": "104030-78617aa1:toolu_01DLyqtYpzMZZhgCqztmsfZG",
+      "sequence": 8,
+      "timestampOffsetMs": 10628,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:52"
+      ],
+      "attemptId": "104030-78617aa1",
+      "caseId": "baseline-policy",
+      "toolName": "Read",
+      "toolUseId": "104030-78617aa1:toolu_01DLyqtYpzMZZhgCqztmsfZG"
+    },
+    {
+      "id": "104030-78617aa1:message_stop",
+      "sequence": 9,
+      "timestampOffsetMs": 10630,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:55"
+      ],
+      "attemptId": "104030-78617aa1"
+    },
+    {
+      "id": "104030-78617aa1:toolu_01DLyqtYpzMZZhgCqztmsfZG:result",
+      "sequence": 10,
+      "timestampOffsetMs": 10631,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:56"
+      ],
+      "attemptId": "104030-78617aa1",
+      "toolName": "Read",
+      "toolUseId": "104030-78617aa1:toolu_01DLyqtYpzMZZhgCqztmsfZG"
+    },
+    {
+      "id": "104110-7a6f1e3e:process:0",
+      "sequence": 11,
+      "timestampOffsetMs": 11000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:104110-7a6f1e3e:process-event:0"
+      ],
+      "attemptId": "104110-7a6f1e3e"
+    },
+    {
+      "id": "104110-7a6f1e3e:sdk.init",
+      "sequence": 12,
+      "timestampOffsetMs": 11942,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "같은 Opus 5 evidence-first policy와 Read 오류 복구: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:104110-7a6f1e3e:sdk-message:1"
+      ],
+      "attemptId": "104110-7a6f1e3e",
+      "caseId": "evidence-first-policy"
+    },
+    {
+      "id": "104030-78617aa1:toolu_01X1zoerrtyzhHPE5z1V3Pn3",
+      "sequence": 13,
+      "timestampOffsetMs": 15339,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Grep {'head_limit': 100, 'output_mode': 'files_with_matches', 'pattern': '.'}",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:73"
+      ],
+      "attemptId": "104030-78617aa1",
+      "caseId": "baseline-policy",
+      "toolName": "Grep",
+      "toolUseId": "104030-78617aa1:toolu_01X1zoerrtyzhHPE5z1V3Pn3"
+    },
+    {
+      "id": "104030-78617aa1:toolu_01X1zoerrtyzhHPE5z1V3Pn3:result",
+      "sequence": 14,
+      "timestampOffsetMs": 15356,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Grep: result received",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:75"
+      ],
+      "attemptId": "104030-78617aa1",
+      "toolName": "Grep",
+      "toolUseId": "104030-78617aa1:toolu_01X1zoerrtyzhHPE5z1V3Pn3"
+    },
+    {
+      "id": "104030-78617aa1:message_stop",
+      "sequence": 15,
+      "timestampOffsetMs": 15379,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:77"
+      ],
+      "attemptId": "104030-78617aa1"
+    },
+    {
+      "id": "104110-7a6f1e3e:toolu_01QhKtjsbuAwuVx2J3HPxr5K",
+      "sequence": 16,
+      "timestampOffsetMs": 17533,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Grep {'head_limit': 50, 'output_mode': 'files_with_matches', 'pattern': 'retry|retries|maxRetries|max_retries|RETRY'}",
+      "sourceRefs": [
+        "attempt:104110-7a6f1e3e:sdk-message:18"
+      ],
+      "attemptId": "104110-7a6f1e3e",
+      "caseId": "evidence-first-policy",
+      "toolName": "Grep",
+      "toolUseId": "104110-7a6f1e3e:toolu_01QhKtjsbuAwuVx2J3HPxr5K"
+    },
+    {
+      "id": "104110-7a6f1e3e:toolu_01QhKtjsbuAwuVx2J3HPxr5K:result",
+      "sequence": 17,
+      "timestampOffsetMs": 17549,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Grep: result received",
+      "sourceRefs": [
+        "attempt:104110-7a6f1e3e:sdk-message:23"
+      ],
+      "attemptId": "104110-7a6f1e3e",
+      "toolName": "Grep",
+      "toolUseId": "104110-7a6f1e3e:toolu_01QhKtjsbuAwuVx2J3HPxr5K"
+    },
+    {
+      "id": "104110-7a6f1e3e:toolu_01WfQFVGN2iW2z8eAtZh16ct",
+      "sequence": 18,
+      "timestampOffsetMs": 19016,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Grep {'head_limit': 50, 'output_mode': 'files_with_matches', 'pattern': 'destructive|approval|confirm|dangerous|marker'}",
+      "sourceRefs": [
+        "attempt:104110-7a6f1e3e:sdk-message:29"
+      ],
+      "attemptId": "104110-7a6f1e3e",
+      "caseId": "evidence-first-policy",
+      "toolName": "Grep",
+      "toolUseId": "104110-7a6f1e3e:toolu_01WfQFVGN2iW2z8eAtZh16ct"
+    },
+    {
+      "id": "104110-7a6f1e3e:message_stop",
+      "sequence": 19,
+      "timestampOffsetMs": 19018,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:104110-7a6f1e3e:sdk-message:32"
+      ],
+      "attemptId": "104110-7a6f1e3e"
+    },
+    {
+      "id": "104110-7a6f1e3e:toolu_01WfQFVGN2iW2z8eAtZh16ct:result",
+      "sequence": 20,
+      "timestampOffsetMs": 19028,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Grep: result received",
+      "sourceRefs": [
+        "attempt:104110-7a6f1e3e:sdk-message:33"
+      ],
+      "attemptId": "104110-7a6f1e3e",
+      "toolName": "Grep",
+      "toolUseId": "104110-7a6f1e3e:toolu_01WfQFVGN2iW2z8eAtZh16ct"
+    },
+    {
+      "id": "104110-7a6f1e3e:toolu_01NGwezrrfGgBc76DK8pL9aQ",
+      "sequence": 21,
+      "timestampOffsetMs": 22383,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:104110-7a6f1e3e:sdk-message:47"
+      ],
+      "attemptId": "104110-7a6f1e3e",
+      "caseId": "evidence-first-policy",
+      "toolName": "Read",
+      "toolUseId": "104110-7a6f1e3e:toolu_01NGwezrrfGgBc76DK8pL9aQ"
+    },
+    {
+      "id": "104110-7a6f1e3e:toolu_01NGwezrrfGgBc76DK8pL9aQ:result",
+      "sequence": 22,
+      "timestampOffsetMs": 22388,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: error",
+      "sourceRefs": [
+        "attempt:104110-7a6f1e3e:sdk-message:49"
+      ],
+      "attemptId": "104110-7a6f1e3e",
+      "toolName": "Read",
+      "toolUseId": "104110-7a6f1e3e:toolu_01NGwezrrfGgBc76DK8pL9aQ"
+    },
+    {
+      "id": "104110-7a6f1e3e:message_stop",
+      "sequence": 23,
+      "timestampOffsetMs": 22396,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:104110-7a6f1e3e:sdk-message:51"
+      ],
+      "attemptId": "104110-7a6f1e3e"
+    },
+    {
+      "id": "104110-7a6f1e3e:toolu_016U1vKriJjfhriJLy1J2GKx",
+      "sequence": 24,
+      "timestampOffsetMs": 25706,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:104110-7a6f1e3e:sdk-message:59"
+      ],
+      "attemptId": "104110-7a6f1e3e",
+      "caseId": "evidence-first-policy",
+      "toolName": "Read",
+      "toolUseId": "104110-7a6f1e3e:toolu_016U1vKriJjfhriJLy1J2GKx"
+    },
+    {
+      "id": "104110-7a6f1e3e:toolu_016U1vKriJjfhriJLy1J2GKx:result",
+      "sequence": 25,
+      "timestampOffsetMs": 25707,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:104110-7a6f1e3e:sdk-message:61"
+      ],
+      "attemptId": "104110-7a6f1e3e",
+      "toolName": "Read",
+      "toolUseId": "104110-7a6f1e3e:toolu_016U1vKriJjfhriJLy1J2GKx"
+    },
+    {
+      "id": "104110-7a6f1e3e:message_stop",
+      "sequence": 26,
+      "timestampOffsetMs": 25732,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:104110-7a6f1e3e:sdk-message:63"
+      ],
+      "attemptId": "104110-7a6f1e3e"
+    },
+    {
+      "id": "104030-78617aa1:message_stop",
+      "sequence": 27,
+      "timestampOffsetMs": 31723,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:118"
+      ],
+      "attemptId": "104030-78617aa1"
+    },
+    {
+      "id": "104030-78617aa1:result",
+      "sequence": 28,
+      "timestampOffsetMs": 31724,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:119"
+      ],
+      "attemptId": "104030-78617aa1"
+    },
+    {
+      "id": "104030-78617aa1:process:120",
+      "sequence": 29,
+      "timestampOffsetMs": 32019,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:process-event:120"
+      ],
+      "attemptId": "104030-78617aa1"
+    },
+    {
+      "id": "104110-7a6f1e3e:message_stop",
+      "sequence": 30,
+      "timestampOffsetMs": 35530,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:104110-7a6f1e3e:sdk-message:92"
+      ],
+      "attemptId": "104110-7a6f1e3e"
+    },
+    {
+      "id": "104110-7a6f1e3e:result",
+      "sequence": 31,
+      "timestampOffsetMs": 35536,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:104110-7a6f1e3e:sdk-message:93"
+      ],
+      "attemptId": "104110-7a6f1e3e"
+    },
+    {
+      "id": "104110-7a6f1e3e:process:94",
+      "sequence": 32,
+      "timestampOffsetMs": 35834,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:104110-7a6f1e3e:process-event:94"
+      ],
+      "attemptId": "104110-7a6f1e3e"
+    },
+    {
+      "id": "claim:fixed-input-system-policy-only-diff",
+      "sequence": 33,
+      "timestampOffsetMs": 36534,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "fixture, user prompt, requested/actual model, 도구와 최대 턴은 같고 system prompt hash만 달랐다.",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:manifest:option_summary",
+        "attempt:104110-7a6f1e3e:manifest:option_summary"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:baseline-grounded-before-final",
+      "sequence": 34,
+      "timestampOffsetMs": 36934,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "baseline도 두 키워드 Grep과 정책 파일 Read를 최종 주장 전에 수행하고 성공 Result로 끝났다.",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:24",
+        "attempt:104030-78617aa1:sdk-message:27",
+        "attempt:104030-78617aa1:sdk-message:34",
+        "attempt:104030-78617aa1:sdk-message:36",
+        "attempt:104030-78617aa1:sdk-message:52",
+        "attempt:104030-78617aa1:sdk-message:56",
+        "attempt:104030-78617aa1:sdk-message:115",
+        "attempt:104030-78617aa1:sdk-message:119"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:patched-read-error-and-recovery",
+      "sequence": 35,
+      "timestampOffsetMs": 37334,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "patched run은 잘못된 절대경로 Read의 error result를 받은 뒤 cwd를 반영한 Read로 복구하고 성공했다.",
+      "sourceRefs": [
+        "attempt:104110-7a6f1e3e:sdk-message:47",
+        "attempt:104110-7a6f1e3e:sdk-message:49",
+        "attempt:104110-7a6f1e3e:sdk-message:59",
+        "attempt:104110-7a6f1e3e:sdk-message:61",
+        "attempt:104110-7a6f1e3e:sdk-message:89",
+        "attempt:104110-7a6f1e3e:sdk-message:93"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:single-pair-metrics-differed",
+      "sequence": 36,
+      "timestampOffsetMs": 37734,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "patched attempt는 이 한 쌍에서 175단어 짧고 API duration과 total cost가 작았으며 두 run 모두 5턴 성공이었다.",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:115",
+        "attempt:104030-78617aa1:sdk-message:119",
+        "attempt:104110-7a6f1e3e:sdk-message:89",
+        "attempt:104110-7a6f1e3e:sdk-message:93"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:both-finals-separated-evidence-and-inference",
+      "sequence": 37,
+      "timestampOffsetMs": 38134,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "두 최종 답변 모두 정책 파일에서 확인한 값과 저장소가 확립하지 않은 추론을 구분해 보고했다.",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:115",
+        "attempt:104110-7a6f1e3e:sdk-message:89"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:primary-opus-is-not-only-provider-usage",
+      "sequence": 38,
+      "timestampOffsetMs": 38534,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "init과 assistant primary는 Opus 5지만 두 Result model_usage에는 Haiku 4.5 보조 사용도 기록됐다.",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:119",
+        "attempt:104110-7a6f1e3e:sdk-message:93"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:same-model-policy-ab-is-not-cross-model-ab",
+      "sequence": 39,
+      "timestampOffsetMs": 38934,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "두 attempt의 actual model은 모두 claude-opus-5이므로 이 tape는 cross-model A/B가 아니라 same-model prompt-policy A/B다.",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:1",
+        "attempt:104110-7a6f1e3e:sdk-message:1"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:single-pair-does-not-prove-patch-superiority",
+      "sequence": 40,
+      "timestampOffsetMs": 39334,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "baseline도 근거를 읽었고 독립 반복이 없으므로 한 쌍의 비용과 길이 차이를 patch의 일반적 인과 우월성으로 선언하면 안 된다.",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:52",
+        "attempt:104030-78617aa1:sdk-message:56",
+        "attempt:104110-7a6f1e3e:sdk-message:59",
+        "attempt:104110-7a6f1e3e:sdk-message:61"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:duration-api-is-not-ui-latency",
+      "sequence": 41,
+      "timestampOffsetMs": 39734,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "Result의 duration_api_ms는 관찰됐지만 제품 UI timestamp를 수집하지 않아 UI 체감 지연이라고 부를 수 없다.",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:119",
+        "attempt:104110-7a6f1e3e:sdk-message:93"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:prompt-patch-general-effect-needs-repetition",
+      "sequence": 42,
+      "timestampOffsetMs": 40134,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "prompt patch의 행동, 비용, 길이 효과 분포를 말하려면 같은 조건의 독립 fresh-session 반복이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:prompt-patch-general-effect-needs-repetition"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:cross-model-behavior-not-observed",
+      "sequence": 43,
+      "timestampOffsetMs": 40534,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "서로 다른 실제 model을 같은 fixture와 policy로 실행하지 않았으므로 모델별 성향 차이는 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:cross-model-behavior-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:permission-behavior-not-observed",
+      "sequence": 44,
+      "timestampOffsetMs": 40934,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "두 run은 auto-approved Grep과 Read만 사용했고 permission callback은 0개이므로 위험 작업 승인 행동은 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:permission-behavior-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:rate-limit-event-influence-not-observed",
+      "sequence": 45,
+      "timestampOffsetMs": 41334,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "두 RateLimitEvent의 allowed_warning과 utilization 0.76은 보였지만 결과 차이에 미친 인과 영향은 계측하지 않았다.",
+      "sourceRefs": [
+        "attempt:104030-78617aa1:sdk-message:3",
+        "attempt:104110-7a6f1e3e:sdk-message:3"
+      ],
+      "claimStatus": "additional_observation_required"
+    }
+  ]
+}
