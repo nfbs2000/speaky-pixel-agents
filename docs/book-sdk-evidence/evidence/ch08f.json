@@ -1,0 +1,1540 @@
+{
+  "schemaVersion": "pixel-book-evidence.v1",
+  "generatedAt": "2026-08-03T20:58:35.061Z",
+  "title": "8f장 권한 제어: callback, mode, 명시적 deny의 실제 우선순위",
+  "description": "Education Shell의 검증된 Book SDK 실행을 Pixel Agents 상태 문법으로 재생한 공개 projection",
+  "boundary": "Pixel Agents 제품이 이 실행을 수집했다는 뜻이 아니며, renderer는 source 판정을 변경하지 않는다.",
+  "source": {
+    "courseId": "book-sdk-ko",
+    "chapterSlug": "ch08f",
+    "campaignId": "book-sdk-live-20260803",
+    "traceId": "recorded:book-sdk-ko:ch08f:book-sdk-live-20260803:2026-08-03T20:52:00.000Z",
+    "traceSha256": "31d9a3786c1cba512c0de51d0cae1439b91e0246deda5e019a6e83622fde19b6",
+    "summarySha256": "76204bbfa139e74683b6a3bf35e54ab013ecb3c40740d54345d4303878f64a54",
+    "sourceEventCount": 661,
+    "publicEventCount": 77,
+    "model": "claude-opus-5",
+    "attemptIds": [
+      "110308-ea475cf9",
+      "110349-dac28e5d",
+      "110426-25b7a9d7",
+      "110508-45847b17",
+      "110547-47d54887",
+      "101040-25cace50",
+      "104523-e1aa0451",
+      "122337-5c9ba78a",
+      "122418-70f4ebd5",
+      "122506-9120507f"
+    ],
+    "proofGate": "accepted_with_notes",
+    "secretScan": "passed"
+  },
+  "actors": [
+    {
+      "id": "user",
+      "label": "검증 프롬프트",
+      "role": "briefing",
+      "station": 0
+    },
+    {
+      "id": "runtime",
+      "label": "Python SDK 런타임",
+      "role": "control",
+      "station": 1
+    },
+    {
+      "id": "claude",
+      "label": "Claude Opus 5",
+      "role": "model",
+      "station": 2
+    },
+    {
+      "id": "tool",
+      "label": "SDK 도구 실행",
+      "role": "execution",
+      "station": 3
+    },
+    {
+      "id": "evaluator",
+      "label": "증거 판정기",
+      "role": "verification",
+      "station": 4
+    }
+  ],
+  "counts": {
+    "observedClaims": 11,
+    "correctionRequired": 12,
+    "additionalObservationRequired": 6,
+    "invalidAttempts": 0
+  },
+  "claims": [
+    {
+      "id": "all-primary-integrity-files-match",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "다섯 8f attempt의 integrity manifest에 기록된 일곱 evidence file SHA-256이 모두 현재 파일과 일치했다.",
+      "sourceRefs": [
+        "spec:claims:all-primary-integrity-files-match"
+      ]
+    },
+    {
+      "id": "callback-allow-joins-request-decision-and-execution",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "같은 tool_use_id의 request/allow 뒤 controlled handler와 marker ToolResult가 실행됐다.",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:sdk-message:15",
+        "attempt:110308-ea475cf9:permission-callback:16",
+        "attempt:110308-ea475cf9:permission-callback:17",
+        "attempt:110308-ea475cf9:process-event:19",
+        "attempt:110308-ea475cf9:sdk-message:20"
+      ]
+    },
+    {
+      "id": "callback-deny-blocks-handler-and-persists-denial",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "같은 tool_use_id의 request/deny 뒤 handler는 실행되지 않았고 error ToolResult와 terminal permission denial이 남았다.",
+      "sourceRefs": [
+        "attempt:110349-dac28e5d:sdk-message:15",
+        "attempt:110349-dac28e5d:permission-callback:16",
+        "attempt:110349-dac28e5d:permission-callback:17",
+        "attempt:110349-dac28e5d:sdk-message:19",
+        "attempt:110349-dac28e5d:sdk-message:35"
+      ]
+    },
+    {
+      "id": "whole-tool-allow-shadows-callback",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "whole-tool allowed_tools 조건에서는 callback 0회, handler 1회였고 SDK shadow warning이 기록됐다.",
+      "sourceRefs": [
+        "attempt:110426-25b7a9d7:sdk-message:15",
+        "attempt:110426-25b7a9d7:process-event:16",
+        "attempt:110426-25b7a9d7:sdk-message:18",
+        "attempt:110426-25b7a9d7:sdk-message:35"
+      ]
+    },
+    {
+      "id": "dontask-denies-this-unapproved-request",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "dontAsk는 같은 요청을 callback과 handler 없이 error ToolResult와 terminal denial로 닫았다.",
+      "sourceRefs": [
+        "attempt:110508-45847b17:sdk-message:15",
+        "attempt:110508-45847b17:sdk-message:17",
+        "attempt:110508-45847b17:sdk-message:38"
+      ]
+    },
+    {
+      "id": "auto-allows-this-controlled-request",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "auto mode에서 callback 없이 controlled handler와 marker result가 실행됐고 terminal denial은 없었다.",
+      "sourceRefs": [
+        "attempt:110547-47d54887:sdk-message:15",
+        "attempt:110547-47d54887:process-event:19",
+        "attempt:110547-47d54887:sdk-message:20",
+        "attempt:110547-47d54887:sdk-message:36"
+      ]
+    },
+    {
+      "id": "acceptedits-performs-real-edit-before-callback",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "16장 보조 실행에서 deny callback은 0회였고 Edit 성공 뒤 파일 content와 SHA가 실제로 바뀌었다.",
+      "sourceRefs": [
+        "attempt:122337-5c9ba78a:sdk-message:42",
+        "attempt:122337-5c9ba78a:sdk-message:46",
+        "attempt:122337-5c9ba78a:process-event:61",
+        "attempt:122337-5c9ba78a:sdk-message:59"
+      ]
+    },
+    {
+      "id": "bypass-runs-isolated-handler-before-callback",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "16장 격리 bypass 실행에서 deny callback은 0회였고 controlled MCP handler가 실행됐다.",
+      "sourceRefs": [
+        "attempt:122418-70f4ebd5:sdk-message:15",
+        "attempt:122418-70f4ebd5:process-event:16",
+        "attempt:122418-70f4ebd5:sdk-message:18",
+        "attempt:122418-70f4ebd5:sdk-message:35"
+      ]
+    },
+    {
+      "id": "explicit-deny-beats-bypass-for-this-tool",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "bypassPermissions에서도 명시적으로 disallow한 같은 tool은 callback과 handler 없이 거절됐다.",
+      "sourceRefs": [
+        "attempt:122506-9120507f:sdk-message:16",
+        "attempt:122506-9120507f:sdk-message:19",
+        "attempt:122506-9120507f:sdk-message:45"
+      ]
+    },
+    {
+      "id": "plan-host-transition-precedes-mutation",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "4b장 보조 실행에서 plan 중 SHA는 불변이었고 host approval record와 acceptEdits mode 전환 뒤 Edit가 SHA를 바꿨다.",
+      "sourceRefs": [
+        "attempt:101040-25cace50:permission-callback:180",
+        "attempt:101040-25cace50:permission-callback:181",
+        "attempt:101040-25cace50:sdk-message:220",
+        "attempt:101040-25cace50:sdk-message:243",
+        "attempt:101040-25cace50:sdk-message:247"
+      ]
+    },
+    {
+      "id": "disallowed-bash-is-absent-from-init",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "8장 보조 실행은 Read와 Bash 구성 중 disallowed Bash를 init 도구 표면에서 제거했고 실제 path도 Read만 사용했다.",
+      "sourceRefs": [
+        "attempt:104523-e1aa0451:sdk-message:1",
+        "attempt:104523-e1aa0451:sdk-message:14",
+        "attempt:104523-e1aa0451:sdk-message:30"
+      ]
+    },
+    {
+      "id": "can-use-tool-is-not-a-universal-observer",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "allow rule, acceptEdits, bypassPermissions가 callback보다 먼저 결정할 수 있으므로 can_use_tool만으로 전체 permission audit를 만들면 누락된다.",
+      "sourceRefs": [
+        "attempt:110426-25b7a9d7:manifest:option_summary",
+        "attempt:122337-5c9ba78a:manifest:option_summary",
+        "attempt:122418-70f4ebd5:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "programmatic-host-decision-is-not-human-ui",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "8f allow/deny는 host program이 반환했으며 실제 사람이 permission card를 클릭한 증거가 아니다.",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:permission-callback:17",
+        "attempt:110349-dac28e5d:permission-callback:17"
+      ]
+    },
+    {
+      "id": "tool-denial-is-not-run-failure",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "deny와 dontAsk는 error ToolResult와 denial을 남겼지만 terminal Result 자체는 success였다.",
+      "sourceRefs": [
+        "attempt:110349-dac28e5d:sdk-message:35",
+        "attempt:110508-45847b17:sdk-message:38"
+      ]
+    },
+    {
+      "id": "auto-rationale-is-not-observed",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "auto에서 handler가 실행된 사실은 classifier prompt, reason, matched rule의 증거가 아니다.",
+      "sourceRefs": [
+        "attempt:110547-47d54887:sdk-message:1",
+        "attempt:110547-47d54887:process-event:19"
+      ]
+    },
+    {
+      "id": "auto-final-misnames-tool-handler",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "auto assistant final은 permission handler 실행을 주장하지만 host permission callback은 0이고 실제 process record는 tool handler 실행이다.",
+      "sourceRefs": [
+        "attempt:110547-47d54887:process-event:19",
+        "attempt:110547-47d54887:sdk-message:32",
+        "attempt:110547-47d54887:sdk-message:36"
+      ]
+    },
+    {
+      "id": "primary-opus-is-not-only-provider-usage",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "다섯 init과 primary assistant는 Opus 5지만 Result model_usage에는 Haiku 4.5 보조 사용도 있다.",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:sdk-message:37",
+        "attempt:110349-dac28e5d:sdk-message:35",
+        "attempt:110426-25b7a9d7:sdk-message:35",
+        "attempt:110508-45847b17:sdk-message:38",
+        "attempt:110547-47d54887:sdk-message:36"
+      ]
+    },
+    {
+      "id": "captured-is-not-claim-pass",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "CAPTURED와 assertion count 0은 raw 수집 완료 표식이지 permission 주장 합격 판정이 아니다.",
+      "sourceRefs": [
+        "spec:claims:captured-is-not-claim-pass"
+      ]
+    },
+    {
+      "id": "shadow-warning-is-host-sdk-not-provider-event",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "CanUseToolShadowedWarning은 Python SDK가 낸 host warning이며 provider stream event로 세면 안 된다.",
+      "sourceRefs": [
+        "attempt:110426-25b7a9d7:process-event:36"
+      ]
+    },
+    {
+      "id": "permission-ui-lanes-are-not-peer-sdk-messages",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "AskUserQuestion, permission control request, MCP elicitation, denial evidence는 UI lane이지 네 동급 top-level SDKMessage class가 아니다.",
+      "sourceRefs": [
+        "spec:claims:permission-ui-lanes-are-not-peer-sdk-messages"
+      ]
+    },
+    {
+      "id": "probe-runtime-definition-is-not-fully-provenance-bound",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "manifest는 장 source와 prompt hash를 묶지만 exact probe/runtime/tool definition/handler source를 모두 묶지 않았다.",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:manifest:option_summary",
+        "attempt:110547-47d54887:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "tool-annotation-causality-is-not-proven",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "destructive/open-world annotation은 host source에서 확인되지만 raw init에 annotation receipt가 없어 permission 결과의 단독 원인으로 선언하지 않는다.",
+      "sourceRefs": [
+        "spec:claims:tool-annotation-causality-is-not-proven"
+      ]
+    },
+    {
+      "id": "actor-user-record-is-not-human-click-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "4b host approval record의 actor=user 문자열만으로 실제 인간 UI 승인이라고 주장할 수 없다.",
+      "sourceRefs": [
+        "attempt:101040-25cace50:process-event:216"
+      ]
+    },
+    {
+      "id": "external-permission-tool-routing-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "permission_prompt_tool_name의 SDK source 계약은 확인했지만 실제 external permission tool 왕복은 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:external-permission-tool-routing-not-observed"
+      ]
+    },
+    {
+      "id": "project-instruction-classifier-causality-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "setting_sources가 빈 실행에서 CLAUDE.md가 auto classifier에 미친 인과를 관찰하지 않았다.",
+      "sourceRefs": [
+        "attempt:110547-47d54887:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "human-permission-card-action-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "실제 사용자가 권한 카드 버튼을 누른 UI receipt와 SDK callback 결합은 아직 없다.",
+      "sourceRefs": [
+        "spec:claims:human-permission-card-action-not-observed"
+      ]
+    },
+    {
+      "id": "permission-rule-matcher-precedence-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "exact/prefix/wildcard matcher와 실제 settings-file allow의 전체 우선순위는 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:permission-rule-matcher-precedence-not-observed"
+      ]
+    },
+    {
+      "id": "ask-and-elicitation-ui-lanes-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "AskUserQuestion과 MCP elicitation을 실제로 발생시킨 UI lane 실행은 이 증거 묶음에 없다.",
+      "sourceRefs": [
+        "spec:claims:ask-and-elicitation-ui-lanes-not-observed"
+      ]
+    },
+    {
+      "id": "full-source-provenance-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "exact probe/runtime/tool description/annotation/handler source를 모두 attempt에 암호학적으로 묶는 provenance가 필요하다.",
+      "sourceRefs": [
+        "spec:claims:full-source-provenance-not-observed"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "book-sdk-live-20260803:prompt",
+      "sequence": 0,
+      "timestampOffsetMs": 0,
+      "actor": "user",
+      "eventType": "prompt.submitted",
+      "pixelState": "briefing",
+      "evidenceLevel": "Configured",
+      "summary": "같은 controlled ToolUse가 callback allow/deny, whole-tool allow, dontAsk, auto를 통과하는 실제 순서를 읽고, acceptEdits와 bypassPermissions의 보조 실행까지 연결해 실행·거절·미관측 이유를 구분한다.",
+      "sourceRefs": [
+        "publication-spec:public_prompt"
+      ]
+    },
+    {
+      "id": "110308-ea475cf9:process:0",
+      "sequence": 1,
+      "timestampOffsetMs": 1000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:process-event:0"
+      ],
+      "attemptId": "110308-ea475cf9"
+    },
+    {
+      "id": "110308-ea475cf9:sdk.init",
+      "sequence": 2,
+      "timestampOffsetMs": 2520,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "host callback allow 뒤 handler 실행: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:sdk-message:1"
+      ],
+      "attemptId": "110308-ea475cf9",
+      "caseId": "callback-allow"
+    },
+    {
+      "id": "110308-ea475cf9:toolu_01EbXYo9LCCqT6UB269RPYtL",
+      "sequence": 3,
+      "timestampOffsetMs": 5695,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__permission_evidence__request_shared_release {'release_id': 'REL-8F-CONTROLLED'}",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:sdk-message:15"
+      ],
+      "attemptId": "110308-ea475cf9",
+      "caseId": "callback-allow",
+      "toolName": "mcp__permission_evidence__request_shared_release",
+      "toolUseId": "110308-ea475cf9:toolu_01EbXYo9LCCqT6UB269RPYtL"
+    },
+    {
+      "id": "110308-ea475cf9:permission:16",
+      "sequence": 4,
+      "timestampOffsetMs": 5697,
+      "actor": "runtime",
+      "eventType": "permission.request",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "permission requested: mcp__permission_evidence__request_shared_release",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:permission-callback:16"
+      ],
+      "attemptId": "110308-ea475cf9",
+      "toolName": "mcp__permission_evidence__request_shared_release",
+      "toolUseId": "110308-ea475cf9:toolu_01EbXYo9LCCqT6UB269RPYtL"
+    },
+    {
+      "id": "110308-ea475cf9:permission:17",
+      "sequence": 5,
+      "timestampOffsetMs": 5698,
+      "actor": "runtime",
+      "eventType": "permission.decision",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "permission allow: mcp__permission_evidence__request_shared_release",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:permission-callback:17"
+      ],
+      "attemptId": "110308-ea475cf9",
+      "toolName": "mcp__permission_evidence__request_shared_release",
+      "toolUseId": "110308-ea475cf9:toolu_01EbXYo9LCCqT6UB269RPYtL"
+    },
+    {
+      "id": "110308-ea475cf9:process:19",
+      "sequence": 6,
+      "timestampOffsetMs": 5700,
+      "actor": "tool",
+      "eventType": "tool.execution",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host executed mcp__permission_evidence__request_shared_release: controlled-handler-executed",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:process-event:19"
+      ],
+      "attemptId": "110308-ea475cf9",
+      "toolName": "mcp__permission_evidence__request_shared_release",
+      "outcome": "controlled-handler-executed"
+    },
+    {
+      "id": "110308-ea475cf9:toolu_01EbXYo9LCCqT6UB269RPYtL:result",
+      "sequence": 7,
+      "timestampOffsetMs": 5703,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__permission_evidence__request_shared_release: result received",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:sdk-message:20"
+      ],
+      "attemptId": "110308-ea475cf9",
+      "toolName": "mcp__permission_evidence__request_shared_release",
+      "toolUseId": "110308-ea475cf9:toolu_01EbXYo9LCCqT6UB269RPYtL"
+    },
+    {
+      "id": "110308-ea475cf9:message_stop",
+      "sequence": 8,
+      "timestampOffsetMs": 5722,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:sdk-message:22"
+      ],
+      "attemptId": "110308-ea475cf9"
+    },
+    {
+      "id": "110349-dac28e5d:process:0",
+      "sequence": 9,
+      "timestampOffsetMs": 11000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:110349-dac28e5d:process-event:0"
+      ],
+      "attemptId": "110349-dac28e5d"
+    },
+    {
+      "id": "110349-dac28e5d:sdk.init",
+      "sequence": 10,
+      "timestampOffsetMs": 11912,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "host callback deny와 terminal denial: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:110349-dac28e5d:sdk-message:1"
+      ],
+      "attemptId": "110349-dac28e5d",
+      "caseId": "callback-deny"
+    },
+    {
+      "id": "110308-ea475cf9:message_stop",
+      "sequence": 11,
+      "timestampOffsetMs": 15180,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:sdk-message:36"
+      ],
+      "attemptId": "110308-ea475cf9"
+    },
+    {
+      "id": "110308-ea475cf9:result",
+      "sequence": 12,
+      "timestampOffsetMs": 15182,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:sdk-message:37"
+      ],
+      "attemptId": "110308-ea475cf9"
+    },
+    {
+      "id": "110308-ea475cf9:process:38",
+      "sequence": 13,
+      "timestampOffsetMs": 15639,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:process-event:38"
+      ],
+      "attemptId": "110308-ea475cf9"
+    },
+    {
+      "id": "110349-dac28e5d:toolu_01AHn1UocgETARFewM3ADpu5",
+      "sequence": 14,
+      "timestampOffsetMs": 16032,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__permission_evidence__request_shared_release {'release_id': 'REL-8F-CONTROLLED'}",
+      "sourceRefs": [
+        "attempt:110349-dac28e5d:sdk-message:15"
+      ],
+      "attemptId": "110349-dac28e5d",
+      "caseId": "callback-deny",
+      "toolName": "mcp__permission_evidence__request_shared_release",
+      "toolUseId": "110349-dac28e5d:toolu_01AHn1UocgETARFewM3ADpu5"
+    },
+    {
+      "id": "110349-dac28e5d:permission:16",
+      "sequence": 15,
+      "timestampOffsetMs": 16034,
+      "actor": "runtime",
+      "eventType": "permission.request",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "permission requested: mcp__permission_evidence__request_shared_release",
+      "sourceRefs": [
+        "attempt:110349-dac28e5d:permission-callback:16"
+      ],
+      "attemptId": "110349-dac28e5d",
+      "toolName": "mcp__permission_evidence__request_shared_release",
+      "toolUseId": "110349-dac28e5d:toolu_01AHn1UocgETARFewM3ADpu5"
+    },
+    {
+      "id": "110349-dac28e5d:permission:17",
+      "sequence": 16,
+      "timestampOffsetMs": 16034,
+      "actor": "runtime",
+      "eventType": "permission.decision",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "permission deny: mcp__permission_evidence__request_shared_release",
+      "sourceRefs": [
+        "attempt:110349-dac28e5d:permission-callback:17"
+      ],
+      "attemptId": "110349-dac28e5d",
+      "toolName": "mcp__permission_evidence__request_shared_release",
+      "toolUseId": "110349-dac28e5d:toolu_01AHn1UocgETARFewM3ADpu5"
+    },
+    {
+      "id": "110349-dac28e5d:toolu_01AHn1UocgETARFewM3ADpu5:result",
+      "sequence": 17,
+      "timestampOffsetMs": 16037,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__permission_evidence__request_shared_release: error",
+      "sourceRefs": [
+        "attempt:110349-dac28e5d:sdk-message:19"
+      ],
+      "attemptId": "110349-dac28e5d",
+      "toolName": "mcp__permission_evidence__request_shared_release",
+      "toolUseId": "110349-dac28e5d:toolu_01AHn1UocgETARFewM3ADpu5"
+    },
+    {
+      "id": "110349-dac28e5d:message_stop",
+      "sequence": 18,
+      "timestampOffsetMs": 16056,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:110349-dac28e5d:sdk-message:21"
+      ],
+      "attemptId": "110349-dac28e5d"
+    },
+    {
+      "id": "110349-dac28e5d:message_stop",
+      "sequence": 19,
+      "timestampOffsetMs": 20261,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:110349-dac28e5d:sdk-message:34"
+      ],
+      "attemptId": "110349-dac28e5d"
+    },
+    {
+      "id": "110349-dac28e5d:result",
+      "sequence": 20,
+      "timestampOffsetMs": 20265,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:110349-dac28e5d:sdk-message:35"
+      ],
+      "attemptId": "110349-dac28e5d"
+    },
+    {
+      "id": "110349-dac28e5d:process:36",
+      "sequence": 21,
+      "timestampOffsetMs": 20782,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:110349-dac28e5d:process-event:36"
+      ],
+      "attemptId": "110349-dac28e5d"
+    },
+    {
+      "id": "110426-25b7a9d7:process:0",
+      "sequence": 22,
+      "timestampOffsetMs": 21000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:110426-25b7a9d7:process-event:0"
+      ],
+      "attemptId": "110426-25b7a9d7"
+    },
+    {
+      "id": "110426-25b7a9d7:sdk.init",
+      "sequence": 23,
+      "timestampOffsetMs": 22399,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "whole-tool allow가 callback을 가림: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:110426-25b7a9d7:sdk-message:1"
+      ],
+      "attemptId": "110426-25b7a9d7",
+      "caseId": "allowed-rule-shadows-callback"
+    },
+    {
+      "id": "110426-25b7a9d7:toolu_01HEdBmEpyGUBctP1JaVwnd6",
+      "sequence": 24,
+      "timestampOffsetMs": 28422,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__permission_evidence__request_shared_release {'release_id': 'REL-8F-CONTROLLED'}",
+      "sourceRefs": [
+        "attempt:110426-25b7a9d7:sdk-message:15"
+      ],
+      "attemptId": "110426-25b7a9d7",
+      "caseId": "allowed-rule-shadows-callback",
+      "toolName": "mcp__permission_evidence__request_shared_release",
+      "toolUseId": "110426-25b7a9d7:toolu_01HEdBmEpyGUBctP1JaVwnd6"
+    },
+    {
+      "id": "110426-25b7a9d7:process:16",
+      "sequence": 25,
+      "timestampOffsetMs": 28425,
+      "actor": "tool",
+      "eventType": "tool.execution",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host executed mcp__permission_evidence__request_shared_release: controlled-handler-executed",
+      "sourceRefs": [
+        "attempt:110426-25b7a9d7:process-event:16"
+      ],
+      "attemptId": "110426-25b7a9d7",
+      "toolName": "mcp__permission_evidence__request_shared_release",
+      "outcome": "controlled-handler-executed"
+    },
+    {
+      "id": "110426-25b7a9d7:toolu_01HEdBmEpyGUBctP1JaVwnd6:result",
+      "sequence": 26,
+      "timestampOffsetMs": 28428,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__permission_evidence__request_shared_release: result received",
+      "sourceRefs": [
+        "attempt:110426-25b7a9d7:sdk-message:18"
+      ],
+      "attemptId": "110426-25b7a9d7",
+      "toolName": "mcp__permission_evidence__request_shared_release",
+      "toolUseId": "110426-25b7a9d7:toolu_01HEdBmEpyGUBctP1JaVwnd6"
+    },
+    {
+      "id": "110426-25b7a9d7:message_stop",
+      "sequence": 27,
+      "timestampOffsetMs": 28501,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:110426-25b7a9d7:sdk-message:20"
+      ],
+      "attemptId": "110426-25b7a9d7"
+    },
+    {
+      "id": "110508-45847b17:process:0",
+      "sequence": 28,
+      "timestampOffsetMs": 31000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:110508-45847b17:process-event:0"
+      ],
+      "attemptId": "110508-45847b17"
+    },
+    {
+      "id": "110508-45847b17:sdk.init",
+      "sequence": 29,
+      "timestampOffsetMs": 31950,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "dontAsk의 무질문 거절: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:110508-45847b17:sdk-message:1"
+      ],
+      "attemptId": "110508-45847b17",
+      "caseId": "dont-ask-unapproved"
+    },
+    {
+      "id": "110426-25b7a9d7:message_stop",
+      "sequence": 30,
+      "timestampOffsetMs": 33436,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:110426-25b7a9d7:sdk-message:34"
+      ],
+      "attemptId": "110426-25b7a9d7"
+    },
+    {
+      "id": "110426-25b7a9d7:result",
+      "sequence": 31,
+      "timestampOffsetMs": 33438,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:110426-25b7a9d7:sdk-message:35"
+      ],
+      "attemptId": "110426-25b7a9d7"
+    },
+    {
+      "id": "110426-25b7a9d7:process:36",
+      "sequence": 32,
+      "timestampOffsetMs": 33905,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:110426-25b7a9d7:process-event:36"
+      ],
+      "attemptId": "110426-25b7a9d7"
+    },
+    {
+      "id": "110508-45847b17:toolu_01YVxUjn2zGTu14ksp7CsxJX",
+      "sequence": 33,
+      "timestampOffsetMs": 35475,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__permission_evidence__request_shared_release {'release_id': 'REL-8F-CONTROLLED'}",
+      "sourceRefs": [
+        "attempt:110508-45847b17:sdk-message:15"
+      ],
+      "attemptId": "110508-45847b17",
+      "caseId": "dont-ask-unapproved",
+      "toolName": "mcp__permission_evidence__request_shared_release",
+      "toolUseId": "110508-45847b17:toolu_01YVxUjn2zGTu14ksp7CsxJX"
+    },
+    {
+      "id": "110508-45847b17:toolu_01YVxUjn2zGTu14ksp7CsxJX:result",
+      "sequence": 34,
+      "timestampOffsetMs": 35477,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__permission_evidence__request_shared_release: error",
+      "sourceRefs": [
+        "attempt:110508-45847b17:sdk-message:17"
+      ],
+      "attemptId": "110508-45847b17",
+      "toolName": "mcp__permission_evidence__request_shared_release",
+      "toolUseId": "110508-45847b17:toolu_01YVxUjn2zGTu14ksp7CsxJX"
+    },
+    {
+      "id": "110508-45847b17:message_stop",
+      "sequence": 35,
+      "timestampOffsetMs": 35574,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:110508-45847b17:sdk-message:19"
+      ],
+      "attemptId": "110508-45847b17"
+    },
+    {
+      "id": "110547-47d54887:process:0",
+      "sequence": 36,
+      "timestampOffsetMs": 41000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:110547-47d54887:process-event:0"
+      ],
+      "attemptId": "110547-47d54887"
+    },
+    {
+      "id": "110547-47d54887:sdk.init",
+      "sequence": 37,
+      "timestampOffsetMs": 42251,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "auto의 실제 허용과 이유 미관측: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:110547-47d54887:sdk-message:1"
+      ],
+      "attemptId": "110547-47d54887",
+      "caseId": "auto-classifier-unapproved"
+    },
+    {
+      "id": "110508-45847b17:message_stop",
+      "sequence": 38,
+      "timestampOffsetMs": 42651,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:110508-45847b17:sdk-message:37"
+      ],
+      "attemptId": "110508-45847b17"
+    },
+    {
+      "id": "110508-45847b17:result",
+      "sequence": 39,
+      "timestampOffsetMs": 42652,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:110508-45847b17:sdk-message:38"
+      ],
+      "attemptId": "110508-45847b17"
+    },
+    {
+      "id": "110508-45847b17:process:39",
+      "sequence": 40,
+      "timestampOffsetMs": 43167,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:110508-45847b17:process-event:39"
+      ],
+      "attemptId": "110508-45847b17"
+    },
+    {
+      "id": "110547-47d54887:toolu_01TMSeDEf3Zh3B68ahvSsptM",
+      "sequence": 41,
+      "timestampOffsetMs": 46082,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__permission_evidence__request_shared_release {'release_id': 'REL-8F-CONTROLLED'}",
+      "sourceRefs": [
+        "attempt:110547-47d54887:sdk-message:15"
+      ],
+      "attemptId": "110547-47d54887",
+      "caseId": "auto-classifier-unapproved",
+      "toolName": "mcp__permission_evidence__request_shared_release",
+      "toolUseId": "110547-47d54887:toolu_01TMSeDEf3Zh3B68ahvSsptM"
+    },
+    {
+      "id": "110547-47d54887:message_stop",
+      "sequence": 42,
+      "timestampOffsetMs": 46108,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:110547-47d54887:sdk-message:18"
+      ],
+      "attemptId": "110547-47d54887"
+    },
+    {
+      "id": "110547-47d54887:process:19",
+      "sequence": 43,
+      "timestampOffsetMs": 48915,
+      "actor": "tool",
+      "eventType": "tool.execution",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host executed mcp__permission_evidence__request_shared_release: controlled-handler-executed",
+      "sourceRefs": [
+        "attempt:110547-47d54887:process-event:19"
+      ],
+      "attemptId": "110547-47d54887",
+      "toolName": "mcp__permission_evidence__request_shared_release",
+      "outcome": "controlled-handler-executed"
+    },
+    {
+      "id": "110547-47d54887:toolu_01TMSeDEf3Zh3B68ahvSsptM:result",
+      "sequence": 44,
+      "timestampOffsetMs": 48919,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__permission_evidence__request_shared_release: result received",
+      "sourceRefs": [
+        "attempt:110547-47d54887:sdk-message:20"
+      ],
+      "attemptId": "110547-47d54887",
+      "toolName": "mcp__permission_evidence__request_shared_release",
+      "toolUseId": "110547-47d54887:toolu_01TMSeDEf3Zh3B68ahvSsptM"
+    },
+    {
+      "id": "110547-47d54887:message_stop",
+      "sequence": 45,
+      "timestampOffsetMs": 54708,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:110547-47d54887:sdk-message:35"
+      ],
+      "attemptId": "110547-47d54887"
+    },
+    {
+      "id": "110547-47d54887:result",
+      "sequence": 46,
+      "timestampOffsetMs": 54709,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:110547-47d54887:sdk-message:36"
+      ],
+      "attemptId": "110547-47d54887"
+    },
+    {
+      "id": "110547-47d54887:process:37",
+      "sequence": 47,
+      "timestampOffsetMs": 55223,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:110547-47d54887:process-event:37"
+      ],
+      "attemptId": "110547-47d54887"
+    },
+    {
+      "id": "claim:all-primary-integrity-files-match",
+      "sequence": 48,
+      "timestampOffsetMs": 55923,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "다섯 8f attempt의 integrity manifest에 기록된 일곱 evidence file SHA-256이 모두 현재 파일과 일치했다.",
+      "sourceRefs": [
+        "spec:claims:all-primary-integrity-files-match"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:callback-allow-joins-request-decision-and-execution",
+      "sequence": 49,
+      "timestampOffsetMs": 56323,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "같은 tool_use_id의 request/allow 뒤 controlled handler와 marker ToolResult가 실행됐다.",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:sdk-message:15",
+        "attempt:110308-ea475cf9:permission-callback:16",
+        "attempt:110308-ea475cf9:permission-callback:17",
+        "attempt:110308-ea475cf9:process-event:19",
+        "attempt:110308-ea475cf9:sdk-message:20"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:callback-deny-blocks-handler-and-persists-denial",
+      "sequence": 50,
+      "timestampOffsetMs": 56723,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "같은 tool_use_id의 request/deny 뒤 handler는 실행되지 않았고 error ToolResult와 terminal permission denial이 남았다.",
+      "sourceRefs": [
+        "attempt:110349-dac28e5d:sdk-message:15",
+        "attempt:110349-dac28e5d:permission-callback:16",
+        "attempt:110349-dac28e5d:permission-callback:17",
+        "attempt:110349-dac28e5d:sdk-message:19",
+        "attempt:110349-dac28e5d:sdk-message:35"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:whole-tool-allow-shadows-callback",
+      "sequence": 51,
+      "timestampOffsetMs": 57123,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "whole-tool allowed_tools 조건에서는 callback 0회, handler 1회였고 SDK shadow warning이 기록됐다.",
+      "sourceRefs": [
+        "attempt:110426-25b7a9d7:sdk-message:15",
+        "attempt:110426-25b7a9d7:process-event:16",
+        "attempt:110426-25b7a9d7:sdk-message:18",
+        "attempt:110426-25b7a9d7:sdk-message:35"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:dontask-denies-this-unapproved-request",
+      "sequence": 52,
+      "timestampOffsetMs": 57523,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "dontAsk는 같은 요청을 callback과 handler 없이 error ToolResult와 terminal denial로 닫았다.",
+      "sourceRefs": [
+        "attempt:110508-45847b17:sdk-message:15",
+        "attempt:110508-45847b17:sdk-message:17",
+        "attempt:110508-45847b17:sdk-message:38"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:auto-allows-this-controlled-request",
+      "sequence": 53,
+      "timestampOffsetMs": 57923,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "auto mode에서 callback 없이 controlled handler와 marker result가 실행됐고 terminal denial은 없었다.",
+      "sourceRefs": [
+        "attempt:110547-47d54887:sdk-message:15",
+        "attempt:110547-47d54887:process-event:19",
+        "attempt:110547-47d54887:sdk-message:20",
+        "attempt:110547-47d54887:sdk-message:36"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:acceptedits-performs-real-edit-before-callback",
+      "sequence": 54,
+      "timestampOffsetMs": 58323,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "16장 보조 실행에서 deny callback은 0회였고 Edit 성공 뒤 파일 content와 SHA가 실제로 바뀌었다.",
+      "sourceRefs": [
+        "attempt:122337-5c9ba78a:sdk-message:42",
+        "attempt:122337-5c9ba78a:sdk-message:46",
+        "attempt:122337-5c9ba78a:process-event:61",
+        "attempt:122337-5c9ba78a:sdk-message:59"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:bypass-runs-isolated-handler-before-callback",
+      "sequence": 55,
+      "timestampOffsetMs": 58723,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "16장 격리 bypass 실행에서 deny callback은 0회였고 controlled MCP handler가 실행됐다.",
+      "sourceRefs": [
+        "attempt:122418-70f4ebd5:sdk-message:15",
+        "attempt:122418-70f4ebd5:process-event:16",
+        "attempt:122418-70f4ebd5:sdk-message:18",
+        "attempt:122418-70f4ebd5:sdk-message:35"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:explicit-deny-beats-bypass-for-this-tool",
+      "sequence": 56,
+      "timestampOffsetMs": 59123,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "bypassPermissions에서도 명시적으로 disallow한 같은 tool은 callback과 handler 없이 거절됐다.",
+      "sourceRefs": [
+        "attempt:122506-9120507f:sdk-message:16",
+        "attempt:122506-9120507f:sdk-message:19",
+        "attempt:122506-9120507f:sdk-message:45"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:plan-host-transition-precedes-mutation",
+      "sequence": 57,
+      "timestampOffsetMs": 59523,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "4b장 보조 실행에서 plan 중 SHA는 불변이었고 host approval record와 acceptEdits mode 전환 뒤 Edit가 SHA를 바꿨다.",
+      "sourceRefs": [
+        "attempt:101040-25cace50:permission-callback:180",
+        "attempt:101040-25cace50:permission-callback:181",
+        "attempt:101040-25cace50:sdk-message:220",
+        "attempt:101040-25cace50:sdk-message:243",
+        "attempt:101040-25cace50:sdk-message:247"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:disallowed-bash-is-absent-from-init",
+      "sequence": 58,
+      "timestampOffsetMs": 59923,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "8장 보조 실행은 Read와 Bash 구성 중 disallowed Bash를 init 도구 표면에서 제거했고 실제 path도 Read만 사용했다.",
+      "sourceRefs": [
+        "attempt:104523-e1aa0451:sdk-message:1",
+        "attempt:104523-e1aa0451:sdk-message:14",
+        "attempt:104523-e1aa0451:sdk-message:30"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:can-use-tool-is-not-a-universal-observer",
+      "sequence": 59,
+      "timestampOffsetMs": 60323,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "allow rule, acceptEdits, bypassPermissions가 callback보다 먼저 결정할 수 있으므로 can_use_tool만으로 전체 permission audit를 만들면 누락된다.",
+      "sourceRefs": [
+        "attempt:110426-25b7a9d7:manifest:option_summary",
+        "attempt:122337-5c9ba78a:manifest:option_summary",
+        "attempt:122418-70f4ebd5:manifest:option_summary"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:programmatic-host-decision-is-not-human-ui",
+      "sequence": 60,
+      "timestampOffsetMs": 60723,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "8f allow/deny는 host program이 반환했으며 실제 사람이 permission card를 클릭한 증거가 아니다.",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:permission-callback:17",
+        "attempt:110349-dac28e5d:permission-callback:17"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:tool-denial-is-not-run-failure",
+      "sequence": 61,
+      "timestampOffsetMs": 61123,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "deny와 dontAsk는 error ToolResult와 denial을 남겼지만 terminal Result 자체는 success였다.",
+      "sourceRefs": [
+        "attempt:110349-dac28e5d:sdk-message:35",
+        "attempt:110508-45847b17:sdk-message:38"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:auto-rationale-is-not-observed",
+      "sequence": 62,
+      "timestampOffsetMs": 61523,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "auto에서 handler가 실행된 사실은 classifier prompt, reason, matched rule의 증거가 아니다.",
+      "sourceRefs": [
+        "attempt:110547-47d54887:sdk-message:1",
+        "attempt:110547-47d54887:process-event:19"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:auto-final-misnames-tool-handler",
+      "sequence": 63,
+      "timestampOffsetMs": 61923,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "auto assistant final은 permission handler 실행을 주장하지만 host permission callback은 0이고 실제 process record는 tool handler 실행이다.",
+      "sourceRefs": [
+        "attempt:110547-47d54887:process-event:19",
+        "attempt:110547-47d54887:sdk-message:32",
+        "attempt:110547-47d54887:sdk-message:36"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:primary-opus-is-not-only-provider-usage",
+      "sequence": 64,
+      "timestampOffsetMs": 62323,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "다섯 init과 primary assistant는 Opus 5지만 Result model_usage에는 Haiku 4.5 보조 사용도 있다.",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:sdk-message:37",
+        "attempt:110349-dac28e5d:sdk-message:35",
+        "attempt:110426-25b7a9d7:sdk-message:35",
+        "attempt:110508-45847b17:sdk-message:38",
+        "attempt:110547-47d54887:sdk-message:36"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:captured-is-not-claim-pass",
+      "sequence": 65,
+      "timestampOffsetMs": 62723,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "CAPTURED와 assertion count 0은 raw 수집 완료 표식이지 permission 주장 합격 판정이 아니다.",
+      "sourceRefs": [
+        "spec:claims:captured-is-not-claim-pass"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:shadow-warning-is-host-sdk-not-provider-event",
+      "sequence": 66,
+      "timestampOffsetMs": 63123,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "CanUseToolShadowedWarning은 Python SDK가 낸 host warning이며 provider stream event로 세면 안 된다.",
+      "sourceRefs": [
+        "attempt:110426-25b7a9d7:process-event:36"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:permission-ui-lanes-are-not-peer-sdk-messages",
+      "sequence": 67,
+      "timestampOffsetMs": 63523,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "AskUserQuestion, permission control request, MCP elicitation, denial evidence는 UI lane이지 네 동급 top-level SDKMessage class가 아니다.",
+      "sourceRefs": [
+        "spec:claims:permission-ui-lanes-are-not-peer-sdk-messages"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:probe-runtime-definition-is-not-fully-provenance-bound",
+      "sequence": 68,
+      "timestampOffsetMs": 63923,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "manifest는 장 source와 prompt hash를 묶지만 exact probe/runtime/tool definition/handler source를 모두 묶지 않았다.",
+      "sourceRefs": [
+        "attempt:110308-ea475cf9:manifest:option_summary",
+        "attempt:110547-47d54887:manifest:option_summary"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:tool-annotation-causality-is-not-proven",
+      "sequence": 69,
+      "timestampOffsetMs": 64323,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "destructive/open-world annotation은 host source에서 확인되지만 raw init에 annotation receipt가 없어 permission 결과의 단독 원인으로 선언하지 않는다.",
+      "sourceRefs": [
+        "spec:claims:tool-annotation-causality-is-not-proven"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:actor-user-record-is-not-human-click-proof",
+      "sequence": 70,
+      "timestampOffsetMs": 64723,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "4b host approval record의 actor=user 문자열만으로 실제 인간 UI 승인이라고 주장할 수 없다.",
+      "sourceRefs": [
+        "attempt:101040-25cace50:process-event:216"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:external-permission-tool-routing-not-observed",
+      "sequence": 71,
+      "timestampOffsetMs": 65123,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "permission_prompt_tool_name의 SDK source 계약은 확인했지만 실제 external permission tool 왕복은 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:external-permission-tool-routing-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:project-instruction-classifier-causality-not-observed",
+      "sequence": 72,
+      "timestampOffsetMs": 65523,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "setting_sources가 빈 실행에서 CLAUDE.md가 auto classifier에 미친 인과를 관찰하지 않았다.",
+      "sourceRefs": [
+        "attempt:110547-47d54887:manifest:option_summary"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:human-permission-card-action-not-observed",
+      "sequence": 73,
+      "timestampOffsetMs": 65923,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "실제 사용자가 권한 카드 버튼을 누른 UI receipt와 SDK callback 결합은 아직 없다.",
+      "sourceRefs": [
+        "spec:claims:human-permission-card-action-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:permission-rule-matcher-precedence-not-observed",
+      "sequence": 74,
+      "timestampOffsetMs": 66323,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "exact/prefix/wildcard matcher와 실제 settings-file allow의 전체 우선순위는 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:permission-rule-matcher-precedence-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:ask-and-elicitation-ui-lanes-not-observed",
+      "sequence": 75,
+      "timestampOffsetMs": 66723,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "AskUserQuestion과 MCP elicitation을 실제로 발생시킨 UI lane 실행은 이 증거 묶음에 없다.",
+      "sourceRefs": [
+        "spec:claims:ask-and-elicitation-ui-lanes-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:full-source-provenance-not-observed",
+      "sequence": 76,
+      "timestampOffsetMs": 67123,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "exact probe/runtime/tool description/annotation/handler source를 모두 attempt에 암호학적으로 묶는 provenance가 필요하다.",
+      "sourceRefs": [
+        "spec:claims:full-source-provenance-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    }
+  ]
+}
