@@ -219,6 +219,7 @@ a { color: inherit; }
 .actor[data-state='interrupted'] { border-color: var(--coral); }
 .actor[data-state='verified'] { border-color: var(--violet); }
 .actor[data-state='needs-evidence'] { border-color: var(--gold); }
+.actor[data-state='correction'] { border-color: #ff6b6b; }
 
 @keyframes work {
   0% { transform: translateY(0); }
@@ -314,6 +315,7 @@ a { color: inherit; }
 .claims li b { font-size: 8px; line-height: 1.5; }
 .claims li em { color: var(--green); font-size: 7px; font-style: normal; }
 .claims li[data-status='additional_observation_required'] em { color: var(--gold); }
+.claims li[data-status='correction_required'] em { color: #ff6b6b; }
 .claims li p { margin: 7px 0 0; color: var(--muted); font: 11px/1.55 ui-sans-serif, system-ui, sans-serif; }
 
 .boundary-note {

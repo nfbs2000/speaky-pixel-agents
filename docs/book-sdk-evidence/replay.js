@@ -61,6 +61,7 @@ function initialize() {
   document.getElementById('raw-count').textContent = evidence.source.sourceEventCount
   document.getElementById('public-count').textContent = evidence.source.publicEventCount
   document.getElementById('observed-count').textContent = evidence.counts.observedClaims
+  document.getElementById('correction-count').textContent = evidence.counts.correctionRequired ?? 0
   document.getElementById('pending-count').textContent = evidence.counts.additionalObservationRequired
   cursorInput.max = String(evidence.events.length - 1)
 
@@ -95,6 +96,7 @@ function initialize() {
       eventCount: evidence.events.length,
       sourceEventCount: evidence.source.sourceEventCount,
       observedClaims: evidence.counts.observedClaims,
+      correctionRequired: evidence.counts.correctionRequired ?? 0,
       additionalObservationRequired: evidence.counts.additionalObservationRequired,
       activeEvent: evidence.events[cursor],
     }),

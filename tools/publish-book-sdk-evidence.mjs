@@ -93,6 +93,7 @@ const projection = {
   ],
   counts: {
     observedClaims: claims.filter((claim) => claim.status === 'observed').length,
+    correctionRequired: claims.filter((claim) => claim.status === 'correction_required').length,
     additionalObservationRequired: claims.filter(
       (claim) => claim.status === 'additional_observation_required',
     ).length,
@@ -115,10 +116,14 @@ async function verifyProjection(file) {
     throw new Error('pixel_book_evidence_source_projection_counts_invalid')
   }
   const expectedObserved = value.claims.filter((claim) => claim.status === 'observed').length
+  const expectedCorrection = value.claims.filter(
+    (claim) => claim.status === 'correction_required',
+  ).length
   const expectedPending = value.claims.filter(
     (claim) => claim.status === 'additional_observation_required',
   ).length
   if (value.counts?.observedClaims !== expectedObserved
+    || value.counts?.correctionRequired !== expectedCorrection
     || value.counts?.additionalObservationRequired !== expectedPending) {
     throw new Error('pixel_book_evidence_claim_counts_invalid')
   }
@@ -152,6 +157,7 @@ async function updateCatalog(file, evidencePath, value) {
     sourceEventCount: value.source.sourceEventCount,
     publicEventCount: value.source.publicEventCount,
     observedClaims: value.counts.observedClaims,
+    correctionRequired: value.counts.correctionRequired,
     additionalObservationRequired: value.counts.additionalObservationRequired,
     artifactSha256: sha256(await fs.readFile(evidencePath, 'utf8')),
   }
@@ -176,7 +182,9 @@ function pixelState(event) {
     return event?.attributes?.outcome === 'cancelled' ? 'cancelled' : 'completed'
   }
   if (event.eventType === 'assistant.claim') {
-    return event?.attributes?.status === 'observed' ? 'verified' : 'needs-evidence'
+    if (event?.attributes?.status === 'observed') return 'verified'
+    if (event?.attributes?.status === 'correction_required') return 'correction'
+    return 'needs-evidence'
   }
   if (event.eventType === 'result.completed') return 'terminal'
   if (event?.attributes?.control === 'interrupt') return 'interrupted'
