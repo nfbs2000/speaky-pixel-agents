@@ -53,6 +53,19 @@
       "artifactSha256": "862c26c0937ee8e560dc9d8b479d3a8d8ccd0f110ee263b9f599ef8e9794665a"
     },
     {
+      "chapterSlug": "ch04b",
+      "title": "4b장 플랜 모드: 계획 artifact와 실행 승인 경계",
+      "path": "./evidence/ch04b.json",
+      "campaignId": "book-sdk-live-20260803",
+      "model": "claude-opus-5",
+      "sourceEventCount": 945,
+      "publicEventCount": 92,
+      "observedClaims": 10,
+      "correctionRequired": 10,
+      "additionalObservationRequired": 6,
+      "artifactSha256": "08183821681cf4eb4eba5d2b62867613e33570279c69ea86f99989729bfe9eca"
+    },
+    {
       "chapterSlug": "ch05",
       "title": "5장 시스템 프롬프트: configured, observed, inferred의 경계",
       "path": "./evidence/ch05.json",
@@ -234,5 +247,5 @@
       "artifactSha256": "382b00bba5a43e4bbba618bbff1b531e191d986458b237ab3eadaa0c015c10b0"
     }
   ],
-  "generatedAt": "2026-08-03T22:32:07.280Z"
+  "generatedAt": "2026-08-03T23:04:03.002Z"
 }

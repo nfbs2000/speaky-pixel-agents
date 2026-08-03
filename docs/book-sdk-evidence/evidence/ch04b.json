@@ -1,0 +1,1701 @@
+{
+  "schemaVersion": "pixel-book-evidence.v1",
+  "generatedAt": "2026-08-03T23:04:02.998Z",
+  "title": "4b장 플랜 모드: 계획 artifact와 실행 승인 경계",
+  "description": "Education Shell의 검증된 Book SDK 실행을 Pixel Agents 상태 문법으로 재생한 공개 projection",
+  "boundary": "Pixel Agents 제품이 이 실행을 수집했다는 뜻이 아니며, renderer는 source 판정을 변경하지 않는다.",
+  "source": {
+    "courseId": "book-sdk-ko",
+    "chapterSlug": "ch04b",
+    "campaignId": "book-sdk-live-20260803",
+    "traceId": "recorded:book-sdk-ko:ch04b:book-sdk-live-20260803:2026-08-03T22:45:39.323983Z",
+    "traceSha256": "7c630a2423a6f9cb2fdcb1239707fe142758e5c0ee086e703779ed5d05b7b3aa",
+    "summarySha256": "51055d6f54cd297fcfedbfd4e3165e47b0887714da00391246923ad764cce4c4",
+    "sourceEventCount": 945,
+    "publicEventCount": 92,
+    "model": "claude-opus-5",
+    "attemptIds": [
+      "224407-d1e8d267"
+    ],
+    "proofGate": "accepted_with_notes",
+    "secretScan": "passed"
+  },
+  "actors": [
+    {
+      "id": "user",
+      "label": "검증 프롬프트",
+      "role": "briefing",
+      "station": 0
+    },
+    {
+      "id": "runtime",
+      "label": "Python SDK 런타임",
+      "role": "control",
+      "station": 1
+    },
+    {
+      "id": "claude",
+      "label": "Claude Opus 5",
+      "role": "model",
+      "station": 2
+    },
+    {
+      "id": "tool",
+      "label": "SDK 도구 실행",
+      "role": "execution",
+      "station": 3
+    },
+    {
+      "id": "evaluator",
+      "label": "증거 판정기",
+      "role": "verification",
+      "station": 4
+    }
+  ],
+  "counts": {
+    "observedClaims": 10,
+    "correctionRequired": 10,
+    "additionalObservationRequired": 6,
+    "invalidAttempts": 1
+  },
+  "claims": [
+    {
+      "id": "attempt-integrity-and-source-provenance",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "integrity manifest의 증거 파일 SHA-256 7개와 실행 시 chapter/probe/case/capture source SHA-256 4개가 현재 실행 artifact와 일치했다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "actual-opus-and-serial-execution",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "init과 terminal capture는 actual primary model Opus 5를 기록했고 manifest는 provider concurrency 1을 기록했다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:6",
+        "attempt:224407-d1e8d267:process-event:944"
+      ]
+    },
+    {
+      "id": "same-session-two-permission-modes",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "같은 opaque SDK session의 plan init과 acceptEdits init이 각각 sequence 6과 906에 기록됐다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:6",
+        "attempt:224407-d1e8d267:sdk-message:906"
+      ]
+    },
+    {
+      "id": "read-investigation-in-plan",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "plan turn에서 Glob와 Read가 실행됐고 잘못된 첫 경로의 error와 수정한 경로의 success가 함께 보존됐다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:19",
+        "attempt:224407-d1e8d267:sdk-message:38",
+        "attempt:224407-d1e8d267:sdk-message:52",
+        "attempt:224407-d1e8d267:sdk-message:60"
+      ]
+    },
+    {
+      "id": "write-disabled-but-plan-edit-succeeds",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "init 목록에 없는 Write는 disabled error였지만 이어진 Edit는 격리된 plan artifact를 갱신했다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:6",
+        "attempt:224407-d1e8d267:sdk-message:761",
+        "attempt:224407-d1e8d267:sdk-message:762",
+        "attempt:224407-d1e8d267:sdk-message:817",
+        "attempt:224407-d1e8d267:sdk-message:823"
+      ]
+    },
+    {
+      "id": "target-workspace-unchanged-before-approval",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "plan artifact Edit와 별개로 baseline과 after-plan의 application app.py SHA-256은 같았다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:1",
+        "attempt:224407-d1e8d267:process-event:900"
+      ]
+    },
+    {
+      "id": "exit-plan-permission-gate-retried",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "ExitPlanMode 두 요청은 permission callback에서 외부 승인이 없다는 이유로 두 번 모두 deny됐고 terminal permission_denials에도 남았다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:841",
+        "attempt:224407-d1e8d267:permission-callback:847",
+        "attempt:224407-d1e8d267:permission-callback:848",
+        "attempt:224407-d1e8d267:sdk-message:866",
+        "attempt:224407-d1e8d267:permission-callback:872",
+        "attempt:224407-d1e8d267:permission-callback:873",
+        "attempt:224407-d1e8d267:sdk-message:898"
+      ]
+    },
+    {
+      "id": "host-program-approval-and-explicit-mode-restore",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "process timeline은 actor=host-program 승인 뒤 host가 plan에서 acceptEdits로 명시 전환했음을 기록했다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:901",
+        "attempt:224407-d1e8d267:process-event:902",
+        "attempt:224407-d1e8d267:process-event:903"
+      ]
+    },
+    {
+      "id": "application-edit-after-approval",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "승인과 mode 복원 뒤 application app.py Edit가 성공했고 최종 target hash가 달라졌다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:916",
+        "attempt:224407-d1e8d267:sdk-message:922",
+        "attempt:224407-d1e8d267:process-event:943"
+      ]
+    },
+    {
+      "id": "raw-otel-sequences-and-model-usage",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "raw SDK 911개와 OTel sdk.message 911개 sequence가 한 trace에서 일치하고 terminal model_usage는 Opus 5와 Haiku 4.5를 분리해 기록했다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:898",
+        "attempt:224407-d1e8d267:sdk-message:941"
+      ]
+    },
+    {
+      "id": "plan-mode-is-not-no-tools",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "plan mode에서도 읽기 조사 도구와 격리된 plan artifact Edit가 실행됐으므로 도구가 전혀 실행되지 않는 모드라고 쓰면 안 된다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:19",
+        "attempt:224407-d1e8d267:sdk-message:817"
+      ]
+    },
+    {
+      "id": "mutation-request-zero-is-false",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "승인 전 mutation tool request는 0이 아니었다. plan artifact Edit와 application source Edit를 path class로 구분해야 한다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:817",
+        "attempt:224407-d1e8d267:process-event:900"
+      ]
+    },
+    {
+      "id": "write-absence-is-not-plan-file-absence",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "Write가 disabled였다는 사실을 계획 파일이 존재하지 않았다는 결론으로 확대할 수 없다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:762",
+        "attempt:224407-d1e8d267:sdk-message:823"
+      ]
+    },
+    {
+      "id": "host-approval-is-not-human-click",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "이번 승인 actor는 host-program이며 실제 사용자의 버튼 클릭이나 permission.reply UX를 검증한 것이 아니다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:901"
+      ]
+    },
+    {
+      "id": "mode-restore-is-host-owned",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "acceptEdits 복원은 SDK 자동 기억이 아니라 host의 명시적 set_permission_mode 결과다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:902",
+        "attempt:224407-d1e8d267:process-event:903"
+      ]
+    },
+    {
+      "id": "five-stage-workflow-not-guaranteed",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "구조화된 plan은 관찰됐지만 Python SDK가 정확한 다섯 heading을 보장하는 option이나 event는 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:five-stage-workflow-not-guaranteed"
+      ]
+    },
+    {
+      "id": "full-sparse-not-public-option",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "full/sparse 계획 선택을 현재 Python SDK의 검증된 공개 option으로 가르치지 않는다.",
+      "sourceRefs": [
+        "spec:claims:full-sparse-not-public-option"
+      ]
+    },
+    {
+      "id": "primary-opus-is-not-only-provider-usage",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "primary assistant model은 Opus 5지만 terminal model_usage에는 Haiku 4.5도 있어 전체 provider usage를 Opus 하나로 쓰면 안 된다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:898",
+        "attempt:224407-d1e8d267:sdk-message:941"
+      ]
+    },
+    {
+      "id": "permission-callback-alone-is-incomplete",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "permission callback만 읽으면 allowed 도구와 plan artifact Edit를 놓칠 수 있으므로 raw SDK, hook, callback, process snapshot을 함께 읽어야 한다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:hook-callback:819",
+        "attempt:224407-d1e8d267:permission-callback:847"
+      ]
+    },
+    {
+      "id": "captured-and-edit-success-are-not-test-pass",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "CAPTURED와 application Edit 성공은 raw 수집 및 변경 성공이며 테스트 통과가 아니다. 이번 execution에는 Bash가 없었다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:941",
+        "attempt:224407-d1e8d267:process-event:944"
+      ]
+    },
+    {
+      "id": "human-permission-ui-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "실제 사용자의 permission.requested/reply와 버튼 승인 actor는 live UI case가 필요하다.",
+      "sourceRefs": [
+        "spec:claims:human-permission-ui-not-observed"
+      ]
+    },
+    {
+      "id": "auto-plan-restore-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "auto에서 plan으로 갔다가 auto 정책 범위를 보존해 복원하는 별도 case가 필요하다.",
+      "sourceRefs": [
+        "spec:claims:auto-plan-restore-not-observed"
+      ]
+    },
+    {
+      "id": "teamlead-approval-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "상위 agent 또는 팀리드가 계획을 승인하는 팀 실행은 이번 단일 agent case 범위 밖이다.",
+      "sourceRefs": [
+        "spec:claims:teamlead-approval-not-observed"
+      ]
+    },
+    {
+      "id": "post-approval-test-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "승인 후 계획에 적힌 Bash test까지 실행해 결과를 연결하는 case가 필요하다.",
+      "sourceRefs": [
+        "spec:claims:post-approval-test-not-observed"
+      ]
+    },
+    {
+      "id": "plan-file-provisioner-and-lifecycle-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "Write deny 뒤 Edit가 성공할 수 있도록 계획 파일을 준비한 정확한 component와 cleanup lifecycle은 관찰하지 않았다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:762",
+        "attempt:224407-d1e8d267:sdk-message:823"
+      ]
+    },
+    {
+      "id": "deny-revise-product-ux-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "callback deny 뒤 모델 재요청은 관찰했지만 실제 사용자의 수정 요청과 수정된 plan 승인 UX는 별도 관측이 필요하다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:841",
+        "attempt:224407-d1e8d267:sdk-message:866"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "book-sdk-live-20260803:prompt",
+      "sequence": 0,
+      "timestampOffsetMs": 0,
+      "actor": "user",
+      "eventType": "prompt.submitted",
+      "pixelState": "briefing",
+      "evidenceLevel": "Configured",
+      "summary": "한 persistent Python Agent SDK session을 plan mode로 전환해 읽기 조사, 계획 artifact 변경, ExitPlanMode permission gate를 관찰한다. host-program 승인과 acceptEdits 명시 복원 뒤에만 애플리케이션 source가 바뀌는지 raw SDK, hook, permission callback, process snapshot과 OTel로 대조한다.",
+      "sourceRefs": [
+        "publication-spec:public_prompt"
+      ]
+    },
+    {
+      "id": "224407-d1e8d267:process:0",
+      "sequence": 1,
+      "timestampOffsetMs": 1000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:0"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:1",
+      "sequence": 2,
+      "timestampOffsetMs": 1001,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "workspace.snapshot",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:1"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:2",
+      "sequence": 3,
+      "timestampOffsetMs": 2025,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "permission.mode.transition.requested",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:2"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:3",
+      "sequence": 4,
+      "timestampOffsetMs": 2028,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "permission.mode.transition.acknowledged",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:3"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:4",
+      "sequence": 5,
+      "timestampOffsetMs": 2028,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.started",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:4"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:sdk.init",
+      "sequence": 6,
+      "timestampOffsetMs": 2041,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "plan artifact와 host-managed 실행 전환: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:6"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "caseId": "host-managed-plan-approval-execution"
+    },
+    {
+      "id": "224407-d1e8d267:toolu_01KmwbLJ6H2uXQBjKXQEhevY",
+      "sequence": 7,
+      "timestampOffsetMs": 5912,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Glob {}",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:19"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "caseId": "host-managed-plan-approval-execution",
+      "toolName": "Glob",
+      "toolUseId": "224407-d1e8d267:toolu_01KmwbLJ6H2uXQBjKXQEhevY"
+    },
+    {
+      "id": "224407-d1e8d267:hook:20",
+      "sequence": 8,
+      "timestampOffsetMs": 5919,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "hook callback: request",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:hook-callback:20"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:21",
+      "sequence": 9,
+      "timestampOffsetMs": 5921,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "tool.request.observed",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:21"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:toolu_01KmwbLJ6H2uXQBjKXQEhevY:result",
+      "sequence": 10,
+      "timestampOffsetMs": 5944,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Glob: result received",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:26"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "toolName": "Glob",
+      "toolUseId": "224407-d1e8d267:toolu_01KmwbLJ6H2uXQBjKXQEhevY"
+    },
+    {
+      "id": "224407-d1e8d267:toolu_01KnRpZBDfL69DVeLtL9usbi",
+      "sequence": 11,
+      "timestampOffsetMs": 7741,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:32"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "caseId": "host-managed-plan-approval-execution",
+      "toolName": "Read",
+      "toolUseId": "224407-d1e8d267:toolu_01KnRpZBDfL69DVeLtL9usbi"
+    },
+    {
+      "id": "224407-d1e8d267:hook:33",
+      "sequence": 12,
+      "timestampOffsetMs": 7742,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "hook callback: request",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:hook-callback:33"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:34",
+      "sequence": 13,
+      "timestampOffsetMs": 7743,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "tool.request.observed",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:34"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:message_stop",
+      "sequence": 14,
+      "timestampOffsetMs": 7747,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:37"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:toolu_01KnRpZBDfL69DVeLtL9usbi:result",
+      "sequence": 15,
+      "timestampOffsetMs": 7755,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: error",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:38"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "toolName": "Read",
+      "toolUseId": "224407-d1e8d267:toolu_01KnRpZBDfL69DVeLtL9usbi"
+    },
+    {
+      "id": "224407-d1e8d267:toolu_013JsQ5DSNBAhX1rPm4GCUxr",
+      "sequence": 16,
+      "timestampOffsetMs": 10127,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:46"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "caseId": "host-managed-plan-approval-execution",
+      "toolName": "Read",
+      "toolUseId": "224407-d1e8d267:toolu_013JsQ5DSNBAhX1rPm4GCUxr"
+    },
+    {
+      "id": "224407-d1e8d267:hook:47",
+      "sequence": 17,
+      "timestampOffsetMs": 10129,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "hook callback: request",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:hook-callback:47"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:48",
+      "sequence": 18,
+      "timestampOffsetMs": 10131,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "tool.request.observed",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:48"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:toolu_013JsQ5DSNBAhX1rPm4GCUxr:result",
+      "sequence": 19,
+      "timestampOffsetMs": 10143,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:52"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "toolName": "Read",
+      "toolUseId": "224407-d1e8d267:toolu_013JsQ5DSNBAhX1rPm4GCUxr"
+    },
+    {
+      "id": "224407-d1e8d267:toolu_0165mYB4h6DuGweFUpMCknPs",
+      "sequence": 20,
+      "timestampOffsetMs": 10879,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:56"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "caseId": "host-managed-plan-approval-execution",
+      "toolName": "Read",
+      "toolUseId": "224407-d1e8d267:toolu_0165mYB4h6DuGweFUpMCknPs"
+    },
+    {
+      "id": "224407-d1e8d267:hook:57",
+      "sequence": 21,
+      "timestampOffsetMs": 10880,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "hook callback: request",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:hook-callback:57"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:58",
+      "sequence": 22,
+      "timestampOffsetMs": 10882,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "tool.request.observed",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:58"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:toolu_0165mYB4h6DuGweFUpMCknPs:result",
+      "sequence": 23,
+      "timestampOffsetMs": 10890,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:60"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "toolName": "Read",
+      "toolUseId": "224407-d1e8d267:toolu_0165mYB4h6DuGweFUpMCknPs"
+    },
+    {
+      "id": "224407-d1e8d267:message_stop",
+      "sequence": 24,
+      "timestampOffsetMs": 10928,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:62"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:toolu_01NpwY8S8hnLHWL1Jzpz5wCV",
+      "sequence": 25,
+      "timestampOffsetMs": 41508,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Write {}",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:761"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "caseId": "host-managed-plan-approval-execution",
+      "toolName": "Write",
+      "toolUseId": "224407-d1e8d267:toolu_01NpwY8S8hnLHWL1Jzpz5wCV"
+    },
+    {
+      "id": "224407-d1e8d267:toolu_01NpwY8S8hnLHWL1Jzpz5wCV:result",
+      "sequence": 26,
+      "timestampOffsetMs": 41509,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Write: error",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:762"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "toolName": "Write",
+      "toolUseId": "224407-d1e8d267:toolu_01NpwY8S8hnLHWL1Jzpz5wCV"
+    },
+    {
+      "id": "224407-d1e8d267:message_stop",
+      "sequence": 27,
+      "timestampOffsetMs": 41510,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:765"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:toolu_01LbEhUDyFhyRVPXbvpp5VDL",
+      "sequence": 28,
+      "timestampOffsetMs": 62327,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Edit {}",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:817"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "caseId": "host-managed-plan-approval-execution",
+      "toolName": "Edit",
+      "toolUseId": "224407-d1e8d267:toolu_01LbEhUDyFhyRVPXbvpp5VDL"
+    },
+    {
+      "id": "224407-d1e8d267:hook:819",
+      "sequence": 29,
+      "timestampOffsetMs": 62331,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "hook callback: request",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:hook-callback:819"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:820",
+      "sequence": 30,
+      "timestampOffsetMs": 62333,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "tool.request.observed",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:820"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:message_stop",
+      "sequence": 31,
+      "timestampOffsetMs": 62349,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:822"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:toolu_01LbEhUDyFhyRVPXbvpp5VDL:result",
+      "sequence": 32,
+      "timestampOffsetMs": 62353,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Edit: result received",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:823"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "toolName": "Edit",
+      "toolUseId": "224407-d1e8d267:toolu_01LbEhUDyFhyRVPXbvpp5VDL"
+    },
+    {
+      "id": "224407-d1e8d267:toolu_01A6ogr4Eq5xqhR1xFEF2EeS",
+      "sequence": 33,
+      "timestampOffsetMs": 68021,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "ExitPlanMode {}",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:841"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "caseId": "host-managed-plan-approval-execution",
+      "toolName": "ExitPlanMode",
+      "toolUseId": "224407-d1e8d267:toolu_01A6ogr4Eq5xqhR1xFEF2EeS"
+    },
+    {
+      "id": "224407-d1e8d267:hook:842",
+      "sequence": 34,
+      "timestampOffsetMs": 68025,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "hook callback: request",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:hook-callback:842"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:843",
+      "sequence": 35,
+      "timestampOffsetMs": 68027,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "tool.request.observed",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:843"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:message_stop",
+      "sequence": 36,
+      "timestampOffsetMs": 68031,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:846"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:permission:847",
+      "sequence": 37,
+      "timestampOffsetMs": 68033,
+      "actor": "runtime",
+      "eventType": "permission.decision",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "permission pending: ExitPlanMode",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:permission-callback:847"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "toolName": "ExitPlanMode",
+      "toolUseId": "224407-d1e8d267:toolu_01A6ogr4Eq5xqhR1xFEF2EeS"
+    },
+    {
+      "id": "224407-d1e8d267:permission:848",
+      "sequence": 38,
+      "timestampOffsetMs": 68041,
+      "actor": "runtime",
+      "eventType": "permission.decision",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "permission deny: ExitPlanMode",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:permission-callback:848"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "toolName": "ExitPlanMode",
+      "toolUseId": "224407-d1e8d267:toolu_01A6ogr4Eq5xqhR1xFEF2EeS"
+    },
+    {
+      "id": "224407-d1e8d267:toolu_01A6ogr4Eq5xqhR1xFEF2EeS:result",
+      "sequence": 39,
+      "timestampOffsetMs": 68054,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "ExitPlanMode: error",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:849"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "toolName": "ExitPlanMode",
+      "toolUseId": "224407-d1e8d267:toolu_01A6ogr4Eq5xqhR1xFEF2EeS"
+    },
+    {
+      "id": "224407-d1e8d267:toolu_01L9ExrYdid4byfdvfd3Wrjk",
+      "sequence": 40,
+      "timestampOffsetMs": 75371,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "ExitPlanMode {}",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:866"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "caseId": "host-managed-plan-approval-execution",
+      "toolName": "ExitPlanMode",
+      "toolUseId": "224407-d1e8d267:toolu_01L9ExrYdid4byfdvfd3Wrjk"
+    },
+    {
+      "id": "224407-d1e8d267:hook:867",
+      "sequence": 41,
+      "timestampOffsetMs": 75373,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "hook callback: request",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:hook-callback:867"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:868",
+      "sequence": 42,
+      "timestampOffsetMs": 75375,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "tool.request.observed",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:868"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:message_stop",
+      "sequence": 43,
+      "timestampOffsetMs": 75378,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:871"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:permission:872",
+      "sequence": 44,
+      "timestampOffsetMs": 75379,
+      "actor": "runtime",
+      "eventType": "permission.decision",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "permission pending: ExitPlanMode",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:permission-callback:872"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "toolName": "ExitPlanMode",
+      "toolUseId": "224407-d1e8d267:toolu_01L9ExrYdid4byfdvfd3Wrjk"
+    },
+    {
+      "id": "224407-d1e8d267:permission:873",
+      "sequence": 45,
+      "timestampOffsetMs": 75381,
+      "actor": "runtime",
+      "eventType": "permission.decision",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "permission deny: ExitPlanMode",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:permission-callback:873"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "toolName": "ExitPlanMode",
+      "toolUseId": "224407-d1e8d267:toolu_01L9ExrYdid4byfdvfd3Wrjk"
+    },
+    {
+      "id": "224407-d1e8d267:toolu_01L9ExrYdid4byfdvfd3Wrjk:result",
+      "sequence": 46,
+      "timestampOffsetMs": 75384,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "ExitPlanMode: error",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:874"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "toolName": "ExitPlanMode",
+      "toolUseId": "224407-d1e8d267:toolu_01L9ExrYdid4byfdvfd3Wrjk"
+    },
+    {
+      "id": "224407-d1e8d267:message_stop",
+      "sequence": 47,
+      "timestampOffsetMs": 83433,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:897"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:result",
+      "sequence": 48,
+      "timestampOffsetMs": 83440,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:898"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:899",
+      "sequence": 49,
+      "timestampOffsetMs": 83444,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.finished",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:899"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:900",
+      "sequence": 50,
+      "timestampOffsetMs": 83445,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "workspace.snapshot",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:900"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:901",
+      "sequence": 51,
+      "timestampOffsetMs": 83445,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.approval.recorded",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:901"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:902",
+      "sequence": 52,
+      "timestampOffsetMs": 83446,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "permission.mode.transition.requested",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:902"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:903",
+      "sequence": 53,
+      "timestampOffsetMs": 83447,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "permission.mode.transition.acknowledged",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:903"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:904",
+      "sequence": 54,
+      "timestampOffsetMs": 83448,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.started",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:904"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:sdk.init:906",
+      "sequence": 55,
+      "timestampOffsetMs": 83453,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "plan artifact와 host-managed 실행 전환: init boundary 2, claude-opus-5",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:906"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "caseId": "host-managed-plan-approval-execution"
+    },
+    {
+      "id": "224407-d1e8d267:toolu_01J2Qx2EdBmGiUgKoxpcDXox",
+      "sequence": 56,
+      "timestampOffsetMs": 86159,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Edit {}",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:916"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "caseId": "host-managed-plan-approval-execution",
+      "toolName": "Edit",
+      "toolUseId": "224407-d1e8d267:toolu_01J2Qx2EdBmGiUgKoxpcDXox"
+    },
+    {
+      "id": "224407-d1e8d267:hook:918",
+      "sequence": 57,
+      "timestampOffsetMs": 86162,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "hook callback: request",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:hook-callback:918"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:919",
+      "sequence": 58,
+      "timestampOffsetMs": 86163,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "tool.request.observed",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:919"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:message_stop",
+      "sequence": 59,
+      "timestampOffsetMs": 86182,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:921"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:toolu_01J2Qx2EdBmGiUgKoxpcDXox:result",
+      "sequence": 60,
+      "timestampOffsetMs": 86184,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Edit: result received",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:922"
+      ],
+      "attemptId": "224407-d1e8d267",
+      "toolName": "Edit",
+      "toolUseId": "224407-d1e8d267:toolu_01J2Qx2EdBmGiUgKoxpcDXox"
+    },
+    {
+      "id": "224407-d1e8d267:message_stop",
+      "sequence": 61,
+      "timestampOffsetMs": 92394,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:940"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:result",
+      "sequence": 62,
+      "timestampOffsetMs": 92396,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:941"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:942",
+      "sequence": 63,
+      "timestampOffsetMs": 92397,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.finished",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:942"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:943",
+      "sequence": 64,
+      "timestampOffsetMs": 92398,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "workspace.snapshot",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:943"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "224407-d1e8d267:process:944",
+      "sequence": 65,
+      "timestampOffsetMs": 92710,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:944"
+      ],
+      "attemptId": "224407-d1e8d267"
+    },
+    {
+      "id": "claim:attempt-integrity-and-source-provenance",
+      "sequence": 66,
+      "timestampOffsetMs": 93410,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "integrity manifest의 증거 파일 SHA-256 7개와 실행 시 chapter/probe/case/capture source SHA-256 4개가 현재 실행 artifact와 일치했다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:manifest:option_summary"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:actual-opus-and-serial-execution",
+      "sequence": 67,
+      "timestampOffsetMs": 93810,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "init과 terminal capture는 actual primary model Opus 5를 기록했고 manifest는 provider concurrency 1을 기록했다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:6",
+        "attempt:224407-d1e8d267:process-event:944"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:same-session-two-permission-modes",
+      "sequence": 68,
+      "timestampOffsetMs": 94210,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "같은 opaque SDK session의 plan init과 acceptEdits init이 각각 sequence 6과 906에 기록됐다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:6",
+        "attempt:224407-d1e8d267:sdk-message:906"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:read-investigation-in-plan",
+      "sequence": 69,
+      "timestampOffsetMs": 94610,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "plan turn에서 Glob와 Read가 실행됐고 잘못된 첫 경로의 error와 수정한 경로의 success가 함께 보존됐다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:19",
+        "attempt:224407-d1e8d267:sdk-message:38",
+        "attempt:224407-d1e8d267:sdk-message:52",
+        "attempt:224407-d1e8d267:sdk-message:60"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:write-disabled-but-plan-edit-succeeds",
+      "sequence": 70,
+      "timestampOffsetMs": 95010,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "init 목록에 없는 Write는 disabled error였지만 이어진 Edit는 격리된 plan artifact를 갱신했다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:6",
+        "attempt:224407-d1e8d267:sdk-message:761",
+        "attempt:224407-d1e8d267:sdk-message:762",
+        "attempt:224407-d1e8d267:sdk-message:817",
+        "attempt:224407-d1e8d267:sdk-message:823"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:target-workspace-unchanged-before-approval",
+      "sequence": 71,
+      "timestampOffsetMs": 95410,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "plan artifact Edit와 별개로 baseline과 after-plan의 application app.py SHA-256은 같았다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:1",
+        "attempt:224407-d1e8d267:process-event:900"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:exit-plan-permission-gate-retried",
+      "sequence": 72,
+      "timestampOffsetMs": 95810,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "ExitPlanMode 두 요청은 permission callback에서 외부 승인이 없다는 이유로 두 번 모두 deny됐고 terminal permission_denials에도 남았다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:841",
+        "attempt:224407-d1e8d267:permission-callback:847",
+        "attempt:224407-d1e8d267:permission-callback:848",
+        "attempt:224407-d1e8d267:sdk-message:866",
+        "attempt:224407-d1e8d267:permission-callback:872",
+        "attempt:224407-d1e8d267:permission-callback:873",
+        "attempt:224407-d1e8d267:sdk-message:898"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:host-program-approval-and-explicit-mode-restore",
+      "sequence": 73,
+      "timestampOffsetMs": 96210,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "process timeline은 actor=host-program 승인 뒤 host가 plan에서 acceptEdits로 명시 전환했음을 기록했다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:901",
+        "attempt:224407-d1e8d267:process-event:902",
+        "attempt:224407-d1e8d267:process-event:903"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:application-edit-after-approval",
+      "sequence": 74,
+      "timestampOffsetMs": 96610,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "승인과 mode 복원 뒤 application app.py Edit가 성공했고 최종 target hash가 달라졌다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:916",
+        "attempt:224407-d1e8d267:sdk-message:922",
+        "attempt:224407-d1e8d267:process-event:943"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:raw-otel-sequences-and-model-usage",
+      "sequence": 75,
+      "timestampOffsetMs": 97010,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "raw SDK 911개와 OTel sdk.message 911개 sequence가 한 trace에서 일치하고 terminal model_usage는 Opus 5와 Haiku 4.5를 분리해 기록했다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:898",
+        "attempt:224407-d1e8d267:sdk-message:941"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:plan-mode-is-not-no-tools",
+      "sequence": 76,
+      "timestampOffsetMs": 97410,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "plan mode에서도 읽기 조사 도구와 격리된 plan artifact Edit가 실행됐으므로 도구가 전혀 실행되지 않는 모드라고 쓰면 안 된다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:19",
+        "attempt:224407-d1e8d267:sdk-message:817"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:mutation-request-zero-is-false",
+      "sequence": 77,
+      "timestampOffsetMs": 97810,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "승인 전 mutation tool request는 0이 아니었다. plan artifact Edit와 application source Edit를 path class로 구분해야 한다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:817",
+        "attempt:224407-d1e8d267:process-event:900"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:write-absence-is-not-plan-file-absence",
+      "sequence": 78,
+      "timestampOffsetMs": 98210,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "Write가 disabled였다는 사실을 계획 파일이 존재하지 않았다는 결론으로 확대할 수 없다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:762",
+        "attempt:224407-d1e8d267:sdk-message:823"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:host-approval-is-not-human-click",
+      "sequence": 79,
+      "timestampOffsetMs": 98610,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "이번 승인 actor는 host-program이며 실제 사용자의 버튼 클릭이나 permission.reply UX를 검증한 것이 아니다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:901"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:mode-restore-is-host-owned",
+      "sequence": 80,
+      "timestampOffsetMs": 99010,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "acceptEdits 복원은 SDK 자동 기억이 아니라 host의 명시적 set_permission_mode 결과다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:process-event:902",
+        "attempt:224407-d1e8d267:process-event:903"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:five-stage-workflow-not-guaranteed",
+      "sequence": 81,
+      "timestampOffsetMs": 99410,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "구조화된 plan은 관찰됐지만 Python SDK가 정확한 다섯 heading을 보장하는 option이나 event는 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:five-stage-workflow-not-guaranteed"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:full-sparse-not-public-option",
+      "sequence": 82,
+      "timestampOffsetMs": 99810,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "full/sparse 계획 선택을 현재 Python SDK의 검증된 공개 option으로 가르치지 않는다.",
+      "sourceRefs": [
+        "spec:claims:full-sparse-not-public-option"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:primary-opus-is-not-only-provider-usage",
+      "sequence": 83,
+      "timestampOffsetMs": 100210,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "primary assistant model은 Opus 5지만 terminal model_usage에는 Haiku 4.5도 있어 전체 provider usage를 Opus 하나로 쓰면 안 된다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:898",
+        "attempt:224407-d1e8d267:sdk-message:941"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:permission-callback-alone-is-incomplete",
+      "sequence": 84,
+      "timestampOffsetMs": 100610,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "permission callback만 읽으면 allowed 도구와 plan artifact Edit를 놓칠 수 있으므로 raw SDK, hook, callback, process snapshot을 함께 읽어야 한다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:hook-callback:819",
+        "attempt:224407-d1e8d267:permission-callback:847"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:captured-and-edit-success-are-not-test-pass",
+      "sequence": 85,
+      "timestampOffsetMs": 101010,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "CAPTURED와 application Edit 성공은 raw 수집 및 변경 성공이며 테스트 통과가 아니다. 이번 execution에는 Bash가 없었다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:941",
+        "attempt:224407-d1e8d267:process-event:944"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:human-permission-ui-not-observed",
+      "sequence": 86,
+      "timestampOffsetMs": 101410,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "실제 사용자의 permission.requested/reply와 버튼 승인 actor는 live UI case가 필요하다.",
+      "sourceRefs": [
+        "spec:claims:human-permission-ui-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:auto-plan-restore-not-observed",
+      "sequence": 87,
+      "timestampOffsetMs": 101810,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "auto에서 plan으로 갔다가 auto 정책 범위를 보존해 복원하는 별도 case가 필요하다.",
+      "sourceRefs": [
+        "spec:claims:auto-plan-restore-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:teamlead-approval-not-observed",
+      "sequence": 88,
+      "timestampOffsetMs": 102210,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "상위 agent 또는 팀리드가 계획을 승인하는 팀 실행은 이번 단일 agent case 범위 밖이다.",
+      "sourceRefs": [
+        "spec:claims:teamlead-approval-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:post-approval-test-not-observed",
+      "sequence": 89,
+      "timestampOffsetMs": 102610,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "승인 후 계획에 적힌 Bash test까지 실행해 결과를 연결하는 case가 필요하다.",
+      "sourceRefs": [
+        "spec:claims:post-approval-test-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:plan-file-provisioner-and-lifecycle-not-observed",
+      "sequence": 90,
+      "timestampOffsetMs": 103010,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "Write deny 뒤 Edit가 성공할 수 있도록 계획 파일을 준비한 정확한 component와 cleanup lifecycle은 관찰하지 않았다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:762",
+        "attempt:224407-d1e8d267:sdk-message:823"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:deny-revise-product-ux-not-observed",
+      "sequence": 91,
+      "timestampOffsetMs": 103410,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "callback deny 뒤 모델 재요청은 관찰했지만 실제 사용자의 수정 요청과 수정된 plan 승인 UX는 별도 관측이 필요하다.",
+      "sourceRefs": [
+        "attempt:224407-d1e8d267:sdk-message:841",
+        "attempt:224407-d1e8d267:sdk-message:866"
+      ],
+      "claimStatus": "additional_observation_required"
+    }
+  ]
+}
