@@ -1,0 +1,832 @@
+{
+  "schemaVersion": "pixel-book-evidence.v1",
+  "generatedAt": "2026-08-03T16:20:10.130Z",
+  "title": "30장 나만의 AI 에이전트: 권한, 산출물, 재개, 메모리",
+  "description": "Education Shell의 검증된 Book SDK 실행을 Pixel Agents 상태 문법으로 재생한 공개 projection",
+  "boundary": "Pixel Agents 제품이 이 실행을 수집했다는 뜻이 아니며, renderer는 source 판정을 변경하지 않는다.",
+  "source": {
+    "courseId": "book-sdk-ko",
+    "chapterSlug": "ch30",
+    "campaignId": "book-sdk-live-20260803",
+    "traceId": "recorded:book-sdk-ko:ch30:book-sdk-live-20260803:2026-08-03T15:36:02.207Z",
+    "traceSha256": "9b5f9e852e1e83a431c7ef54818fbb12cffdfff356d59912493ba2755e3bbbba",
+    "summarySha256": "e702d4c1c8ae736628767f115c66c0ca4a305afb2b4a9259f831ea982f908670",
+    "sourceEventCount": 119,
+    "publicEventCount": 45,
+    "model": "claude-opus-5",
+    "attemptIds": [
+      "153528-a47425f8"
+    ],
+    "proofGate": "accepted_with_notes",
+    "secretScan": "passed"
+  },
+  "actors": [
+    {
+      "id": "user",
+      "label": "검증 프롬프트",
+      "role": "briefing",
+      "station": 0
+    },
+    {
+      "id": "runtime",
+      "label": "Python SDK 런타임",
+      "role": "control",
+      "station": 1
+    },
+    {
+      "id": "claude",
+      "label": "Claude Opus 5",
+      "role": "model",
+      "station": 2
+    },
+    {
+      "id": "tool",
+      "label": "SDK 도구 실행",
+      "role": "execution",
+      "station": 3
+    },
+    {
+      "id": "evaluator",
+      "label": "증거 판정기",
+      "role": "verification",
+      "station": 4
+    }
+  ],
+  "counts": {
+    "observedClaims": 5,
+    "additionalObservationRequired": 1,
+    "invalidAttempts": 0
+  },
+  "claims": [
+    {
+      "id": "local-report-host-allow",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "로컬 보고서는 host permission allow 뒤 handler와 ToolResult를 거쳐 생성됐다.",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:permission-callback:35",
+        "attempt:153528-a47425f8:permission-callback:36",
+        "attempt:153528-a47425f8:process-event:40",
+        "attempt:153528-a47425f8:sdk-message:41"
+      ]
+    },
+    {
+      "id": "external-publish-denied-before-handler",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "외부 게시는 host deny와 오류 ToolResult까지만 진행됐고 handler 실행과 publish count는 0이었다.",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:53",
+        "attempt:153528-a47425f8:permission-callback:54",
+        "attempt:153528-a47425f8:permission-callback:55",
+        "attempt:153528-a47425f8:sdk-message:59",
+        "attempt:153528-a47425f8:process-event:90"
+      ]
+    },
+    {
+      "id": "memory-saved-after-denial",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "거부된 게시 뒤 허용된 memory handler가 외부 memory artifact를 저장했다.",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:59",
+        "attempt:153528-a47425f8:sdk-message:72",
+        "attempt:153528-a47425f8:permission-callback:74",
+        "attempt:153528-a47425f8:process-event:76",
+        "attempt:153528-a47425f8:sdk-message:77",
+        "attempt:153528-a47425f8:process-event:90"
+      ]
+    },
+    {
+      "id": "new-client-resumed-and-loaded-memory",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "새 client가 같은 session을 재개하고 실제 load_memory handler와 ToolResult 뒤 두 번째 Result를 냈다.",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:89",
+        "attempt:153528-a47425f8:process-event:91",
+        "attempt:153528-a47425f8:sdk-message:92",
+        "attempt:153528-a47425f8:sdk-message:99",
+        "attempt:153528-a47425f8:process-event:100",
+        "attempt:153528-a47425f8:sdk-message:105",
+        "attempt:153528-a47425f8:sdk-message:115"
+      ]
+    },
+    {
+      "id": "artifact-state-stable",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "두 턴 뒤 report와 memory hash는 같았고 external publish count는 계속 0이었다.",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:process-event:90",
+        "attempt:153528-a47425f8:process-event:116"
+      ]
+    },
+    {
+      "id": "hosting-remote-eval-automatic-learning",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "호스팅, 원격 평가, 자동 장기학습은 이 로컬 run에서 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:hosting-remote-eval-automatic-learning"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "book-sdk-live-20260803:prompt",
+      "sequence": 0,
+      "timestampOffsetMs": 0,
+      "actor": "user",
+      "eventType": "prompt.submitted",
+      "pixelState": "briefing",
+      "evidenceLevel": "Configured",
+      "summary": "실제 두 턴 Agent SDK run에서 로컬 산출물 허용, 외부 게시 거부, 같은 세션 재개, 외부 메모리 회수를 연결한다.",
+      "sourceRefs": [
+        "publication-spec:public_prompt"
+      ]
+    },
+    {
+      "id": "153528-a47425f8:process:0",
+      "sequence": 1,
+      "timestampOffsetMs": 1000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:process-event:0"
+      ],
+      "attemptId": "153528-a47425f8"
+    },
+    {
+      "id": "153528-a47425f8:process:1",
+      "sequence": 2,
+      "timestampOffsetMs": 1002,
+      "actor": "runtime",
+      "eventType": "run.turn.started",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "turn 1 started",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:process-event:1"
+      ],
+      "attemptId": "153528-a47425f8"
+    },
+    {
+      "id": "153528-a47425f8:sdk.init",
+      "sequence": 3,
+      "timestampOffsetMs": 2466,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "permission, artifact, resume, memory agent MVP: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:2"
+      ],
+      "attemptId": "153528-a47425f8",
+      "caseId": "permission-artifact-resumed-memory"
+    },
+    {
+      "id": "153528-a47425f8:toolu_0135u1LPAY8z7bBzKZeu8hWC",
+      "sequence": 4,
+      "timestampOffsetMs": 5940,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__agent_lab__inspect_request {}",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:15"
+      ],
+      "attemptId": "153528-a47425f8",
+      "caseId": "permission-artifact-resumed-memory",
+      "toolName": "mcp__agent_lab__inspect_request",
+      "toolUseId": "153528-a47425f8:toolu_0135u1LPAY8z7bBzKZeu8hWC"
+    },
+    {
+      "id": "153528-a47425f8:process:16",
+      "sequence": 5,
+      "timestampOffsetMs": 5945,
+      "actor": "tool",
+      "eventType": "tool.execution",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host executed mcp__agent_lab__inspect_request: request-read",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:process-event:16"
+      ],
+      "attemptId": "153528-a47425f8",
+      "toolName": "mcp__agent_lab__inspect_request",
+      "outcome": "request-read"
+    },
+    {
+      "id": "153528-a47425f8:toolu_0135u1LPAY8z7bBzKZeu8hWC:result",
+      "sequence": 6,
+      "timestampOffsetMs": 5951,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__agent_lab__inspect_request: result received",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:18"
+      ],
+      "attemptId": "153528-a47425f8",
+      "toolName": "mcp__agent_lab__inspect_request",
+      "toolUseId": "153528-a47425f8:toolu_0135u1LPAY8z7bBzKZeu8hWC"
+    },
+    {
+      "id": "153528-a47425f8:message_stop",
+      "sequence": 7,
+      "timestampOffsetMs": 6027,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:20"
+      ],
+      "attemptId": "153528-a47425f8"
+    },
+    {
+      "id": "153528-a47425f8:toolu_01EZVP6ExMmeHpcefgxmdCjS",
+      "sequence": 8,
+      "timestampOffsetMs": 9040,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__agent_lab__save_local_report {}",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:34"
+      ],
+      "attemptId": "153528-a47425f8",
+      "caseId": "permission-artifact-resumed-memory",
+      "toolName": "mcp__agent_lab__save_local_report",
+      "toolUseId": "153528-a47425f8:toolu_01EZVP6ExMmeHpcefgxmdCjS"
+    },
+    {
+      "id": "153528-a47425f8:permission:35",
+      "sequence": 9,
+      "timestampOffsetMs": 9041,
+      "actor": "runtime",
+      "eventType": "permission.request",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "permission requested: mcp__agent_lab__save_local_report",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:permission-callback:35"
+      ],
+      "attemptId": "153528-a47425f8",
+      "toolName": "mcp__agent_lab__save_local_report",
+      "toolUseId": "153528-a47425f8:toolu_01EZVP6ExMmeHpcefgxmdCjS"
+    },
+    {
+      "id": "153528-a47425f8:permission:36",
+      "sequence": 10,
+      "timestampOffsetMs": 9042,
+      "actor": "runtime",
+      "eventType": "permission.decision",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "permission allow: mcp__agent_lab__save_local_report",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:permission-callback:36"
+      ],
+      "attemptId": "153528-a47425f8",
+      "toolName": "mcp__agent_lab__save_local_report",
+      "toolUseId": "153528-a47425f8:toolu_01EZVP6ExMmeHpcefgxmdCjS"
+    },
+    {
+      "id": "153528-a47425f8:message_stop",
+      "sequence": 11,
+      "timestampOffsetMs": 9046,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:39"
+      ],
+      "attemptId": "153528-a47425f8"
+    },
+    {
+      "id": "153528-a47425f8:process:40",
+      "sequence": 12,
+      "timestampOffsetMs": 9048,
+      "actor": "tool",
+      "eventType": "tool.execution",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host executed mcp__agent_lab__save_local_report: report-written",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:process-event:40"
+      ],
+      "attemptId": "153528-a47425f8",
+      "toolName": "mcp__agent_lab__save_local_report",
+      "outcome": "report-written"
+    },
+    {
+      "id": "153528-a47425f8:toolu_01EZVP6ExMmeHpcefgxmdCjS:result",
+      "sequence": 13,
+      "timestampOffsetMs": 9051,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__agent_lab__save_local_report: result received",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:41"
+      ],
+      "attemptId": "153528-a47425f8",
+      "toolName": "mcp__agent_lab__save_local_report",
+      "toolUseId": "153528-a47425f8:toolu_01EZVP6ExMmeHpcefgxmdCjS"
+    },
+    {
+      "id": "153528-a47425f8:toolu_01FtVYAhuxTQvHQiAkfrhbJY",
+      "sequence": 14,
+      "timestampOffsetMs": 13154,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__agent_lab__publish_external {}",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:53"
+      ],
+      "attemptId": "153528-a47425f8",
+      "caseId": "permission-artifact-resumed-memory",
+      "toolName": "mcp__agent_lab__publish_external",
+      "toolUseId": "153528-a47425f8:toolu_01FtVYAhuxTQvHQiAkfrhbJY"
+    },
+    {
+      "id": "153528-a47425f8:permission:54",
+      "sequence": 15,
+      "timestampOffsetMs": 13155,
+      "actor": "runtime",
+      "eventType": "permission.request",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "permission requested: mcp__agent_lab__publish_external",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:permission-callback:54"
+      ],
+      "attemptId": "153528-a47425f8",
+      "toolName": "mcp__agent_lab__publish_external",
+      "toolUseId": "153528-a47425f8:toolu_01FtVYAhuxTQvHQiAkfrhbJY"
+    },
+    {
+      "id": "153528-a47425f8:permission:55",
+      "sequence": 16,
+      "timestampOffsetMs": 13156,
+      "actor": "runtime",
+      "eventType": "permission.decision",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "permission deny: mcp__agent_lab__publish_external",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:permission-callback:55"
+      ],
+      "attemptId": "153528-a47425f8",
+      "toolName": "mcp__agent_lab__publish_external",
+      "toolUseId": "153528-a47425f8:toolu_01FtVYAhuxTQvHQiAkfrhbJY"
+    },
+    {
+      "id": "153528-a47425f8:message_stop",
+      "sequence": 17,
+      "timestampOffsetMs": 13160,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:58"
+      ],
+      "attemptId": "153528-a47425f8"
+    },
+    {
+      "id": "153528-a47425f8:toolu_01FtVYAhuxTQvHQiAkfrhbJY:result",
+      "sequence": 18,
+      "timestampOffsetMs": 13161,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__agent_lab__publish_external: error",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:59"
+      ],
+      "attemptId": "153528-a47425f8",
+      "toolName": "mcp__agent_lab__publish_external",
+      "toolUseId": "153528-a47425f8:toolu_01FtVYAhuxTQvHQiAkfrhbJY"
+    },
+    {
+      "id": "153528-a47425f8:toolu_01SCnbh9b9PFRqaiAA9beS1i",
+      "sequence": 19,
+      "timestampOffsetMs": 21508,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__agent_lab__save_memory {}",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:72"
+      ],
+      "attemptId": "153528-a47425f8",
+      "caseId": "permission-artifact-resumed-memory",
+      "toolName": "mcp__agent_lab__save_memory",
+      "toolUseId": "153528-a47425f8:toolu_01SCnbh9b9PFRqaiAA9beS1i"
+    },
+    {
+      "id": "153528-a47425f8:permission:73",
+      "sequence": 20,
+      "timestampOffsetMs": 21510,
+      "actor": "runtime",
+      "eventType": "permission.request",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "permission requested: mcp__agent_lab__save_memory",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:permission-callback:73"
+      ],
+      "attemptId": "153528-a47425f8",
+      "toolName": "mcp__agent_lab__save_memory",
+      "toolUseId": "153528-a47425f8:toolu_01SCnbh9b9PFRqaiAA9beS1i"
+    },
+    {
+      "id": "153528-a47425f8:permission:74",
+      "sequence": 21,
+      "timestampOffsetMs": 21512,
+      "actor": "runtime",
+      "eventType": "permission.decision",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "permission allow: mcp__agent_lab__save_memory",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:permission-callback:74"
+      ],
+      "attemptId": "153528-a47425f8",
+      "toolName": "mcp__agent_lab__save_memory",
+      "toolUseId": "153528-a47425f8:toolu_01SCnbh9b9PFRqaiAA9beS1i"
+    },
+    {
+      "id": "153528-a47425f8:process:76",
+      "sequence": 22,
+      "timestampOffsetMs": 21518,
+      "actor": "tool",
+      "eventType": "tool.execution",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host executed mcp__agent_lab__save_memory: memory-written",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:process-event:76"
+      ],
+      "attemptId": "153528-a47425f8",
+      "toolName": "mcp__agent_lab__save_memory",
+      "outcome": "memory-written"
+    },
+    {
+      "id": "153528-a47425f8:toolu_01SCnbh9b9PFRqaiAA9beS1i:result",
+      "sequence": 23,
+      "timestampOffsetMs": 21525,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__agent_lab__save_memory: result received",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:77"
+      ],
+      "attemptId": "153528-a47425f8",
+      "toolName": "mcp__agent_lab__save_memory",
+      "toolUseId": "153528-a47425f8:toolu_01SCnbh9b9PFRqaiAA9beS1i"
+    },
+    {
+      "id": "153528-a47425f8:message_stop",
+      "sequence": 24,
+      "timestampOffsetMs": 21994,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:79"
+      ],
+      "attemptId": "153528-a47425f8"
+    },
+    {
+      "id": "153528-a47425f8:message_stop",
+      "sequence": 25,
+      "timestampOffsetMs": 24804,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:88"
+      ],
+      "attemptId": "153528-a47425f8"
+    },
+    {
+      "id": "153528-a47425f8:result",
+      "sequence": 26,
+      "timestampOffsetMs": 24808,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:89"
+      ],
+      "attemptId": "153528-a47425f8"
+    },
+    {
+      "id": "153528-a47425f8:process:90",
+      "sequence": 27,
+      "timestampOffsetMs": 25341,
+      "actor": "runtime",
+      "eventType": "artifact.snapshot",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "artifact snapshot: after-turn-1",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:process-event:90"
+      ],
+      "attemptId": "153528-a47425f8"
+    },
+    {
+      "id": "153528-a47425f8:process:91",
+      "sequence": 28,
+      "timestampOffsetMs": 25344,
+      "actor": "runtime",
+      "eventType": "run.turn.started",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "turn 2 started",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:process-event:91"
+      ],
+      "attemptId": "153528-a47425f8"
+    },
+    {
+      "id": "153528-a47425f8:sdk.init:92",
+      "sequence": 29,
+      "timestampOffsetMs": 25654,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "permission, artifact, resume, memory agent MVP: init boundary 2, claude-opus-5",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:92"
+      ],
+      "attemptId": "153528-a47425f8",
+      "caseId": "permission-artifact-resumed-memory"
+    },
+    {
+      "id": "153528-a47425f8:toolu_01FJvMmnFJdaLWDaS78yZa7r",
+      "sequence": 30,
+      "timestampOffsetMs": 29111,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__agent_lab__load_memory {}",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:99"
+      ],
+      "attemptId": "153528-a47425f8",
+      "caseId": "permission-artifact-resumed-memory",
+      "toolName": "mcp__agent_lab__load_memory",
+      "toolUseId": "153528-a47425f8:toolu_01FJvMmnFJdaLWDaS78yZa7r"
+    },
+    {
+      "id": "153528-a47425f8:process:100",
+      "sequence": 31,
+      "timestampOffsetMs": 29120,
+      "actor": "tool",
+      "eventType": "tool.execution",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host executed mcp__agent_lab__load_memory: memory-read",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:process-event:100"
+      ],
+      "attemptId": "153528-a47425f8",
+      "toolName": "mcp__agent_lab__load_memory",
+      "outcome": "memory-read"
+    },
+    {
+      "id": "153528-a47425f8:message_stop",
+      "sequence": 32,
+      "timestampOffsetMs": 29125,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:103"
+      ],
+      "attemptId": "153528-a47425f8"
+    },
+    {
+      "id": "153528-a47425f8:toolu_01FJvMmnFJdaLWDaS78yZa7r:result",
+      "sequence": 33,
+      "timestampOffsetMs": 29127,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__agent_lab__load_memory: result received",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:105"
+      ],
+      "attemptId": "153528-a47425f8",
+      "toolName": "mcp__agent_lab__load_memory",
+      "toolUseId": "153528-a47425f8:toolu_01FJvMmnFJdaLWDaS78yZa7r"
+    },
+    {
+      "id": "153528-a47425f8:message_stop",
+      "sequence": 34,
+      "timestampOffsetMs": 34133,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:114"
+      ],
+      "attemptId": "153528-a47425f8"
+    },
+    {
+      "id": "153528-a47425f8:result",
+      "sequence": 35,
+      "timestampOffsetMs": 34135,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:115"
+      ],
+      "attemptId": "153528-a47425f8"
+    },
+    {
+      "id": "153528-a47425f8:process:116",
+      "sequence": 36,
+      "timestampOffsetMs": 34671,
+      "actor": "runtime",
+      "eventType": "artifact.snapshot",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "artifact snapshot: after-turn-2",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:process-event:116"
+      ],
+      "attemptId": "153528-a47425f8"
+    },
+    {
+      "id": "153528-a47425f8:process:117",
+      "sequence": 37,
+      "timestampOffsetMs": 34675,
+      "actor": "runtime",
+      "eventType": "evidence.frozen",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "raw observation scope frozen",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:process-event:117"
+      ],
+      "attemptId": "153528-a47425f8"
+    },
+    {
+      "id": "153528-a47425f8:process:118",
+      "sequence": 38,
+      "timestampOffsetMs": 34680,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:process-event:118"
+      ],
+      "attemptId": "153528-a47425f8"
+    },
+    {
+      "id": "claim:local-report-host-allow",
+      "sequence": 39,
+      "timestampOffsetMs": 35380,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "로컬 보고서는 host permission allow 뒤 handler와 ToolResult를 거쳐 생성됐다.",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:permission-callback:35",
+        "attempt:153528-a47425f8:permission-callback:36",
+        "attempt:153528-a47425f8:process-event:40",
+        "attempt:153528-a47425f8:sdk-message:41"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:external-publish-denied-before-handler",
+      "sequence": 40,
+      "timestampOffsetMs": 35780,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "외부 게시는 host deny와 오류 ToolResult까지만 진행됐고 handler 실행과 publish count는 0이었다.",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:53",
+        "attempt:153528-a47425f8:permission-callback:54",
+        "attempt:153528-a47425f8:permission-callback:55",
+        "attempt:153528-a47425f8:sdk-message:59",
+        "attempt:153528-a47425f8:process-event:90"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:memory-saved-after-denial",
+      "sequence": 41,
+      "timestampOffsetMs": 36180,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "거부된 게시 뒤 허용된 memory handler가 외부 memory artifact를 저장했다.",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:59",
+        "attempt:153528-a47425f8:sdk-message:72",
+        "attempt:153528-a47425f8:permission-callback:74",
+        "attempt:153528-a47425f8:process-event:76",
+        "attempt:153528-a47425f8:sdk-message:77",
+        "attempt:153528-a47425f8:process-event:90"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:new-client-resumed-and-loaded-memory",
+      "sequence": 42,
+      "timestampOffsetMs": 36580,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "새 client가 같은 session을 재개하고 실제 load_memory handler와 ToolResult 뒤 두 번째 Result를 냈다.",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:sdk-message:89",
+        "attempt:153528-a47425f8:process-event:91",
+        "attempt:153528-a47425f8:sdk-message:92",
+        "attempt:153528-a47425f8:sdk-message:99",
+        "attempt:153528-a47425f8:process-event:100",
+        "attempt:153528-a47425f8:sdk-message:105",
+        "attempt:153528-a47425f8:sdk-message:115"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:artifact-state-stable",
+      "sequence": 43,
+      "timestampOffsetMs": 36980,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "두 턴 뒤 report와 memory hash는 같았고 external publish count는 계속 0이었다.",
+      "sourceRefs": [
+        "attempt:153528-a47425f8:process-event:90",
+        "attempt:153528-a47425f8:process-event:116"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:hosting-remote-eval-automatic-learning",
+      "sequence": 44,
+      "timestampOffsetMs": 37380,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "호스팅, 원격 평가, 자동 장기학습은 이 로컬 run에서 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:hosting-remote-eval-automatic-learning"
+      ],
+      "claimStatus": "additional_observation_required"
+    }
+  ]
+}

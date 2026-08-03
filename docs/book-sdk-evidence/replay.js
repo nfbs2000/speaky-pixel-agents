@@ -3,15 +3,39 @@ const actorGrid = document.getElementById('actor-grid')
 const cursorInput = document.getElementById('cursor')
 const speedSelect = document.getElementById('speed')
 const playButton = document.getElementById('play')
+const chapterSelect = document.getElementById('chapter')
 
 let evidence = null
+let catalog = null
+let selectedEntry = null
 let cursor = 0
 let playing = false
 let timer = null
 const actorStates = new Map()
 
 try {
-  const response = await fetch('./evidence.json', { cache: 'no-store' })
+  const catalogResponse = await fetch('./catalog.json', { cache: 'no-store' })
+  if (!catalogResponse.ok) throw new Error(`catalog_http_${catalogResponse.status}`)
+  catalog = await catalogResponse.json()
+  if (catalog.schemaVersion !== 'pixel-book-evidence-catalog.v1' || !catalog.entries?.length) {
+    throw new Error('catalog_contract_invalid')
+  }
+  const requested = new URLSearchParams(window.location.search).get('chapter')
+  selectedEntry = catalog.entries.find((entry) => entry.chapterSlug === requested) || catalog.entries[0]
+  chapterSelect.replaceChildren(...catalog.entries.map((entry) => {
+    const option = document.createElement('option')
+    option.value = entry.chapterSlug
+    option.textContent = `${entry.chapterSlug.toUpperCase()} · ${entry.title}`
+    return option
+  }))
+  chapterSelect.value = selectedEntry.chapterSlug
+  chapterSelect.addEventListener('change', () => {
+    const params = new URLSearchParams(window.location.search)
+    params.set('chapter', chapterSelect.value)
+    window.location.assign(`${window.location.pathname}?${params}`)
+  })
+
+  const response = await fetch(selectedEntry.path, { cache: 'no-store' })
   if (!response.ok) throw new Error(`evidence_http_${response.status}`)
   evidence = await response.json()
   if (evidence.schemaVersion !== 'pixel-book-evidence.v1' || !evidence.events?.length) {
@@ -26,6 +50,11 @@ try {
 
 function initialize() {
   shell.dataset.loadState = 'ready'
+  document.title = `${evidence.title} · Pixel Agents Replay`
+  document.getElementById('chapter-eyebrow').textContent = `RECORDED PROJECTION · ${evidence.source.chapterSlug.toUpperCase()}`
+  document.getElementById('stage-title').textContent = evidence.title
+  document.getElementById('claim-title').textContent = `${evidence.source.chapterSlug.toUpperCase()} 판정`
+  document.getElementById('source-json').href = selectedEntry.path
   document.getElementById('model-badge').textContent = evidence.source.model || 'MODEL NOT RECORDED'
   document.getElementById('proof-badge').textContent = `PROOF · ${evidence.source.proofGate}`
   document.getElementById('stage-boundary').textContent = evidence.boundary
@@ -35,6 +64,7 @@ function initialize() {
   document.getElementById('pending-count').textContent = evidence.counts.additionalObservationRequired
   cursorInput.max = String(evidence.events.length - 1)
 
+  actorStates.clear()
   actorGrid.replaceChildren(...evidence.actors.map(actorElement))
   document.getElementById('claim-list').replaceChildren(...evidence.claims.map(claimElement))
   render(0)
@@ -58,6 +88,7 @@ function initialize() {
   window.__bookSdkEvidenceReplay = {
     getState: () => ({
       schemaVersion: evidence.schemaVersion,
+      chapterSlug: evidence.source.chapterSlug,
       campaignId: evidence.source.campaignId,
       cursor,
       playing,

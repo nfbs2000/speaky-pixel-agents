@@ -103,6 +103,7 @@ a { color: inherit; }
   gap: 7px;
 }
 
+.source-badges select,
 .source-badges span,
 .source-badges a {
   min-height: 30px;
@@ -115,6 +116,14 @@ a { color: inherit; }
   font-size: 8px;
   text-decoration: none;
 }
+
+.source-badges select {
+  max-width: min(300px, 45vw);
+  border-radius: 0;
+  outline: none;
+}
+
+.source-badges select:focus-visible { border-color: var(--cyan); color: var(--cyan); }
 
 .source-badges a:hover,
 .source-badges a:focus-visible { border-color: var(--cyan); color: var(--cyan); }

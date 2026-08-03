@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="실제 Python Claude Agent SDK 4장 실행 증거를 Pixel Agents 상태 문법으로 재생합니다.">
-  <title>Book SDK 4장 증거 · Pixel Agents Replay</title>
+  <meta name="description" content="실제 Python Claude Agent SDK 실행 증거를 Pixel Agents 상태 문법으로 재생합니다.">
+  <title>Book SDK 실행 증거 · Pixel Agents Replay</title>
   <link rel="icon" href="../assets/icon.png">
   <link rel="stylesheet" href="./replay.css">
 </head>
@@ -17,16 +17,17 @@
         <span>Pixel Agents <small>Book SDK evidence replay</small></span>
       </a>
       <div class="source-badges" aria-label="증거 상태">
+        <select id="chapter" aria-label="Book SDK 장 선택"></select>
         <span id="model-badge">MODEL</span>
         <span id="proof-badge">PROOF GATE</span>
-        <a href="./evidence.json">SOURCE JSON</a>
+        <a id="source-json" href="./catalog.json">SOURCE JSON</a>
       </div>
     </header>
 
     <section class="stage" aria-labelledby="stage-title">
       <div class="stage-heading">
-        <p>RECORDED PROJECTION · CHAPTER 04</p>
-        <h1 id="stage-title">도구 실행이 실제로 어떻게 겹치고, 멈추는가</h1>
+        <p id="chapter-eyebrow">RECORDED PROJECTION</p>
+        <h1 id="stage-title">검증된 SDK 증거를 불러오는 중입니다</h1>
         <span id="stage-boundary">검증된 evidence를 불러오는 중입니다.</span>
       </div>
 
@@ -64,7 +65,7 @@
       </div>
       <section class="claims">
         <div class="claims__head">
-          <h2>4장 판정</h2>
+          <h2 id="claim-title">장별 판정</h2>
           <span>관찰되지 않음 ≠ 책이 틀림</span>
         </div>
         <ol id="claim-list"></ol>
@@ -92,7 +93,7 @@
 
     <section class="load-error" id="load-error" hidden>
       <h2>검증된 recorded evidence를 불러오지 못했습니다.</h2>
-      <p>mock 장면으로 대체하지 않습니다. <a href="./evidence.json">evidence.json</a>과 배포 상태를 확인하세요.</p>
+      <p>mock 장면으로 대체하지 않습니다. <a href="./catalog.json">catalog.json</a>과 배포 상태를 확인하세요.</p>
     </section>
   </main>
   <script type="module" src="./replay.js"></script>

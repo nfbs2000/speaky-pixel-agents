@@ -15,10 +15,15 @@ if (verifyPath) {
 const tracePath = path.resolve(requiredValue('--trace'))
 const summaryPath = path.resolve(requiredValue('--summary'))
 const outputPath = path.resolve(requiredValue('--out'))
+const catalogPath = valueAfter('--catalog') ? path.resolve(valueAfter('--catalog')) : null
 const traceText = await fs.readFile(tracePath, 'utf8')
 const summaryText = await fs.readFile(summaryPath, 'utf8')
 const trace = JSON.parse(traceText)
 const summary = JSON.parse(summaryText)
+
+if (trace.chapterSlug !== summary.chapter_id) {
+  throw new Error(`pixel_book_evidence_chapter_mismatch: ${trace.chapterSlug} != ${summary.chapter_id}`)
+}
 
 if (!Array.isArray(trace.events) || trace.events.length === 0) {
   throw new Error('pixel_book_evidence_trace_has_no_events')
@@ -33,6 +38,11 @@ const claims = trace.events
     summary: safeText(event.summary),
     sourceRefs: safeRefs(event.sourceRefs),
   }))
+
+const traceClaimStatuses = claims.map((claim) => claim.status)
+if (JSON.stringify(traceClaimStatuses) !== JSON.stringify(summary.claim_statuses)) {
+  throw new Error('pixel_book_evidence_claim_status_mismatch')
+}
 
 const events = trace.events.map((event, sequence) => ({
   id: stringValue(event.id, `event-${sequence}`),
@@ -78,7 +88,7 @@ const projection = {
     { id: 'user', label: '검증 프롬프트', role: 'briefing', station: 0 },
     { id: 'runtime', label: 'Python SDK 런타임', role: 'control', station: 1 },
     { id: 'claude', label: 'Claude Opus 5', role: 'model', station: 2 },
-    { id: 'tool', label: 'Custom MCP 도구', role: 'execution', station: 3 },
+    { id: 'tool', label: 'SDK 도구 실행', role: 'execution', station: 3 },
     { id: 'evaluator', label: '증거 판정기', role: 'verification', station: 4 },
   ],
   counts: {
@@ -95,6 +105,7 @@ const projection = {
 await fs.mkdir(path.dirname(outputPath), { recursive: true })
 await fs.writeFile(outputPath, `${JSON.stringify(projection, null, 2)}\n`)
 await verifyProjection(outputPath)
+if (catalogPath) await updateCatalog(catalogPath, outputPath, projection)
 
 async function verifyProjection(file) {
   const text = await fs.readFile(file, 'utf8')
@@ -103,19 +114,58 @@ async function verifyProjection(file) {
   if (value.source?.sourceEventCount <= value.source?.publicEventCount) {
     throw new Error('pixel_book_evidence_source_projection_counts_invalid')
   }
-  if (value.counts?.observedClaims !== 4 || value.counts?.additionalObservationRequired !== 2) {
+  const expectedObserved = value.claims.filter((claim) => claim.status === 'observed').length
+  const expectedPending = value.claims.filter(
+    (claim) => claim.status === 'additional_observation_required',
+  ).length
+  if (value.counts?.observedClaims !== expectedObserved
+    || value.counts?.additionalObservationRequired !== expectedPending) {
     throw new Error('pixel_book_evidence_claim_counts_invalid')
   }
-  if (!value.events?.some((event) => event.pixelState === 'cancelled')) {
-    throw new Error('pixel_book_evidence_interrupt_outcome_missing')
-  }
-  if (!value.events?.some((event) => event.evidenceLevel === 'Missing')) {
+  if (expectedPending > 0 && !value.events?.some((event) => event.evidenceLevel === 'Missing')) {
     throw new Error('pixel_book_evidence_missing_boundary_lost')
   }
   if (/\/Users\/|sk-ant-|AKIA|CLAUDE_CODE_OAUTH_TOKEN|hidden reasoning/i.test(text)) {
     throw new Error('pixel_book_evidence_private_content_detected')
   }
   process.stdout.write(`Verified ${value.events.length} Pixel evidence events in ${file}\n`)
+}
+
+async function updateCatalog(file, evidencePath, value) {
+  const catalog = await fs.readFile(file, 'utf8')
+    .then((text) => JSON.parse(text))
+    .catch(() => ({
+      schemaVersion: 'pixel-book-evidence-catalog.v1',
+      title: 'Book SDK 실제 실행 증거',
+      entries: [],
+    }))
+  if (catalog.schemaVersion !== 'pixel-book-evidence-catalog.v1' || !Array.isArray(catalog.entries)) {
+    throw new Error('pixel_book_evidence_catalog_invalid')
+  }
+  const relativePath = path.relative(path.dirname(file), evidencePath).split(path.sep).join('/')
+  const entry = {
+    chapterSlug: value.source.chapterSlug,
+    title: value.title,
+    path: relativePath.startsWith('.') ? relativePath : `./${relativePath}`,
+    campaignId: value.source.campaignId,
+    model: value.source.model,
+    sourceEventCount: value.source.sourceEventCount,
+    publicEventCount: value.source.publicEventCount,
+    observedClaims: value.counts.observedClaims,
+    additionalObservationRequired: value.counts.additionalObservationRequired,
+    artifactSha256: sha256(await fs.readFile(evidencePath, 'utf8')),
+  }
+  catalog.entries = catalog.entries
+    .filter((candidate) => candidate.chapterSlug !== entry.chapterSlug)
+    .concat(entry)
+    .sort((left, right) => chapterNumber(left.chapterSlug) - chapterNumber(right.chapterSlug))
+  catalog.generatedAt = new Date().toISOString()
+  await fs.mkdir(path.dirname(file), { recursive: true })
+  await fs.writeFile(file, `${JSON.stringify(catalog, null, 2)}\n`)
+}
+
+function chapterNumber(value) {
+  return Number(String(value).replace(/^ch/, '')) || Number.MAX_SAFE_INTEGER
 }
 
 function pixelState(event) {

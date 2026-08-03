@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "pixel-book-evidence-catalog.v1",
+  "title": "Book SDK 실제 실행 증거",
+  "entries": [
+    {
+      "chapterSlug": "ch01",
+      "title": "1장 AI 코딩 에이전트의 전체 기술 스택: 실제 SDK 첫 실행",
+      "path": "./evidence/ch01.json",
+      "campaignId": "book-sdk-live-20260803",
+      "model": "claude-opus-5",
+      "sourceEventCount": 58,
+      "publicEventCount": 18,
+      "observedClaims": 3,
+      "additionalObservationRequired": 1,
+      "artifactSha256": "2d02bdad2d493b529386e5b8d409cf4a05042d6ec60a00e367a9282730f3b2f4"
+    },
+    {
+      "chapterSlug": "ch04",
+      "title": "4장 도구 실행 오케스트레이션: 권한, 동시성, 스트리밍, 인터럽트",
+      "path": "./evidence/ch04.json",
+      "campaignId": "book-sdk-live-20260803",
+      "model": "claude-opus-5",
+      "sourceEventCount": 95,
+      "publicEventCount": 32,
+      "observedClaims": 4,
+      "additionalObservationRequired": 2,
+      "artifactSha256": "862c26c0937ee8e560dc9d8b479d3a8d8ccd0f110ee263b9f599ef8e9794665a"
+    },
+    {
+      "chapterSlug": "ch30",
+      "title": "30장 나만의 AI 에이전트: 권한, 산출물, 재개, 메모리",
+      "path": "./evidence/ch30.json",
+      "campaignId": "book-sdk-live-20260803",
+      "model": "claude-opus-5",
+      "sourceEventCount": 119,
+      "publicEventCount": 45,
+      "observedClaims": 5,
+      "additionalObservationRequired": 1,
+      "artifactSha256": "382b00bba5a43e4bbba618bbff1b531e191d986458b237ab3eadaa0c015c10b0"
+    }
+  ],
+  "generatedAt": "2026-08-03T16:20:10.135Z"
+}

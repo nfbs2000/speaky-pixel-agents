@@ -1,0 +1,383 @@
+{
+  "schemaVersion": "pixel-book-evidence.v1",
+  "generatedAt": "2026-08-03T16:20:10.027Z",
+  "title": "1장 AI 코딩 에이전트의 전체 기술 스택: 실제 SDK 첫 실행",
+  "description": "Education Shell의 검증된 Book SDK 실행을 Pixel Agents 상태 문법으로 재생한 공개 projection",
+  "boundary": "Pixel Agents 제품이 이 실행을 수집했다는 뜻이 아니며, renderer는 source 판정을 변경하지 않는다.",
+  "source": {
+    "courseId": "book-sdk-ko",
+    "chapterSlug": "ch01",
+    "campaignId": "book-sdk-live-20260803",
+    "traceId": "recorded:book-sdk-ko:ch01:book-sdk-live-20260803:2026-08-03T15:46:26.009Z",
+    "traceSha256": "ae16d90ae2a48972a16d4a9091b5b98965738e1f21f6866173bd1c1843c44f42",
+    "summarySha256": "cb56e38a0eee890160077d478eb6d476beed0da1065428a8df6df07f3c69d708",
+    "sourceEventCount": 58,
+    "publicEventCount": 18,
+    "model": "claude-opus-5",
+    "attemptIds": [
+      "154613-e5697396"
+    ],
+    "proofGate": "accepted_with_notes",
+    "secretScan": "passed"
+  },
+  "actors": [
+    {
+      "id": "user",
+      "label": "검증 프롬프트",
+      "role": "briefing",
+      "station": 0
+    },
+    {
+      "id": "runtime",
+      "label": "Python SDK 런타임",
+      "role": "control",
+      "station": 1
+    },
+    {
+      "id": "claude",
+      "label": "Claude Opus 5",
+      "role": "model",
+      "station": 2
+    },
+    {
+      "id": "tool",
+      "label": "SDK 도구 실행",
+      "role": "execution",
+      "station": 3
+    },
+    {
+      "id": "evaluator",
+      "label": "증거 판정기",
+      "role": "verification",
+      "station": 4
+    }
+  ],
+  "counts": {
+    "observedClaims": 3,
+    "additionalObservationRequired": 1,
+    "invalidAttempts": 0
+  },
+  "claims": [
+    {
+      "id": "configured-init-surface",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "요청한 Opus 5와 built-in Read가 실제 init 표면에 나타났다.",
+      "sourceRefs": [
+        "attempt:154613-e5697396:sdk-message:1",
+        "attempt:154613-e5697396:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "read-error-retry-success",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "두 번의 Read 오류 뒤 수정한 세 번째 Read가 실제 fixture 결과를 반환했다.",
+      "sourceRefs": [
+        "attempt:154613-e5697396:sdk-message:14",
+        "attempt:154613-e5697396:sdk-message:18",
+        "attempt:154613-e5697396:sdk-message:21",
+        "attempt:154613-e5697396:sdk-message:25",
+        "attempt:154613-e5697396:sdk-message:42",
+        "attempt:154613-e5697396:sdk-message:44"
+      ]
+    },
+    {
+      "id": "terminal-result-after-tool-result",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "성공 ToolResult 뒤 같은 run이 success/completed Result로 종료됐다.",
+      "sourceRefs": [
+        "attempt:154613-e5697396:sdk-message:42",
+        "attempt:154613-e5697396:sdk-message:44",
+        "attempt:154613-e5697396:sdk-message:56"
+      ]
+    },
+    {
+      "id": "ui-and-permission-projection",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "권한 UI, custom MCP handler, Book Canvas는 이 Read run에서 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:ui-and-permission-projection"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "book-sdk-live-20260803:prompt",
+      "sequence": 0,
+      "timestampOffsetMs": 0,
+      "actor": "user",
+      "eventType": "prompt.submitted",
+      "pixelState": "briefing",
+      "evidenceLevel": "Configured",
+      "summary": "실제 Python Agent SDK에서 init, partial stream, Read 도구 왕복, terminal Result가 이어지는 첫 실행을 관찰한다.",
+      "sourceRefs": [
+        "publication-spec:public_prompt"
+      ]
+    },
+    {
+      "id": "154613-e5697396:process:0",
+      "sequence": 1,
+      "timestampOffsetMs": 1000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.query.started",
+      "sourceRefs": [
+        "attempt:154613-e5697396:process-event:0"
+      ],
+      "attemptId": "154613-e5697396"
+    },
+    {
+      "id": "154613-e5697396:sdk.init",
+      "sequence": 2,
+      "timestampOffsetMs": 2020,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "built-in Read의 실패, 수정, 성공과 terminal Result: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:154613-e5697396:sdk-message:1"
+      ],
+      "attemptId": "154613-e5697396",
+      "caseId": "read-fixture-runtime-contract"
+    },
+    {
+      "id": "154613-e5697396:toolu_01M5uWXgWwH4KngQWTMkCaHf",
+      "sequence": 3,
+      "timestampOffsetMs": 4830,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:154613-e5697396:sdk-message:14"
+      ],
+      "attemptId": "154613-e5697396",
+      "caseId": "read-fixture-runtime-contract",
+      "toolName": "Read",
+      "toolUseId": "154613-e5697396:toolu_01M5uWXgWwH4KngQWTMkCaHf"
+    },
+    {
+      "id": "154613-e5697396:toolu_01M5uWXgWwH4KngQWTMkCaHf:result",
+      "sequence": 4,
+      "timestampOffsetMs": 4842,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: error",
+      "sourceRefs": [
+        "attempt:154613-e5697396:sdk-message:18"
+      ],
+      "attemptId": "154613-e5697396",
+      "toolName": "Read",
+      "toolUseId": "154613-e5697396:toolu_01M5uWXgWwH4KngQWTMkCaHf"
+    },
+    {
+      "id": "154613-e5697396:toolu_011uuQMrccmd2U4rVu3Si9AR",
+      "sequence": 5,
+      "timestampOffsetMs": 5639,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:154613-e5697396:sdk-message:21"
+      ],
+      "attemptId": "154613-e5697396",
+      "caseId": "read-fixture-runtime-contract",
+      "toolName": "Read",
+      "toolUseId": "154613-e5697396:toolu_011uuQMrccmd2U4rVu3Si9AR"
+    },
+    {
+      "id": "154613-e5697396:message_stop",
+      "sequence": 6,
+      "timestampOffsetMs": 5883,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:154613-e5697396:sdk-message:24"
+      ],
+      "attemptId": "154613-e5697396"
+    },
+    {
+      "id": "154613-e5697396:toolu_011uuQMrccmd2U4rVu3Si9AR:result",
+      "sequence": 7,
+      "timestampOffsetMs": 5903,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: error",
+      "sourceRefs": [
+        "attempt:154613-e5697396:sdk-message:25"
+      ],
+      "attemptId": "154613-e5697396",
+      "toolName": "Read",
+      "toolUseId": "154613-e5697396:toolu_011uuQMrccmd2U4rVu3Si9AR"
+    },
+    {
+      "id": "154613-e5697396:toolu_01LcPdPrQuVCNvGxuP1tWhnp",
+      "sequence": 8,
+      "timestampOffsetMs": 10589,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:154613-e5697396:sdk-message:42"
+      ],
+      "attemptId": "154613-e5697396",
+      "caseId": "read-fixture-runtime-contract",
+      "toolName": "Read",
+      "toolUseId": "154613-e5697396:toolu_01LcPdPrQuVCNvGxuP1tWhnp"
+    },
+    {
+      "id": "154613-e5697396:toolu_01LcPdPrQuVCNvGxuP1tWhnp:result",
+      "sequence": 9,
+      "timestampOffsetMs": 10603,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:154613-e5697396:sdk-message:44"
+      ],
+      "attemptId": "154613-e5697396",
+      "toolName": "Read",
+      "toolUseId": "154613-e5697396:toolu_01LcPdPrQuVCNvGxuP1tWhnp"
+    },
+    {
+      "id": "154613-e5697396:message_stop",
+      "sequence": 10,
+      "timestampOffsetMs": 10729,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:154613-e5697396:sdk-message:46"
+      ],
+      "attemptId": "154613-e5697396"
+    },
+    {
+      "id": "154613-e5697396:message_stop",
+      "sequence": 11,
+      "timestampOffsetMs": 12849,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:154613-e5697396:sdk-message:55"
+      ],
+      "attemptId": "154613-e5697396"
+    },
+    {
+      "id": "154613-e5697396:result",
+      "sequence": 12,
+      "timestampOffsetMs": 12851,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:154613-e5697396:sdk-message:56"
+      ],
+      "attemptId": "154613-e5697396"
+    },
+    {
+      "id": "154613-e5697396:process:57",
+      "sequence": 13,
+      "timestampOffsetMs": 13382,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.query.finished",
+      "sourceRefs": [
+        "attempt:154613-e5697396:process-event:57"
+      ],
+      "attemptId": "154613-e5697396"
+    },
+    {
+      "id": "claim:configured-init-surface",
+      "sequence": 14,
+      "timestampOffsetMs": 14082,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "요청한 Opus 5와 built-in Read가 실제 init 표면에 나타났다.",
+      "sourceRefs": [
+        "attempt:154613-e5697396:sdk-message:1",
+        "attempt:154613-e5697396:manifest:option_summary"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:read-error-retry-success",
+      "sequence": 15,
+      "timestampOffsetMs": 14482,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "두 번의 Read 오류 뒤 수정한 세 번째 Read가 실제 fixture 결과를 반환했다.",
+      "sourceRefs": [
+        "attempt:154613-e5697396:sdk-message:14",
+        "attempt:154613-e5697396:sdk-message:18",
+        "attempt:154613-e5697396:sdk-message:21",
+        "attempt:154613-e5697396:sdk-message:25",
+        "attempt:154613-e5697396:sdk-message:42",
+        "attempt:154613-e5697396:sdk-message:44"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:terminal-result-after-tool-result",
+      "sequence": 16,
+      "timestampOffsetMs": 14882,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "성공 ToolResult 뒤 같은 run이 success/completed Result로 종료됐다.",
+      "sourceRefs": [
+        "attempt:154613-e5697396:sdk-message:42",
+        "attempt:154613-e5697396:sdk-message:44",
+        "attempt:154613-e5697396:sdk-message:56"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:ui-and-permission-projection",
+      "sequence": 17,
+      "timestampOffsetMs": 15282,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "권한 UI, custom MCP handler, Book Canvas는 이 Read run에서 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:ui-and-permission-projection"
+      ],
+      "claimStatus": "additional_observation_required"
+    }
+  ]
+}
