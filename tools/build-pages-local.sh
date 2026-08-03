@@ -15,6 +15,10 @@ if [[ -d "$OUT" ]] && [[ -n "$(find "$OUT" -mindepth 1 -maxdepth 1 -print -quit)
 fi
 
 mkdir -p "$OUT/assets"
+if [[ -f "$ROOT/site/book-sdk-evidence/evidence.json" ]]; then
+  node "$ROOT/tools/publish-book-sdk-evidence.mjs" \
+    --verify "$ROOT/site/book-sdk-evidence/evidence.json"
+fi
 cp -R "$ROOT/site/." "$OUT/"
 cp "$ROOT/icon.png" "$OUT/assets/icon.png"
 cp "$ROOT/webview-ui/public/Screenshot.jpg" "$OUT/assets/screenshot.jpg"

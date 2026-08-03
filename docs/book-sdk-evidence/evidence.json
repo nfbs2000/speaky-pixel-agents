@@ -1,0 +1,647 @@
+{
+  "schemaVersion": "pixel-book-evidence.v1",
+  "generatedAt": "2026-08-03T06:20:04.248Z",
+  "title": "4장 도구 실행 오케스트레이션: 권한, 동시성, 스트리밍, 인터럽트",
+  "description": "Education Shell의 검증된 Book SDK 실행을 Pixel Agents 상태 문법으로 재생한 공개 projection",
+  "boundary": "Pixel Agents 제품이 이 실행을 수집했다는 뜻이 아니며, renderer는 source 판정을 변경하지 않는다.",
+  "source": {
+    "courseId": "book-sdk-ko",
+    "chapterSlug": "ch04",
+    "campaignId": "book-sdk-live-20260803",
+    "traceId": "recorded:book-sdk-ko:ch04:book-sdk-live-20260803:2026-08-03T05:25:15.785Z",
+    "traceSha256": "658158830a8f0a8742b1bed330341f1688f1f76a9f5f72985a558333df98ef76",
+    "summarySha256": "f3881873569e211a16bde952f8b92230fae95ce0ec0dd3d4d45116c1de571d4b",
+    "sourceEventCount": 95,
+    "publicEventCount": 32,
+    "model": "claude-opus-5",
+    "attemptIds": [
+      "052242-c66552af",
+      "052440-7003d15a",
+      "052511-c1cba98a"
+    ],
+    "proofGate": "accepted_with_notes",
+    "secretScan": "passed"
+  },
+  "actors": [
+    {
+      "id": "user",
+      "label": "검증 프롬프트",
+      "role": "briefing",
+      "station": 0
+    },
+    {
+      "id": "runtime",
+      "label": "Python SDK 런타임",
+      "role": "control",
+      "station": 1
+    },
+    {
+      "id": "claude",
+      "label": "Claude Opus 5",
+      "role": "model",
+      "station": 2
+    },
+    {
+      "id": "tool",
+      "label": "Custom MCP 도구",
+      "role": "execution",
+      "station": 3
+    },
+    {
+      "id": "evaluator",
+      "label": "증거 판정기",
+      "role": "verification",
+      "station": 4
+    }
+  ],
+  "counts": {
+    "observedClaims": 4,
+    "additionalObservationRequired": 2,
+    "invalidAttempts": 1
+  },
+  "claims": [
+    {
+      "id": "read-only-overlap",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "같은 assistant message의 read-only custom MCP 두 handler가 858.949ms 겹쳐 실행됐다.",
+      "sourceRefs": [
+        "attempt:052242-c66552af:sdk-message:15",
+        "attempt:052242-c66552af:process-event:16",
+        "attempt:052242-c66552af:sdk-message:22",
+        "attempt:052242-c66552af:process-event:23",
+        "attempt:052242-c66552af:process-event:27",
+        "attempt:052242-c66552af:process-event:29",
+        "attempt:052242-c66552af:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "mutating-serialization",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "같은 assistant message의 mutating custom MCP 두 handler는 overlap 0ms였고 첫 종료 뒤 두 번째가 시작됐다.",
+      "sourceRefs": [
+        "attempt:052440-7003d15a:sdk-message:15",
+        "attempt:052440-7003d15a:process-event:16",
+        "attempt:052440-7003d15a:sdk-message:22",
+        "attempt:052440-7003d15a:process-event:26",
+        "attempt:052440-7003d15a:process-event:27",
+        "attempt:052440-7003d15a:process-event:29",
+        "attempt:052440-7003d15a:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "stream-before-message-stop",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "완성된 ToolUseBlock 뒤 handler가 시작됐고, 전체 assistant stream의 message_stop보다 먼저 실행이 시작됐다.",
+      "sourceRefs": [
+        "attempt:052242-c66552af:sdk-message:15",
+        "attempt:052242-c66552af:process-event:16",
+        "attempt:052242-c66552af:sdk-message:22",
+        "attempt:052242-c66552af:process-event:23",
+        "attempt:052242-c66552af:sdk-message:26"
+      ]
+    },
+    {
+      "id": "interrupt-cancels-handler",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "ClaudeSDKClient.interrupt() 뒤 long handler가 cancelled로 끝났고 terminal_reason은 aborted_streaming이었다.",
+      "sourceRefs": [
+        "attempt:052511-c1cba98a:sdk-message:16",
+        "attempt:052511-c1cba98a:process-event:17",
+        "attempt:052511-c1cba98a:process-event:18",
+        "attempt:052511-c1cba98a:process-event:20",
+        "attempt:052511-c1cba98a:sdk-message:23",
+        "attempt:052511-c1cba98a:process-event:25"
+      ]
+    },
+    {
+      "id": "built-in-and-unannotated-tools",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "built-in Read/Edit/Bash와 annotation 없는 custom MCP의 scheduling은 이 세 실행으로 일반화하지 않는다.",
+      "sourceRefs": [
+        "spec:claims:built-in-and-unannotated-tools"
+      ]
+    },
+    {
+      "id": "progress-persistence-large-result",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "SDKToolProgressMessage, SDKFilesPersistedEvent, large-result persistence 경로는 별도 실제 실행이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:progress-persistence-large-result"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "book-sdk-live-20260803:prompt",
+      "sequence": 0,
+      "timestampOffsetMs": 0,
+      "actor": "user",
+      "eventType": "prompt.submitted",
+      "pixelState": "briefing",
+      "evidenceLevel": "Configured",
+      "summary": "Python Claude Agent SDK에서 read-only 도구, mutation 도구, interrupt의 실제 host 경계를 비교한다.",
+      "sourceRefs": [
+        "publication-spec:public_prompt"
+      ]
+    },
+    {
+      "id": "052242-c66552af:sdk.init",
+      "sequence": 1,
+      "timestampOffsetMs": 2153,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "readOnlyHint=true인 두 custom MCP handler: claude-opus-5, Python Agent SDK live run",
+      "sourceRefs": [
+        "attempt:052242-c66552af:sdk-message:2"
+      ],
+      "attemptId": "052242-c66552af",
+      "caseId": "read-only-handler-overlap"
+    },
+    {
+      "id": "052242-c66552af:toolu_014zZrdFqFYZvwdod9AmC8Xv",
+      "sequence": 2,
+      "timestampOffsetMs": 4794,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__orchestration__left_probe {'label': 'left'}",
+      "sourceRefs": [
+        "attempt:052242-c66552af:sdk-message:15"
+      ],
+      "attemptId": "052242-c66552af",
+      "caseId": "read-only-handler-overlap",
+      "toolName": "mcp__orchestration__left_probe",
+      "toolUseId": "052242-c66552af:toolu_014zZrdFqFYZvwdod9AmC8Xv"
+    },
+    {
+      "id": "052242-c66552af:handler:a45ffbb736e74dce8f59a20e4aff41ba:start",
+      "sequence": 3,
+      "timestampOffsetMs": 4797,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "host handler started: mcp__orchestration__left_probe",
+      "sourceRefs": [
+        "attempt:052242-c66552af:process-event:16"
+      ],
+      "attemptId": "052242-c66552af",
+      "toolName": "mcp__orchestration__left_probe"
+    },
+    {
+      "id": "052242-c66552af:toolu_01HGTG3WHYZ21Yw1QbVy4wvq",
+      "sequence": 4,
+      "timestampOffsetMs": 5188,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__orchestration__right_probe {'label': 'right'}",
+      "sourceRefs": [
+        "attempt:052242-c66552af:sdk-message:22"
+      ],
+      "attemptId": "052242-c66552af",
+      "caseId": "read-only-handler-overlap",
+      "toolName": "mcp__orchestration__right_probe",
+      "toolUseId": "052242-c66552af:toolu_01HGTG3WHYZ21Yw1QbVy4wvq"
+    },
+    {
+      "id": "052242-c66552af:handler:c64354bcf6b649fa9c851064b2bdc751:start",
+      "sequence": 5,
+      "timestampOffsetMs": 5191,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "host handler started: mcp__orchestration__right_probe",
+      "sourceRefs": [
+        "attempt:052242-c66552af:process-event:23"
+      ],
+      "attemptId": "052242-c66552af",
+      "toolName": "mcp__orchestration__right_probe"
+    },
+    {
+      "id": "052242-c66552af:message_stop",
+      "sequence": 6,
+      "timestampOffsetMs": 5233,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:052242-c66552af:sdk-message:26"
+      ],
+      "attemptId": "052242-c66552af"
+    },
+    {
+      "id": "052242-c66552af:toolu_014zZrdFqFYZvwdod9AmC8Xv:result",
+      "sequence": 7,
+      "timestampOffsetMs": 6050,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__orchestration__left_probe: completed (1252.638ms)",
+      "sourceRefs": [
+        "attempt:052242-c66552af:process-event:27"
+      ],
+      "attemptId": "052242-c66552af",
+      "toolName": "mcp__orchestration__left_probe",
+      "toolUseId": "052242-c66552af:toolu_014zZrdFqFYZvwdod9AmC8Xv",
+      "outcome": "completed"
+    },
+    {
+      "id": "052242-c66552af:toolu_01HGTG3WHYZ21Yw1QbVy4wvq:result",
+      "sequence": 8,
+      "timestampOffsetMs": 6444,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__orchestration__right_probe: completed (1253.093ms)",
+      "sourceRefs": [
+        "attempt:052242-c66552af:process-event:29"
+      ],
+      "attemptId": "052242-c66552af",
+      "toolName": "mcp__orchestration__right_probe",
+      "toolUseId": "052242-c66552af:toolu_01HGTG3WHYZ21Yw1QbVy4wvq",
+      "outcome": "completed"
+    },
+    {
+      "id": "052242-c66552af:result",
+      "sequence": 9,
+      "timestampOffsetMs": 6450,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "error_max_turns; terminal_reason=max_turns",
+      "sourceRefs": [
+        "attempt:052242-c66552af:sdk-message:31"
+      ],
+      "attemptId": "052242-c66552af"
+    },
+    {
+      "id": "052440-7003d15a:sdk.init",
+      "sequence": 10,
+      "timestampOffsetMs": 11975,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "readOnlyHint=false, destructiveHint=true인 두 custom MCP handler: claude-opus-5, Python Agent SDK live run",
+      "sourceRefs": [
+        "attempt:052440-7003d15a:sdk-message:2"
+      ],
+      "attemptId": "052440-7003d15a",
+      "caseId": "mutating-handler-overlap"
+    },
+    {
+      "id": "052440-7003d15a:toolu_018vDPDVXWVEcpBgWQPfqibD",
+      "sequence": 11,
+      "timestampOffsetMs": 14313,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__orchestration__left_probe {'label': 'left'}",
+      "sourceRefs": [
+        "attempt:052440-7003d15a:sdk-message:15"
+      ],
+      "attemptId": "052440-7003d15a",
+      "caseId": "mutating-handler-overlap",
+      "toolName": "mcp__orchestration__left_probe",
+      "toolUseId": "052440-7003d15a:toolu_018vDPDVXWVEcpBgWQPfqibD"
+    },
+    {
+      "id": "052440-7003d15a:handler:2d17b56386a24faebfed9296d825b211:start",
+      "sequence": 12,
+      "timestampOffsetMs": 14318,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "host handler started: mcp__orchestration__left_probe",
+      "sourceRefs": [
+        "attempt:052440-7003d15a:process-event:16"
+      ],
+      "attemptId": "052440-7003d15a",
+      "toolName": "mcp__orchestration__left_probe"
+    },
+    {
+      "id": "052440-7003d15a:toolu_011nauSivdHfescRwoucgu4s",
+      "sequence": 13,
+      "timestampOffsetMs": 14470,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__orchestration__right_probe {'label': 'right'}",
+      "sourceRefs": [
+        "attempt:052440-7003d15a:sdk-message:22"
+      ],
+      "attemptId": "052440-7003d15a",
+      "caseId": "mutating-handler-overlap",
+      "toolName": "mcp__orchestration__right_probe",
+      "toolUseId": "052440-7003d15a:toolu_011nauSivdHfescRwoucgu4s"
+    },
+    {
+      "id": "052440-7003d15a:message_stop",
+      "sequence": 14,
+      "timestampOffsetMs": 14491,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:052440-7003d15a:sdk-message:25"
+      ],
+      "attemptId": "052440-7003d15a"
+    },
+    {
+      "id": "052440-7003d15a:toolu_018vDPDVXWVEcpBgWQPfqibD:result",
+      "sequence": 15,
+      "timestampOffsetMs": 15572,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__orchestration__left_probe: completed (1254.011ms)",
+      "sourceRefs": [
+        "attempt:052440-7003d15a:process-event:26"
+      ],
+      "attemptId": "052440-7003d15a",
+      "toolName": "mcp__orchestration__left_probe",
+      "toolUseId": "052440-7003d15a:toolu_018vDPDVXWVEcpBgWQPfqibD",
+      "outcome": "completed"
+    },
+    {
+      "id": "052440-7003d15a:handler:c46fe20ce9a4486ea39cc5ca3b7affbf:start",
+      "sequence": 16,
+      "timestampOffsetMs": 15583,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "host handler started: mcp__orchestration__right_probe",
+      "sourceRefs": [
+        "attempt:052440-7003d15a:process-event:27"
+      ],
+      "attemptId": "052440-7003d15a",
+      "toolName": "mcp__orchestration__right_probe"
+    },
+    {
+      "id": "052440-7003d15a:toolu_011nauSivdHfescRwoucgu4s:result",
+      "sequence": 17,
+      "timestampOffsetMs": 16837,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__orchestration__right_probe: completed (1254.009ms)",
+      "sourceRefs": [
+        "attempt:052440-7003d15a:process-event:29"
+      ],
+      "attemptId": "052440-7003d15a",
+      "toolName": "mcp__orchestration__right_probe",
+      "toolUseId": "052440-7003d15a:toolu_011nauSivdHfescRwoucgu4s",
+      "outcome": "completed"
+    },
+    {
+      "id": "052440-7003d15a:result",
+      "sequence": 18,
+      "timestampOffsetMs": 16848,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "error_max_turns; terminal_reason=max_turns",
+      "sourceRefs": [
+        "attempt:052440-7003d15a:sdk-message:31"
+      ],
+      "attemptId": "052440-7003d15a"
+    },
+    {
+      "id": "052511-c1cba98a:sdk.init",
+      "sequence": 19,
+      "timestampOffsetMs": 22041,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "실행 중인 long custom MCP handler interrupt: claude-opus-5, Python Agent SDK live run",
+      "sourceRefs": [
+        "attempt:052511-c1cba98a:sdk-message:2"
+      ],
+      "attemptId": "052511-c1cba98a",
+      "caseId": "interrupt-long-tool"
+    },
+    {
+      "id": "052511-c1cba98a:toolu_01LtALc7hczEYBV7GC5DfZYm",
+      "sequence": 20,
+      "timestampOffsetMs": 24635,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__orchestration__long_probe {'label': 'interrupt-observation'}",
+      "sourceRefs": [
+        "attempt:052511-c1cba98a:sdk-message:16"
+      ],
+      "attemptId": "052511-c1cba98a",
+      "caseId": "interrupt-long-tool",
+      "toolName": "mcp__orchestration__long_probe",
+      "toolUseId": "052511-c1cba98a:toolu_01LtALc7hczEYBV7GC5DfZYm"
+    },
+    {
+      "id": "052511-c1cba98a:handler:7d3f6b62ce474b5fa030f95563f568f5:start",
+      "sequence": 21,
+      "timestampOffsetMs": 24638,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "host handler started: mcp__orchestration__long_probe",
+      "sourceRefs": [
+        "attempt:052511-c1cba98a:process-event:17"
+      ],
+      "attemptId": "052511-c1cba98a",
+      "toolName": "mcp__orchestration__long_probe"
+    },
+    {
+      "id": "052511-c1cba98a:sdk.interrupt.requested:18",
+      "sequence": 22,
+      "timestampOffsetMs": 24639,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "interrupted",
+      "evidenceLevel": "Observed",
+      "summary": "interrupt requested",
+      "sourceRefs": [
+        "attempt:052511-c1cba98a:process-event:18"
+      ],
+      "attemptId": "052511-c1cba98a"
+    },
+    {
+      "id": "052511-c1cba98a:sdk.interrupt.acknowledged:20",
+      "sequence": 23,
+      "timestampOffsetMs": 24642,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "interrupted",
+      "evidenceLevel": "Observed",
+      "summary": "interrupt acknowledged",
+      "sourceRefs": [
+        "attempt:052511-c1cba98a:process-event:20"
+      ],
+      "attemptId": "052511-c1cba98a"
+    },
+    {
+      "id": "052511-c1cba98a:result",
+      "sequence": 24,
+      "timestampOffsetMs": 24649,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "error_during_execution; terminal_reason=aborted_streaming",
+      "sourceRefs": [
+        "attempt:052511-c1cba98a:sdk-message:23"
+      ],
+      "attemptId": "052511-c1cba98a"
+    },
+    {
+      "id": "052511-c1cba98a:toolu_01LtALc7hczEYBV7GC5DfZYm:result",
+      "sequence": 25,
+      "timestampOffsetMs": 24650,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "cancelled",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__orchestration__long_probe: cancelled (12.394ms)",
+      "sourceRefs": [
+        "attempt:052511-c1cba98a:process-event:25"
+      ],
+      "attemptId": "052511-c1cba98a",
+      "toolName": "mcp__orchestration__long_probe",
+      "toolUseId": "052511-c1cba98a:toolu_01LtALc7hczEYBV7GC5DfZYm",
+      "outcome": "cancelled"
+    },
+    {
+      "id": "claim:read-only-overlap",
+      "sequence": 26,
+      "timestampOffsetMs": 25350,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "같은 assistant message의 read-only custom MCP 두 handler가 858.949ms 겹쳐 실행됐다.",
+      "sourceRefs": [
+        "attempt:052242-c66552af:sdk-message:15",
+        "attempt:052242-c66552af:process-event:16",
+        "attempt:052242-c66552af:sdk-message:22",
+        "attempt:052242-c66552af:process-event:23",
+        "attempt:052242-c66552af:process-event:27",
+        "attempt:052242-c66552af:process-event:29",
+        "attempt:052242-c66552af:manifest:option_summary"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:mutating-serialization",
+      "sequence": 27,
+      "timestampOffsetMs": 25750,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "같은 assistant message의 mutating custom MCP 두 handler는 overlap 0ms였고 첫 종료 뒤 두 번째가 시작됐다.",
+      "sourceRefs": [
+        "attempt:052440-7003d15a:sdk-message:15",
+        "attempt:052440-7003d15a:process-event:16",
+        "attempt:052440-7003d15a:sdk-message:22",
+        "attempt:052440-7003d15a:process-event:26",
+        "attempt:052440-7003d15a:process-event:27",
+        "attempt:052440-7003d15a:process-event:29",
+        "attempt:052440-7003d15a:manifest:option_summary"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:stream-before-message-stop",
+      "sequence": 28,
+      "timestampOffsetMs": 26150,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "완성된 ToolUseBlock 뒤 handler가 시작됐고, 전체 assistant stream의 message_stop보다 먼저 실행이 시작됐다.",
+      "sourceRefs": [
+        "attempt:052242-c66552af:sdk-message:15",
+        "attempt:052242-c66552af:process-event:16",
+        "attempt:052242-c66552af:sdk-message:22",
+        "attempt:052242-c66552af:process-event:23",
+        "attempt:052242-c66552af:sdk-message:26"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:interrupt-cancels-handler",
+      "sequence": 29,
+      "timestampOffsetMs": 26550,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "ClaudeSDKClient.interrupt() 뒤 long handler가 cancelled로 끝났고 terminal_reason은 aborted_streaming이었다.",
+      "sourceRefs": [
+        "attempt:052511-c1cba98a:sdk-message:16",
+        "attempt:052511-c1cba98a:process-event:17",
+        "attempt:052511-c1cba98a:process-event:18",
+        "attempt:052511-c1cba98a:process-event:20",
+        "attempt:052511-c1cba98a:sdk-message:23",
+        "attempt:052511-c1cba98a:process-event:25"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:built-in-and-unannotated-tools",
+      "sequence": 30,
+      "timestampOffsetMs": 26950,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "built-in Read/Edit/Bash와 annotation 없는 custom MCP의 scheduling은 이 세 실행으로 일반화하지 않는다.",
+      "sourceRefs": [
+        "spec:claims:built-in-and-unannotated-tools"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:progress-persistence-large-result",
+      "sequence": 31,
+      "timestampOffsetMs": 27350,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "SDKToolProgressMessage, SDKFilesPersistedEvent, large-result persistence 경로는 별도 실제 실행이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:progress-persistence-large-result"
+      ],
+      "claimStatus": "additional_observation_required"
+    }
+  ]
+}

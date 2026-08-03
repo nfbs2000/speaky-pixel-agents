@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="실제 Python Claude Agent SDK 4장 실행 증거를 Pixel Agents 상태 문법으로 재생합니다.">
+  <title>Book SDK 4장 증거 · Pixel Agents Replay</title>
+  <link rel="icon" href="../assets/icon.png">
+  <link rel="stylesheet" href="./replay.css">
+</head>
+<body>
+  <main class="replay-shell" data-load-state="loading">
+    <div class="office-backdrop" aria-hidden="true"></div>
+    <header class="topbar">
+      <a class="brand" href="../">
+        <img src="../assets/icon.png" alt="">
+        <span>Pixel Agents <small>Book SDK evidence replay</small></span>
+      </a>
+      <div class="source-badges" aria-label="증거 상태">
+        <span id="model-badge">MODEL</span>
+        <span id="proof-badge">PROOF GATE</span>
+        <a href="./evidence.json">SOURCE JSON</a>
+      </div>
+    </header>
+
+    <section class="stage" aria-labelledby="stage-title">
+      <div class="stage-heading">
+        <p>RECORDED PROJECTION · CHAPTER 04</p>
+        <h1 id="stage-title">도구 실행이 실제로 어떻게 겹치고, 멈추는가</h1>
+        <span id="stage-boundary">검증된 evidence를 불러오는 중입니다.</span>
+      </div>
+
+      <div id="actor-grid" class="actor-grid" aria-label="증거 actor 상태"></div>
+
+      <section class="event-console" aria-live="polite">
+        <div class="event-console__head">
+          <span id="event-sequence">EVENT 00 / 00</span>
+          <strong id="event-type">loading</strong>
+          <em id="event-level">CONFIGURED</em>
+        </div>
+        <p id="event-summary">공개 projection을 읽고 있습니다.</p>
+        <div class="event-meta">
+          <span><b>STATE</b><output id="event-state">-</output></span>
+          <span><b>ACTOR</b><output id="event-actor">-</output></span>
+          <span><b>ATTEMPT</b><output id="event-attempt">-</output></span>
+          <span><b>SOURCE</b><output id="event-source">-</output></span>
+        </div>
+      </section>
+    </section>
+
+    <aside class="evidence-panel">
+      <div class="evidence-panel__title">
+        <p>LIVE PYTHON SDK EVIDENCE</p>
+        <h2>원천과 투영을 분리해서 본다</h2>
+      </div>
+      <dl class="metrics">
+        <div><dt>RAW SOURCE</dt><dd id="raw-count">-</dd></div>
+        <div><dt>PUBLIC EVENTS</dt><dd id="public-count">-</dd></div>
+        <div><dt>OBSERVED</dt><dd id="observed-count">-</dd></div>
+        <div><dt>MORE EVIDENCE</dt><dd id="pending-count">-</dd></div>
+      </dl>
+      <div class="character-strip">
+        <img src="../assets/characters.png" alt="Pixel Agents 캐릭터 팔레트">
+      </div>
+      <section class="claims">
+        <div class="claims__head">
+          <h2>4장 판정</h2>
+          <span>관찰되지 않음 ≠ 책이 틀림</span>
+        </div>
+        <ol id="claim-list"></ol>
+      </section>
+      <p class="boundary-note">
+        이 화면은 Pixel Agents 제품이 이번 실행을 직접 수집했다는 뜻이 아닙니다.
+        Education Shell이 저장·검증한 사건을 Pixel Agents의 상태 언어로 바꾼 강의용 projection입니다.
+      </p>
+    </aside>
+
+    <footer class="transport">
+      <button id="restart" type="button" title="처음부터" aria-label="처음부터">↺</button>
+      <button id="play" type="button" class="play" title="재생 또는 일시 정지" aria-label="재생">▶</button>
+      <button id="step" type="button" title="다음 사건" aria-label="다음 사건">↦</button>
+      <label>
+        <span id="cursor-label">0 / 0</span>
+        <input id="cursor" type="range" min="0" max="0" value="0" step="1" aria-label="사건 위치">
+      </label>
+      <select id="speed" aria-label="재생 속도">
+        <option value="1400">0.5×</option>
+        <option value="800" selected>1×</option>
+        <option value="420">2×</option>
+      </select>
+    </footer>
+
+    <section class="load-error" id="load-error" hidden>
+      <h2>검증된 recorded evidence를 불러오지 못했습니다.</h2>
+      <p>mock 장면으로 대체하지 않습니다. <a href="./evidence.json">evidence.json</a>과 배포 상태를 확인하세요.</p>
+    </section>
+  </main>
+  <script type="module" src="./replay.js"></script>
+</body>
+</html>
