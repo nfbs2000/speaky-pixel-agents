@@ -164,14 +164,18 @@ async function updateCatalog(file, evidencePath, value) {
   catalog.entries = catalog.entries
     .filter((candidate) => candidate.chapterSlug !== entry.chapterSlug)
     .concat(entry)
-    .sort((left, right) => chapterNumber(left.chapterSlug) - chapterNumber(right.chapterSlug))
+    .sort((left, right) => chapterOrder(left.chapterSlug) - chapterOrder(right.chapterSlug))
   catalog.generatedAt = new Date().toISOString()
   await fs.mkdir(path.dirname(file), { recursive: true })
   await fs.writeFile(file, `${JSON.stringify(catalog, null, 2)}\n`)
 }
 
-function chapterNumber(value) {
-  return Number(String(value).replace(/^ch/, '')) || Number.MAX_SAFE_INTEGER
+function chapterOrder(value) {
+  const match = String(value).match(/^ch(\d+)([a-z]*)$/i)
+  if (!match) return Number.MAX_SAFE_INTEGER
+  const suffix = [...match[2].toLowerCase()]
+    .reduce((order, letter) => order * 27 + letter.charCodeAt(0) - 96, 0)
+  return Number(match[1]) + suffix / 1000
 }
 
 function pixelState(event) {
