@@ -1,0 +1,1080 @@
+{
+  "schemaVersion": "pixel-book-evidence.v1",
+  "generatedAt": "2026-08-03T21:38:04.042Z",
+  "title": "10장 파일 상태: summary의 V1과 디스크 V2 충돌",
+  "description": "Education Shell의 검증된 Book SDK 실행을 Pixel Agents 상태 문법으로 재생한 공개 projection",
+  "boundary": "Pixel Agents 제품이 이 실행을 수집했다는 뜻이 아니며, renderer는 source 판정을 변경하지 않는다.",
+  "source": {
+    "courseId": "book-sdk-ko",
+    "chapterSlug": "ch10",
+    "campaignId": "book-sdk-live-20260803",
+    "traceId": "recorded:book-sdk-ko:ch10:book-sdk-live-20260803:2026-08-03T22:20:00.000Z",
+    "traceSha256": "90bd3310282e2447e49e00db8fbff2ffa03bda82d636520cc6618bc66f3096d1",
+    "summarySha256": "8a25c92345cb79469b4c4940168073985a70baee0552275655960260fc164eb8",
+    "sourceEventCount": 87,
+    "publicEventCount": 52,
+    "model": "claude-opus-5",
+    "attemptIds": [
+      "111658-cc5ddf5e"
+    ],
+    "proofGate": "accepted_with_notes",
+    "secretScan": "passed"
+  },
+  "actors": [
+    {
+      "id": "user",
+      "label": "검증 프롬프트",
+      "role": "briefing",
+      "station": 0
+    },
+    {
+      "id": "runtime",
+      "label": "Python SDK 런타임",
+      "role": "control",
+      "station": 1
+    },
+    {
+      "id": "claude",
+      "label": "Claude Opus 5",
+      "role": "model",
+      "station": 2
+    },
+    {
+      "id": "tool",
+      "label": "SDK 도구 실행",
+      "role": "execution",
+      "station": 3
+    },
+    {
+      "id": "evaluator",
+      "label": "증거 판정기",
+      "role": "verification",
+      "station": 4
+    }
+  ],
+  "counts": {
+    "observedClaims": 9,
+    "correctionRequired": 11,
+    "additionalObservationRequired": 6,
+    "invalidAttempts": 0
+  },
+  "claims": [
+    {
+      "id": "attempt-integrity-files-match",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "attempt integrity manifest가 열거한 manifest, verdict, raw 4종, OTel의 SHA-256 7개를 현재 파일에서 다시 계산해 모두 일치했다.",
+      "sourceRefs": [
+        "spec:claims:attempt-integrity-files-match"
+      ]
+    },
+    {
+      "id": "same-session-survives-manual-boundary",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "before와 after phase는 같은 session ID를 사용했고 boundary 뒤 같은 ID의 init이 다시 방출됐다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:2",
+        "attempt:111658-cc5ddf5e:sdk-message:65",
+        "attempt:111658-cc5ddf5e:sdk-message:72"
+      ]
+    },
+    {
+      "id": "skill-and-v1-are-read-before-boundary",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "경계 전 skill file은 seq 21/25, state.md V1은 seq 42/46의 연결된 Read ToolUse/ToolResult로 관찰됐다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:21",
+        "attempt:111658-cc5ddf5e:sdk-message:25",
+        "attempt:111658-cc5ddf5e:sdk-message:42",
+        "attempt:111658-cc5ddf5e:sdk-message:46"
+      ]
+    },
+    {
+      "id": "manual-boundary-drops-3003-tokens",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "manual compact boundary는 pre 5,281, post 2,278, cumulative dropped 3,003, duration 48,719ms를 기록했다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:65"
+      ]
+    },
+    {
+      "id": "continuation-summary-preserves-v1-and-reread-rule",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "seq 66의 7,762자 continuation summary에는 V1, skill 본문, 재조회 규칙이 있고 V2는 없다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:66"
+      ]
+    },
+    {
+      "id": "host-mutates-disk-to-v2-after-boundary",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host process event seq 70은 boundary 뒤 state.md의 hash와 marker를 V1에서 V2로 변경했다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:process-event:70"
+      ]
+    },
+    {
+      "id": "post-mutation-tool-lane-is-empty",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "V2 변경 뒤 Skill/Read ToolUse와 ToolResult는 0건인데 assistant와 Result는 V1을 RE-READ라고 보고했다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:process-event:70",
+        "attempt:111658-cc5ddf5e:sdk-message:72",
+        "attempt:111658-cc5ddf5e:sdk-message:80",
+        "attempt:111658-cc5ddf5e:sdk-message:84"
+      ]
+    },
+    {
+      "id": "compact-result-is-success-with-empty-text",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "compact phase Result seq 68은 success, num_turns 0, 빈 자연어 result이며 실제 경계 성공은 status와 boundary 사건으로 확인된다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:62",
+        "attempt:111658-cc5ddf5e:sdk-message:63",
+        "attempt:111658-cc5ddf5e:sdk-message:65",
+        "attempt:111658-cc5ddf5e:sdk-message:68"
+      ]
+    },
+    {
+      "id": "raw-and-otel-sdk-sequences-align",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "raw SDK message 78건과 OTel sdk.message 78건의 sequence가 일치하고 89개 span은 하나의 trace에 속한다.",
+      "sourceRefs": [
+        "spec:claims:raw-and-otel-sdk-sequences-align"
+      ]
+    },
+    {
+      "id": "skill-listing-is-not-post-boundary-execution",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "seq 72 init에 skill 이름이 다시 나타난 사실은 availability이며 post-boundary skill 실행 증거가 아니다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:72",
+        "attempt:111658-cc5ddf5e:sdk-message:80"
+      ]
+    },
+    {
+      "id": "summary-rule-is-not-executed-action",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "summary가 재조회 규칙을 보존했어도 실제 다음 turn에 Read가 실행됐다는 뜻은 아니다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:66",
+        "attempt:111658-cc5ddf5e:sdk-message:80"
+      ]
+    },
+    {
+      "id": "model-reread-label-is-not-tool-evidence",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "assistant의 RE-READ 자기보고는 V2 변경 뒤 대응 ToolUse/ToolResult 부재와 모순되므로 raw tool event를 우선해야 한다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:process-event:70",
+        "attempt:111658-cc5ddf5e:sdk-message:80",
+        "attempt:111658-cc5ddf5e:sdk-message:84"
+      ]
+    },
+    {
+      "id": "path-and-line-do-not-prove-freshness",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "final의 정확한 path와 line은 continuation summary에도 있었으므로 fresh file provenance를 증명하지 않는다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:66",
+        "attempt:111658-cc5ddf5e:sdk-message:80"
+      ]
+    },
+    {
+      "id": "sdk-files-persisted-event-is-not-current-python-type",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "Python SDK 0.2.128은 SDKFilesPersistedEvent를 export/parse하지 않으며 이번 raw에도 전용 file persisted system event가 없다.",
+      "sourceRefs": [
+        "spec:claims:sdk-files-persisted-event-is-not-current-python-type"
+      ]
+    },
+    {
+      "id": "manual-compact-does-not-prove-automatic-restore-policy",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "host가 직접 보낸 manual /compact 한 번으로 자동 threshold나 선택적 file/skill 복원 정책을 증명할 수 없다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:65"
+      ]
+    },
+    {
+      "id": "restore-surfaces-must-remain-separate",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "tool Read, file checkpoint/rewind, session store, skill reinjection, plan restore는 서로 다른 관찰 표면이며 하나의 복원 보장으로 합치면 안 된다.",
+      "sourceRefs": [
+        "spec:claims:restore-surfaces-must-remain-separate"
+      ]
+    },
+    {
+      "id": "primary-opus-is-not-only-provider-usage",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "primary assistant는 Opus 5지만 세 Result의 model_usage에는 Haiku 4.5 보조 사용도 있어 전체 provider usage는 Opus 하나가 아니다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:59",
+        "attempt:111658-cc5ddf5e:sdk-message:68",
+        "attempt:111658-cc5ddf5e:sdk-message:84"
+      ]
+    },
+    {
+      "id": "captured-is-not-claim-pass",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "OTel CAPTURED와 assertion count 0은 raw 수집 완료 표식이며 파일 복원 주장의 합격 판정이 아니다.",
+      "sourceRefs": [
+        "spec:claims:captured-is-not-claim-pass"
+      ]
+    },
+    {
+      "id": "otel-is-not-independent-provider-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "이 OTel은 같은 recorder가 raw SDK와 host event를 투영한 것이므로 독립 provider 관측기로 부르면 안 된다.",
+      "sourceRefs": [
+        "spec:claims:otel-is-not-independent-provider-proof"
+      ]
+    },
+    {
+      "id": "probe-runtime-source-is-not-fully-provenance-bound",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "manifest는 장 source와 V1/V2/skill hash를 묶지만 exact probe, case, runtime source hash를 묶지 않았다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "successful-post-boundary-v2-read-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "host mutation 뒤 V2를 포함한 새 Read ToolUse와 연결 성공 ToolResult를 가진 실행이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:successful-post-boundary-v2-read-not-observed"
+      ]
+    },
+    {
+      "id": "selective-skill-reinjection-policy-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "호출된 skill만 선택적으로 자동 재주입하는 내부 정책은 이번 event stream에서 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:selective-skill-reinjection-policy-not-observed"
+      ]
+    },
+    {
+      "id": "plan-artifact-restore-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "plan artifact가 compaction 뒤 자동 복원되는지는 이 실행에서 다루지 않았다.",
+      "sourceRefs": [
+        "spec:claims:plan-artifact-restore-not-observed"
+      ]
+    },
+    {
+      "id": "checkpoint-compact-combination-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "file checkpoint/rewind와 compaction을 결합해 변경 파일을 복구하는 경로는 별도 실제 실행이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:checkpoint-compact-combination-not-observed"
+      ]
+    },
+    {
+      "id": "repeated-stale-rate-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "한 번의 실행으로 stale 응답과 성공 재조회 비율을 일반화할 수 없다.",
+      "sourceRefs": [
+        "spec:claims:repeated-stale-rate-not-observed"
+      ]
+    },
+    {
+      "id": "full-source-provenance-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "chapter, probe, case, runtime source hash를 모두 attempt에 묶는 새 provenance manifest가 필요하다.",
+      "sourceRefs": [
+        "spec:claims:full-source-provenance-not-observed"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "book-sdk-live-20260803:prompt",
+      "sequence": 0,
+      "timestampOffsetMs": 0,
+      "actor": "user",
+      "eventType": "prompt.submitted",
+      "pixelState": "briefing",
+      "evidenceLevel": "Configured",
+      "summary": "한 persistent session에서 skill과 V1 파일을 읽고 수동 compaction을 실행한 뒤 host가 파일을 V2로 변경한다. 경계 뒤 실제 Read/ToolResult와 모델의 RE-READ 주장을 분리해 current, stale, available, executed 상태를 판정한다.",
+      "sourceRefs": [
+        "publication-spec:public_prompt"
+      ]
+    },
+    {
+      "id": "111658-cc5ddf5e:process:0",
+      "sequence": 1,
+      "timestampOffsetMs": 1000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:process-event:0"
+      ],
+      "attemptId": "111658-cc5ddf5e"
+    },
+    {
+      "id": "111658-cc5ddf5e:process:1",
+      "sequence": 2,
+      "timestampOffsetMs": 2042,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.started",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:process-event:1"
+      ],
+      "attemptId": "111658-cc5ddf5e"
+    },
+    {
+      "id": "111658-cc5ddf5e:sdk.init",
+      "sequence": 3,
+      "timestampOffsetMs": 2062,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "V1 summary와 V2 disk 충돌 뒤 fresh Read 부재: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:2"
+      ],
+      "attemptId": "111658-cc5ddf5e",
+      "caseId": "compact-file-change-skill-reread"
+    },
+    {
+      "id": "111658-cc5ddf5e:toolu_012AMshUMXrWYCXQ7W9pztyg",
+      "sequence": 4,
+      "timestampOffsetMs": 11678,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:21"
+      ],
+      "attemptId": "111658-cc5ddf5e",
+      "caseId": "compact-file-change-skill-reread",
+      "toolName": "Read",
+      "toolUseId": "111658-cc5ddf5e:toolu_012AMshUMXrWYCXQ7W9pztyg"
+    },
+    {
+      "id": "111658-cc5ddf5e:toolu_012AMshUMXrWYCXQ7W9pztyg:result",
+      "sequence": 5,
+      "timestampOffsetMs": 11682,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:25"
+      ],
+      "attemptId": "111658-cc5ddf5e",
+      "toolName": "Read",
+      "toolUseId": "111658-cc5ddf5e:toolu_012AMshUMXrWYCXQ7W9pztyg"
+    },
+    {
+      "id": "111658-cc5ddf5e:toolu_013gH5eyBZPVSSZ27siYPsvU",
+      "sequence": 6,
+      "timestampOffsetMs": 13882,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:30"
+      ],
+      "attemptId": "111658-cc5ddf5e",
+      "caseId": "compact-file-change-skill-reread",
+      "toolName": "Read",
+      "toolUseId": "111658-cc5ddf5e:toolu_013gH5eyBZPVSSZ27siYPsvU"
+    },
+    {
+      "id": "111658-cc5ddf5e:toolu_013gH5eyBZPVSSZ27siYPsvU:result",
+      "sequence": 7,
+      "timestampOffsetMs": 13887,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: error",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:32"
+      ],
+      "attemptId": "111658-cc5ddf5e",
+      "toolName": "Read",
+      "toolUseId": "111658-cc5ddf5e:toolu_013gH5eyBZPVSSZ27siYPsvU"
+    },
+    {
+      "id": "111658-cc5ddf5e:message_stop",
+      "sequence": 8,
+      "timestampOffsetMs": 14045,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:34"
+      ],
+      "attemptId": "111658-cc5ddf5e"
+    },
+    {
+      "id": "111658-cc5ddf5e:toolu_012N9qm3fb8yNPDn7r7Snpbi",
+      "sequence": 9,
+      "timestampOffsetMs": 27944,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:42"
+      ],
+      "attemptId": "111658-cc5ddf5e",
+      "caseId": "compact-file-change-skill-reread",
+      "toolName": "Read",
+      "toolUseId": "111658-cc5ddf5e:toolu_012N9qm3fb8yNPDn7r7Snpbi"
+    },
+    {
+      "id": "111658-cc5ddf5e:message_stop",
+      "sequence": 10,
+      "timestampOffsetMs": 27945,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:45"
+      ],
+      "attemptId": "111658-cc5ddf5e"
+    },
+    {
+      "id": "111658-cc5ddf5e:toolu_012N9qm3fb8yNPDn7r7Snpbi:result",
+      "sequence": 11,
+      "timestampOffsetMs": 27947,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:46"
+      ],
+      "attemptId": "111658-cc5ddf5e",
+      "toolName": "Read",
+      "toolUseId": "111658-cc5ddf5e:toolu_012N9qm3fb8yNPDn7r7Snpbi"
+    },
+    {
+      "id": "111658-cc5ddf5e:message_stop",
+      "sequence": 12,
+      "timestampOffsetMs": 33821,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:58"
+      ],
+      "attemptId": "111658-cc5ddf5e"
+    },
+    {
+      "id": "111658-cc5ddf5e:result",
+      "sequence": 13,
+      "timestampOffsetMs": 33823,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:59"
+      ],
+      "attemptId": "111658-cc5ddf5e"
+    },
+    {
+      "id": "111658-cc5ddf5e:process:60",
+      "sequence": 14,
+      "timestampOffsetMs": 33824,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.finished",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:process-event:60"
+      ],
+      "attemptId": "111658-cc5ddf5e"
+    },
+    {
+      "id": "111658-cc5ddf5e:process:61",
+      "sequence": 15,
+      "timestampOffsetMs": 33824,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.started",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:process-event:61"
+      ],
+      "attemptId": "111658-cc5ddf5e"
+    },
+    {
+      "id": "111658-cc5ddf5e:sdk.init:64",
+      "sequence": 16,
+      "timestampOffsetMs": 82553,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "V1 summary와 V2 disk 충돌 뒤 fresh Read 부재: init boundary 2, claude-opus-5",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:64"
+      ],
+      "attemptId": "111658-cc5ddf5e",
+      "caseId": "compact-file-change-skill-reread"
+    },
+    {
+      "id": "111658-cc5ddf5e:result",
+      "sequence": 17,
+      "timestampOffsetMs": 82556,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=None",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:68"
+      ],
+      "attemptId": "111658-cc5ddf5e"
+    },
+    {
+      "id": "111658-cc5ddf5e:process:69",
+      "sequence": 18,
+      "timestampOffsetMs": 82557,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.finished",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:process-event:69"
+      ],
+      "attemptId": "111658-cc5ddf5e"
+    },
+    {
+      "id": "111658-cc5ddf5e:process:70",
+      "sequence": 19,
+      "timestampOffsetMs": 82557,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.file.mutated",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:process-event:70"
+      ],
+      "attemptId": "111658-cc5ddf5e"
+    },
+    {
+      "id": "111658-cc5ddf5e:process:71",
+      "sequence": 20,
+      "timestampOffsetMs": 82558,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.started",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:process-event:71"
+      ],
+      "attemptId": "111658-cc5ddf5e"
+    },
+    {
+      "id": "111658-cc5ddf5e:sdk.init:72",
+      "sequence": 21,
+      "timestampOffsetMs": 82567,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "V1 summary와 V2 disk 충돌 뒤 fresh Read 부재: init boundary 3, claude-opus-5",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:72"
+      ],
+      "attemptId": "111658-cc5ddf5e",
+      "caseId": "compact-file-change-skill-reread"
+    },
+    {
+      "id": "111658-cc5ddf5e:message_stop",
+      "sequence": 22,
+      "timestampOffsetMs": 89201,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:83"
+      ],
+      "attemptId": "111658-cc5ddf5e"
+    },
+    {
+      "id": "111658-cc5ddf5e:result",
+      "sequence": 23,
+      "timestampOffsetMs": 89201,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:84"
+      ],
+      "attemptId": "111658-cc5ddf5e"
+    },
+    {
+      "id": "111658-cc5ddf5e:process:85",
+      "sequence": 24,
+      "timestampOffsetMs": 89202,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.finished",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:process-event:85"
+      ],
+      "attemptId": "111658-cc5ddf5e"
+    },
+    {
+      "id": "111658-cc5ddf5e:process:86",
+      "sequence": 25,
+      "timestampOffsetMs": 89522,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:process-event:86"
+      ],
+      "attemptId": "111658-cc5ddf5e"
+    },
+    {
+      "id": "claim:attempt-integrity-files-match",
+      "sequence": 26,
+      "timestampOffsetMs": 90222,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "attempt integrity manifest가 열거한 manifest, verdict, raw 4종, OTel의 SHA-256 7개를 현재 파일에서 다시 계산해 모두 일치했다.",
+      "sourceRefs": [
+        "spec:claims:attempt-integrity-files-match"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:same-session-survives-manual-boundary",
+      "sequence": 27,
+      "timestampOffsetMs": 90622,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "before와 after phase는 같은 session ID를 사용했고 boundary 뒤 같은 ID의 init이 다시 방출됐다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:2",
+        "attempt:111658-cc5ddf5e:sdk-message:65",
+        "attempt:111658-cc5ddf5e:sdk-message:72"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:skill-and-v1-are-read-before-boundary",
+      "sequence": 28,
+      "timestampOffsetMs": 91022,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "경계 전 skill file은 seq 21/25, state.md V1은 seq 42/46의 연결된 Read ToolUse/ToolResult로 관찰됐다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:21",
+        "attempt:111658-cc5ddf5e:sdk-message:25",
+        "attempt:111658-cc5ddf5e:sdk-message:42",
+        "attempt:111658-cc5ddf5e:sdk-message:46"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:manual-boundary-drops-3003-tokens",
+      "sequence": 29,
+      "timestampOffsetMs": 91422,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "manual compact boundary는 pre 5,281, post 2,278, cumulative dropped 3,003, duration 48,719ms를 기록했다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:65"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:continuation-summary-preserves-v1-and-reread-rule",
+      "sequence": 30,
+      "timestampOffsetMs": 91822,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "seq 66의 7,762자 continuation summary에는 V1, skill 본문, 재조회 규칙이 있고 V2는 없다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:66"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:host-mutates-disk-to-v2-after-boundary",
+      "sequence": 31,
+      "timestampOffsetMs": 92222,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "host process event seq 70은 boundary 뒤 state.md의 hash와 marker를 V1에서 V2로 변경했다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:process-event:70"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:post-mutation-tool-lane-is-empty",
+      "sequence": 32,
+      "timestampOffsetMs": 92622,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "V2 변경 뒤 Skill/Read ToolUse와 ToolResult는 0건인데 assistant와 Result는 V1을 RE-READ라고 보고했다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:process-event:70",
+        "attempt:111658-cc5ddf5e:sdk-message:72",
+        "attempt:111658-cc5ddf5e:sdk-message:80",
+        "attempt:111658-cc5ddf5e:sdk-message:84"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:compact-result-is-success-with-empty-text",
+      "sequence": 33,
+      "timestampOffsetMs": 93022,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "compact phase Result seq 68은 success, num_turns 0, 빈 자연어 result이며 실제 경계 성공은 status와 boundary 사건으로 확인된다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:62",
+        "attempt:111658-cc5ddf5e:sdk-message:63",
+        "attempt:111658-cc5ddf5e:sdk-message:65",
+        "attempt:111658-cc5ddf5e:sdk-message:68"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:raw-and-otel-sdk-sequences-align",
+      "sequence": 34,
+      "timestampOffsetMs": 93422,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "raw SDK message 78건과 OTel sdk.message 78건의 sequence가 일치하고 89개 span은 하나의 trace에 속한다.",
+      "sourceRefs": [
+        "spec:claims:raw-and-otel-sdk-sequences-align"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:skill-listing-is-not-post-boundary-execution",
+      "sequence": 35,
+      "timestampOffsetMs": 93822,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "seq 72 init에 skill 이름이 다시 나타난 사실은 availability이며 post-boundary skill 실행 증거가 아니다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:72",
+        "attempt:111658-cc5ddf5e:sdk-message:80"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:summary-rule-is-not-executed-action",
+      "sequence": 36,
+      "timestampOffsetMs": 94222,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "summary가 재조회 규칙을 보존했어도 실제 다음 turn에 Read가 실행됐다는 뜻은 아니다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:66",
+        "attempt:111658-cc5ddf5e:sdk-message:80"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:model-reread-label-is-not-tool-evidence",
+      "sequence": 37,
+      "timestampOffsetMs": 94622,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "assistant의 RE-READ 자기보고는 V2 변경 뒤 대응 ToolUse/ToolResult 부재와 모순되므로 raw tool event를 우선해야 한다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:process-event:70",
+        "attempt:111658-cc5ddf5e:sdk-message:80",
+        "attempt:111658-cc5ddf5e:sdk-message:84"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:path-and-line-do-not-prove-freshness",
+      "sequence": 38,
+      "timestampOffsetMs": 95022,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "final의 정확한 path와 line은 continuation summary에도 있었으므로 fresh file provenance를 증명하지 않는다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:66",
+        "attempt:111658-cc5ddf5e:sdk-message:80"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:sdk-files-persisted-event-is-not-current-python-type",
+      "sequence": 39,
+      "timestampOffsetMs": 95422,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "Python SDK 0.2.128은 SDKFilesPersistedEvent를 export/parse하지 않으며 이번 raw에도 전용 file persisted system event가 없다.",
+      "sourceRefs": [
+        "spec:claims:sdk-files-persisted-event-is-not-current-python-type"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:manual-compact-does-not-prove-automatic-restore-policy",
+      "sequence": 40,
+      "timestampOffsetMs": 95822,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "host가 직접 보낸 manual /compact 한 번으로 자동 threshold나 선택적 file/skill 복원 정책을 증명할 수 없다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:65"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:restore-surfaces-must-remain-separate",
+      "sequence": 41,
+      "timestampOffsetMs": 96222,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "tool Read, file checkpoint/rewind, session store, skill reinjection, plan restore는 서로 다른 관찰 표면이며 하나의 복원 보장으로 합치면 안 된다.",
+      "sourceRefs": [
+        "spec:claims:restore-surfaces-must-remain-separate"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:primary-opus-is-not-only-provider-usage",
+      "sequence": 42,
+      "timestampOffsetMs": 96622,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "primary assistant는 Opus 5지만 세 Result의 model_usage에는 Haiku 4.5 보조 사용도 있어 전체 provider usage는 Opus 하나가 아니다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:sdk-message:59",
+        "attempt:111658-cc5ddf5e:sdk-message:68",
+        "attempt:111658-cc5ddf5e:sdk-message:84"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:captured-is-not-claim-pass",
+      "sequence": 43,
+      "timestampOffsetMs": 97022,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "OTel CAPTURED와 assertion count 0은 raw 수집 완료 표식이며 파일 복원 주장의 합격 판정이 아니다.",
+      "sourceRefs": [
+        "spec:claims:captured-is-not-claim-pass"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:otel-is-not-independent-provider-proof",
+      "sequence": 44,
+      "timestampOffsetMs": 97422,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "이 OTel은 같은 recorder가 raw SDK와 host event를 투영한 것이므로 독립 provider 관측기로 부르면 안 된다.",
+      "sourceRefs": [
+        "spec:claims:otel-is-not-independent-provider-proof"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:probe-runtime-source-is-not-fully-provenance-bound",
+      "sequence": 45,
+      "timestampOffsetMs": 97822,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "manifest는 장 source와 V1/V2/skill hash를 묶지만 exact probe, case, runtime source hash를 묶지 않았다.",
+      "sourceRefs": [
+        "attempt:111658-cc5ddf5e:manifest:option_summary"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:successful-post-boundary-v2-read-not-observed",
+      "sequence": 46,
+      "timestampOffsetMs": 98222,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "host mutation 뒤 V2를 포함한 새 Read ToolUse와 연결 성공 ToolResult를 가진 실행이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:successful-post-boundary-v2-read-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:selective-skill-reinjection-policy-not-observed",
+      "sequence": 47,
+      "timestampOffsetMs": 98622,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "호출된 skill만 선택적으로 자동 재주입하는 내부 정책은 이번 event stream에서 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:selective-skill-reinjection-policy-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:plan-artifact-restore-not-observed",
+      "sequence": 48,
+      "timestampOffsetMs": 99022,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "plan artifact가 compaction 뒤 자동 복원되는지는 이 실행에서 다루지 않았다.",
+      "sourceRefs": [
+        "spec:claims:plan-artifact-restore-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:checkpoint-compact-combination-not-observed",
+      "sequence": 49,
+      "timestampOffsetMs": 99422,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "file checkpoint/rewind와 compaction을 결합해 변경 파일을 복구하는 경로는 별도 실제 실행이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:checkpoint-compact-combination-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:repeated-stale-rate-not-observed",
+      "sequence": 50,
+      "timestampOffsetMs": 99822,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "한 번의 실행으로 stale 응답과 성공 재조회 비율을 일반화할 수 없다.",
+      "sourceRefs": [
+        "spec:claims:repeated-stale-rate-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:full-source-provenance-not-observed",
+      "sequence": 51,
+      "timestampOffsetMs": 100222,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "chapter, probe, case, runtime source hash를 모두 attempt에 묶는 새 provenance manifest가 필요하다.",
+      "sourceRefs": [
+        "spec:claims:full-source-provenance-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    }
+  ]
+}

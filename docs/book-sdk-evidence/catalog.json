@@ -183,6 +183,19 @@
       "artifactSha256": "09a408d9bd52ec2d84c131c9ed6ec83470979ae2a0487826c2de62ed1b642e07"
     },
     {
+      "chapterSlug": "ch10",
+      "title": "10장 파일 상태: summary의 V1과 디스크 V2 충돌",
+      "path": "./evidence/ch10.json",
+      "campaignId": "book-sdk-live-20260803",
+      "model": "claude-opus-5",
+      "sourceEventCount": 87,
+      "publicEventCount": 52,
+      "observedClaims": 9,
+      "correctionRequired": 11,
+      "additionalObservationRequired": 6,
+      "artifactSha256": "8016ef4d08508a4cce60ff3c6b732b5935919a9fd6cfc282e23a718bc13e430c"
+    },
+    {
       "chapterSlug": "ch30",
       "title": "30장 나만의 AI 에이전트: 권한, 산출물, 재개, 메모리",
       "path": "./evidence/ch30.json",
@@ -195,5 +208,5 @@
       "artifactSha256": "382b00bba5a43e4bbba618bbff1b531e191d986458b237ab3eadaa0c015c10b0"
     }
   ],
-  "generatedAt": "2026-08-03T21:18:52.761Z"
+  "generatedAt": "2026-08-03T21:38:04.046Z"
 }
