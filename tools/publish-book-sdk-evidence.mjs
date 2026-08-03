@@ -92,7 +92,10 @@ const projection = {
     { id: 'evaluator', label: '증거 판정기', role: 'verification', station: 4 },
   ],
   counts: {
+    configuredClaims: claims.filter((claim) => claim.status === 'configured').length,
     observedClaims: claims.filter((claim) => claim.status === 'observed').length,
+    inferredClaims: claims.filter((claim) => claim.status === 'inferred').length,
+    notObservedClaims: claims.filter((claim) => claim.status === 'not_observed').length,
     correctionRequired: claims.filter((claim) => claim.status === 'correction_required').length,
     additionalObservationRequired: claims.filter(
       (claim) => claim.status === 'additional_observation_required',
@@ -112,17 +115,23 @@ async function verifyProjection(file) {
   const text = await fs.readFile(file, 'utf8')
   const value = JSON.parse(text)
   if (value.schemaVersion !== 'pixel-book-evidence.v1') throw new Error('pixel_book_evidence_schema_invalid')
-  if (value.source?.sourceEventCount <= value.source?.publicEventCount) {
+  if (value.source?.sourceEventCount <= 0 || value.source?.publicEventCount <= 0) {
     throw new Error('pixel_book_evidence_source_projection_counts_invalid')
   }
+  const expectedConfigured = value.claims.filter((claim) => claim.status === 'configured').length
   const expectedObserved = value.claims.filter((claim) => claim.status === 'observed').length
+  const expectedInferred = value.claims.filter((claim) => claim.status === 'inferred').length
+  const expectedNotObserved = value.claims.filter((claim) => claim.status === 'not_observed').length
   const expectedCorrection = value.claims.filter(
     (claim) => claim.status === 'correction_required',
   ).length
   const expectedPending = value.claims.filter(
     (claim) => claim.status === 'additional_observation_required',
   ).length
-  if (value.counts?.observedClaims !== expectedObserved
+  if (value.counts?.configuredClaims !== expectedConfigured
+    || value.counts?.observedClaims !== expectedObserved
+    || value.counts?.inferredClaims !== expectedInferred
+    || value.counts?.notObservedClaims !== expectedNotObserved
     || value.counts?.correctionRequired !== expectedCorrection
     || value.counts?.additionalObservationRequired !== expectedPending) {
     throw new Error('pixel_book_evidence_claim_counts_invalid')
@@ -156,7 +165,10 @@ async function updateCatalog(file, evidencePath, value) {
     model: value.source.model,
     sourceEventCount: value.source.sourceEventCount,
     publicEventCount: value.source.publicEventCount,
+    configuredClaims: value.counts.configuredClaims,
     observedClaims: value.counts.observedClaims,
+    inferredClaims: value.counts.inferredClaims,
+    notObservedClaims: value.counts.notObservedClaims,
     correctionRequired: value.counts.correctionRequired,
     additionalObservationRequired: value.counts.additionalObservationRequired,
     artifactSha256: sha256(await fs.readFile(evidencePath, 'utf8')),
