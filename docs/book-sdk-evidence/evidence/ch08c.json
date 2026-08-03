@@ -1,0 +1,1389 @@
+{
+  "schemaVersion": "pixel-book-evidence.v1",
+  "generatedAt": "2026-08-03T19:56:21.738Z",
+  "title": "8c장 정적 시스템 프롬프트: preset과 explicit policy의 실제 경계",
+  "description": "Education Shell의 검증된 Book SDK 실행을 Pixel Agents 상태 문법으로 재생한 공개 projection",
+  "boundary": "Pixel Agents 제품이 이 실행을 수집했다는 뜻이 아니며, renderer는 source 판정을 변경하지 않는다.",
+  "source": {
+    "courseId": "book-sdk-ko",
+    "chapterSlug": "ch08c",
+    "campaignId": "book-sdk-live-20260803",
+    "traceId": "recorded:book-sdk-ko:ch08c:book-sdk-live-20260803:2026-08-03T19:50:00.000Z",
+    "traceSha256": "e41c3a45b6767d47f739eb7822fc6c461f1a20da64ead68f54286ba5b3b8e598",
+    "summarySha256": "2dbfd12d9f4cd8757c8d37831b3947f76577c6fb534fb289a35bbe585e1dc2f8",
+    "sourceEventCount": 249,
+    "publicEventCount": 72,
+    "model": "claude-opus-5",
+    "attemptIds": [
+      "105231-08cba367",
+      "105308-beb0e51a"
+    ],
+    "proofGate": "accepted_with_notes",
+    "secretScan": "passed"
+  },
+  "actors": [
+    {
+      "id": "user",
+      "label": "검증 프롬프트",
+      "role": "briefing",
+      "station": 0
+    },
+    {
+      "id": "runtime",
+      "label": "Python SDK 런타임",
+      "role": "control",
+      "station": 1
+    },
+    {
+      "id": "claude",
+      "label": "Claude Opus 5",
+      "role": "model",
+      "station": 2
+    },
+    {
+      "id": "tool",
+      "label": "SDK 도구 실행",
+      "role": "execution",
+      "station": 3
+    },
+    {
+      "id": "evaluator",
+      "label": "증거 판정기",
+      "role": "verification",
+      "station": 4
+    }
+  ],
+  "counts": {
+    "observedClaims": 7,
+    "correctionRequired": 8,
+    "additionalObservationRequired": 5,
+    "invalidAttempts": 0
+  },
+  "claims": [
+    {
+      "id": "matched-task-tool-surface-and-model",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "두 attempt는 장 원문과 user prompt hash, before snapshot, init의 Bash/Edit/Read·default permission·Opus 5가 같고 prompt kind가 preset과 explicit으로 구성됐다.",
+      "sourceRefs": [
+        "attempt:105231-08cba367:manifest:option_summary",
+        "attempt:105308-beb0e51a:manifest:option_summary",
+        "attempt:105231-08cba367:sdk-message:1",
+        "attempt:105308-beb0e51a:sdk-message:1"
+      ]
+    },
+    {
+      "id": "preset-minimal-edit-pass-and-complete-report",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "preset run은 workspace를 나열하고 calculator/check를 읽은 뒤 한 줄 Edit, 실제 PASS, 실행·미실행 검증을 분리한 final, success Result까지 완료했다.",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:20",
+        "attempt:105231-08cba367:sdk-message:28",
+        "attempt:105231-08cba367:sdk-message:47",
+        "attempt:105231-08cba367:sdk-message:66",
+        "attempt:105231-08cba367:sdk-message:84",
+        "attempt:105231-08cba367:sdk-message:100"
+      ]
+    },
+    {
+      "id": "explicit-read-errors-and-cwd-recovery",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "explicit run은 이미 상대 경로를 찾았지만 잘못된 홈 절대경로 Read 세 번을 실패하고, 오류가 알려 준 cwd로 복구해 세 파일을 읽었다.",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:28",
+        "attempt:105308-beb0e51a:sdk-message:45",
+        "attempt:105308-beb0e51a:sdk-message:52",
+        "attempt:105308-beb0e51a:sdk-message:56",
+        "attempt:105308-beb0e51a:sdk-message:67",
+        "attempt:105308-beb0e51a:sdk-message:92"
+      ]
+    },
+    {
+      "id": "explicit-minimal-edit-pass-but-terminal-failure",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "explicit run은 calculator 한 줄을 수정하고 check PASS를 받았지만 final report 없이 error_max_turns로 종료됐다.",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:114",
+        "attempt:105308-beb0e51a:sdk-message:132",
+        "attempt:105308-beb0e51a:sdk-message:145"
+      ]
+    },
+    {
+      "id": "filtered-snapshots-preserve-source-scope",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host의 __pycache__ 제외 snapshot에서 두 run 모두 calculator.py만 바뀌고 check.py와 unrelated.md hash는 유지됐다.",
+      "sourceRefs": [
+        "attempt:105231-08cba367:process-event:101",
+        "attempt:105308-beb0e51a:process-event:146"
+      ]
+    },
+    {
+      "id": "explicit-post-test-pycache-observed",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "explicit run의 테스트 후 fallback ls에는 새 __pycache__ 디렉터리가 실제로 나타났다.",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:140",
+        "attempt:105308-beb0e51a:sdk-message:144"
+      ]
+    },
+    {
+      "id": "terminal-metrics-and-tool-counts-differ",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "preset은 5 tool use와 success, explicit은 11 tool use와 max-turns였고 duration과 비용도 서로 달랐다.",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:100",
+        "attempt:105308-beb0e51a:sdk-message:145"
+      ]
+    },
+    {
+      "id": "passing-check-is-not-run-success",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "check PASS는 mutation 검증 성공이지 run 성공이 아니다. explicit Result는 is_error=true, terminal_reason=max_turns다.",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:132",
+        "attempt:105308-beb0e51a:sdk-message:145"
+      ]
+    },
+    {
+      "id": "preset-path-was-not-direct-read",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "preset도 calculator/check를 곧바로 Read한 것이 아니라 먼저 Bash로 workspace를 나열했다.",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:20",
+        "attempt:105231-08cba367:sdk-message:25",
+        "attempt:105231-08cba367:sdk-message:28"
+      ]
+    },
+    {
+      "id": "filtered-snapshot-is-not-total-filesystem",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "changed_paths는 __pycache__를 제외한 source snapshot이다. 이를 전체 파일시스템에 새 파일이 없었다는 증거로 사용하면 안 된다.",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:process-event:146",
+        "attempt:105308-beb0e51a:sdk-message:144"
+      ]
+    },
+    {
+      "id": "user-prompt-confounds-static-policy-attribution",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "공통 user prompt가 최소 수정, unrelated 보존, check 실행, 실행·미실행 보고를 직접 요구해 해당 행동을 system prompt 단독 효과로 귀속할 수 없다.",
+      "sourceRefs": [
+        "attempt:105231-08cba367:manifest:option_summary",
+        "attempt:105308-beb0e51a:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "primary-opus-is-not-only-provider-usage",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "두 primary assistant는 Opus 5지만 두 Result model_usage에는 Haiku 4.5 보조 사용도 기록됐다.",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:100",
+        "attempt:105308-beb0e51a:sdk-message:145"
+      ]
+    },
+    {
+      "id": "max-turns-option-and-result-count-boundary",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "host option의 max_turns는 6이지만 explicit Result의 num_turns는 7이다. 내부 카운팅 의미를 추측하지 않고 두 관찰값을 함께 보존한다.",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:145",
+        "spec:claims:max-turns-option-and-result-count-boundary"
+      ]
+    },
+    {
+      "id": "single-pair-does-not-prove-preset-superiority",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "preset만 final까지 완료했지만 더 오래 걸리고 비용도 컸다. fixed-order 한 쌍으로 일반 우월성이나 단일 승자를 만들 수 없다.",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:100",
+        "attempt:105308-beb0e51a:sdk-message:145"
+      ]
+    },
+    {
+      "id": "exact-prompt-and-probe-not-provenance-bound",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "manifest provenance는 장 원문과 prompt_kind option summary를 묶지만 exact policy, preset object, probe source, fixture hash를 묶지 않았다.",
+      "sourceRefs": [
+        "attempt:105231-08cba367:manifest:option_summary",
+        "attempt:105308-beb0e51a:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "exact-system-prompt-provider-receipt-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "raw init에는 exact system prompt text가 없어 provider가 받은 직렬화 payload를 직접 확인하지 못했다.",
+      "sourceRefs": [
+        "spec:claims:exact-system-prompt-provider-receipt-not-observed"
+      ]
+    },
+    {
+      "id": "hidden-preset-text-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "preset object와 행동은 확인했지만 Claude Code preset 내부 전문이나 특정 숨은 문장을 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:hidden-preset-text-not-observed"
+      ]
+    },
+    {
+      "id": "repeated-counterbalanced-distribution-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "preset 후 explicit의 고정 순서로 한 번씩 실행했으므로 순서 교차 반복 분포는 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:repeated-counterbalanced-distribution-not-observed"
+      ]
+    },
+    {
+      "id": "permission-and-safety-behavior-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "permission callback과 hook callback은 두 run 모두 0개라 static policy의 안전·승인 행동을 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:permission-and-safety-behavior-not-observed"
+      ]
+    },
+    {
+      "id": "typescript-dynamic-boundary-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "TypeScript 배열형 system prompt와 SYSTEM_PROMPT_DYNAMIC_BOUNDARY는 이 Python 0.2.128 실행에서 사용하거나 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:typescript-dynamic-boundary-not-observed"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "book-sdk-live-20260803:prompt",
+      "sequence": 0,
+      "timestampOffsetMs": 0,
+      "actor": "user",
+      "eventType": "prompt.submitted",
+      "pixelState": "briefing",
+      "evidenceLevel": "Configured",
+      "summary": "같은 수정 task를 Claude Code preset과 짧은 explicit static policy로 실제 실행하고, 최소 수정과 PASS, 경로 오류 복구, max-turns 종료, filtered snapshot과 실제 파일시스템 부작용을 관찰·교정·미관찰로 분리한다.",
+      "sourceRefs": [
+        "publication-spec:public_prompt"
+      ]
+    },
+    {
+      "id": "105231-08cba367:process:0",
+      "sequence": 1,
+      "timestampOffsetMs": 1000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:105231-08cba367:process-event:0"
+      ],
+      "attemptId": "105231-08cba367"
+    },
+    {
+      "id": "105231-08cba367:sdk.init",
+      "sequence": 2,
+      "timestampOffsetMs": 1902,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "Claude Code preset의 최소 수정과 완료 보고: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:1"
+      ],
+      "attemptId": "105231-08cba367",
+      "caseId": "preset-static-behavior"
+    },
+    {
+      "id": "105231-08cba367:toolu_01HsScHVk4MhR2cKTkVAsbmt",
+      "sequence": 3,
+      "timestampOffsetMs": 6827,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Bash {'description': 'List workspace files'}",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:20"
+      ],
+      "attemptId": "105231-08cba367",
+      "caseId": "preset-static-behavior",
+      "toolName": "Bash",
+      "toolUseId": "105231-08cba367:toolu_01HsScHVk4MhR2cKTkVAsbmt"
+    },
+    {
+      "id": "105231-08cba367:toolu_01HsScHVk4MhR2cKTkVAsbmt:result",
+      "sequence": 4,
+      "timestampOffsetMs": 6988,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Bash: result received",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:25"
+      ],
+      "attemptId": "105231-08cba367",
+      "toolName": "Bash",
+      "toolUseId": "105231-08cba367:toolu_01HsScHVk4MhR2cKTkVAsbmt"
+    },
+    {
+      "id": "105231-08cba367:toolu_01CmUbov6yhqJV2RCWB37USk",
+      "sequence": 5,
+      "timestampOffsetMs": 7154,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:28"
+      ],
+      "attemptId": "105231-08cba367",
+      "caseId": "preset-static-behavior",
+      "toolName": "Read",
+      "toolUseId": "105231-08cba367:toolu_01CmUbov6yhqJV2RCWB37USk"
+    },
+    {
+      "id": "105231-08cba367:toolu_01CmUbov6yhqJV2RCWB37USk:result",
+      "sequence": 6,
+      "timestampOffsetMs": 7160,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:30"
+      ],
+      "attemptId": "105231-08cba367",
+      "toolName": "Read",
+      "toolUseId": "105231-08cba367:toolu_01CmUbov6yhqJV2RCWB37USk"
+    },
+    {
+      "id": "105231-08cba367:message_stop",
+      "sequence": 7,
+      "timestampOffsetMs": 7200,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:32"
+      ],
+      "attemptId": "105231-08cba367"
+    },
+    {
+      "id": "105308-beb0e51a:process:0",
+      "sequence": 8,
+      "timestampOffsetMs": 11000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:process-event:0"
+      ],
+      "attemptId": "105308-beb0e51a"
+    },
+    {
+      "id": "105308-beb0e51a:sdk.init",
+      "sequence": 9,
+      "timestampOffsetMs": 12359,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "explicit policy의 경로 오류 복구와 max-turns 종료: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:1"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "caseId": "explicit-static-behavior"
+    },
+    {
+      "id": "105231-08cba367:toolu_01TWPMqp7b1AUThVM4bpbdvJ",
+      "sequence": 10,
+      "timestampOffsetMs": 12986,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:47"
+      ],
+      "attemptId": "105231-08cba367",
+      "caseId": "preset-static-behavior",
+      "toolName": "Read",
+      "toolUseId": "105231-08cba367:toolu_01TWPMqp7b1AUThVM4bpbdvJ"
+    },
+    {
+      "id": "105231-08cba367:toolu_01TWPMqp7b1AUThVM4bpbdvJ:result",
+      "sequence": 11,
+      "timestampOffsetMs": 12989,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:49"
+      ],
+      "attemptId": "105231-08cba367",
+      "toolName": "Read",
+      "toolUseId": "105231-08cba367:toolu_01TWPMqp7b1AUThVM4bpbdvJ"
+    },
+    {
+      "id": "105231-08cba367:message_stop",
+      "sequence": 12,
+      "timestampOffsetMs": 12995,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:51"
+      ],
+      "attemptId": "105231-08cba367"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_019hru9DMrKQhAXPLQK5sXrE",
+      "sequence": 13,
+      "timestampOffsetMs": 14885,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Bash {'description': 'List files in working directory'}",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:15"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "caseId": "explicit-static-behavior",
+      "toolName": "Bash",
+      "toolUseId": "105308-beb0e51a:toolu_019hru9DMrKQhAXPLQK5sXrE"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_019hru9DMrKQhAXPLQK5sXrE:result",
+      "sequence": 14,
+      "timestampOffsetMs": 14976,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Bash: result received",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:20"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "toolName": "Bash",
+      "toolUseId": "105308-beb0e51a:toolu_019hru9DMrKQhAXPLQK5sXrE"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_014SgRVVwYMsJyECeyZ76A2Z",
+      "sequence": 15,
+      "timestampOffsetMs": 15404,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Bash {'description': 'Locate target files'}",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:24"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "caseId": "explicit-static-behavior",
+      "toolName": "Bash",
+      "toolUseId": "105308-beb0e51a:toolu_014SgRVVwYMsJyECeyZ76A2Z"
+    },
+    {
+      "id": "105308-beb0e51a:message_stop",
+      "sequence": 16,
+      "timestampOffsetMs": 15410,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:27"
+      ],
+      "attemptId": "105308-beb0e51a"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_014SgRVVwYMsJyECeyZ76A2Z:result",
+      "sequence": 17,
+      "timestampOffsetMs": 15428,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Bash: result received",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:28"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "toolName": "Bash",
+      "toolUseId": "105308-beb0e51a:toolu_014SgRVVwYMsJyECeyZ76A2Z"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_01C4oz4KUPJ6zkL4hkK7dhiw",
+      "sequence": 18,
+      "timestampOffsetMs": 17833,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:40"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "caseId": "explicit-static-behavior",
+      "toolName": "Read",
+      "toolUseId": "105308-beb0e51a:toolu_01C4oz4KUPJ6zkL4hkK7dhiw"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_01C4oz4KUPJ6zkL4hkK7dhiw:result",
+      "sequence": 19,
+      "timestampOffsetMs": 17838,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: error",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:45"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "toolName": "Read",
+      "toolUseId": "105308-beb0e51a:toolu_01C4oz4KUPJ6zkL4hkK7dhiw"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_01NhFehkWwJ9HU8XGnSz4QhE",
+      "sequence": 20,
+      "timestampOffsetMs": 18041,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:47"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "caseId": "explicit-static-behavior",
+      "toolName": "Read",
+      "toolUseId": "105308-beb0e51a:toolu_01NhFehkWwJ9HU8XGnSz4QhE"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_01NhFehkWwJ9HU8XGnSz4QhE:result",
+      "sequence": 21,
+      "timestampOffsetMs": 18044,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: error",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:52"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "toolName": "Read",
+      "toolUseId": "105308-beb0e51a:toolu_01NhFehkWwJ9HU8XGnSz4QhE"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_01B5mE4z3M5YQSQWu9sb7ncT",
+      "sequence": 22,
+      "timestampOffsetMs": 18149,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:54"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "caseId": "explicit-static-behavior",
+      "toolName": "Read",
+      "toolUseId": "105308-beb0e51a:toolu_01B5mE4z3M5YQSQWu9sb7ncT"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_01B5mE4z3M5YQSQWu9sb7ncT:result",
+      "sequence": 23,
+      "timestampOffsetMs": 18151,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: error",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:56"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "toolName": "Read",
+      "toolUseId": "105308-beb0e51a:toolu_01B5mE4z3M5YQSQWu9sb7ncT"
+    },
+    {
+      "id": "105231-08cba367:toolu_01SPMVkBWh6t5KuUjBET3Ho1",
+      "sequence": 24,
+      "timestampOffsetMs": 18227,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Edit {}",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:66"
+      ],
+      "attemptId": "105231-08cba367",
+      "caseId": "preset-static-behavior",
+      "toolName": "Edit",
+      "toolUseId": "105231-08cba367:toolu_01SPMVkBWh6t5KuUjBET3Ho1"
+    },
+    {
+      "id": "105231-08cba367:toolu_01SPMVkBWh6t5KuUjBET3Ho1:result",
+      "sequence": 25,
+      "timestampOffsetMs": 18231,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Edit: result received",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:68"
+      ],
+      "attemptId": "105231-08cba367",
+      "toolName": "Edit",
+      "toolUseId": "105231-08cba367:toolu_01SPMVkBWh6t5KuUjBET3Ho1"
+    },
+    {
+      "id": "105308-beb0e51a:message_stop",
+      "sequence": 26,
+      "timestampOffsetMs": 18243,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:58"
+      ],
+      "attemptId": "105308-beb0e51a"
+    },
+    {
+      "id": "105231-08cba367:message_stop",
+      "sequence": 27,
+      "timestampOffsetMs": 18341,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:70"
+      ],
+      "attemptId": "105231-08cba367"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_01KaM22sakMBqUQ3X33NE1yi",
+      "sequence": 28,
+      "timestampOffsetMs": 20805,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:74"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "caseId": "explicit-static-behavior",
+      "toolName": "Read",
+      "toolUseId": "105308-beb0e51a:toolu_01KaM22sakMBqUQ3X33NE1yi"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_01KaM22sakMBqUQ3X33NE1yi:result",
+      "sequence": 29,
+      "timestampOffsetMs": 20808,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:78"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "toolName": "Read",
+      "toolUseId": "105308-beb0e51a:toolu_01KaM22sakMBqUQ3X33NE1yi"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_01QvZaxssFnYX9LwbnaTM9tz",
+      "sequence": 30,
+      "timestampOffsetMs": 21784,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:82"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "caseId": "explicit-static-behavior",
+      "toolName": "Read",
+      "toolUseId": "105308-beb0e51a:toolu_01QvZaxssFnYX9LwbnaTM9tz"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_01QvZaxssFnYX9LwbnaTM9tz:result",
+      "sequence": 31,
+      "timestampOffsetMs": 21786,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:87"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "toolName": "Read",
+      "toolUseId": "105308-beb0e51a:toolu_01QvZaxssFnYX9LwbnaTM9tz"
+    },
+    {
+      "id": "105231-08cba367:toolu_01N17LDBTJF5qkVqe6SCPAgV",
+      "sequence": 32,
+      "timestampOffsetMs": 22012,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Bash {'description': 'Run check.py verification script'}",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:80"
+      ],
+      "attemptId": "105231-08cba367",
+      "caseId": "preset-static-behavior",
+      "toolName": "Bash",
+      "toolUseId": "105231-08cba367:toolu_01N17LDBTJF5qkVqe6SCPAgV"
+    },
+    {
+      "id": "105231-08cba367:message_stop",
+      "sequence": 33,
+      "timestampOffsetMs": 22015,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:83"
+      ],
+      "attemptId": "105231-08cba367"
+    },
+    {
+      "id": "105231-08cba367:toolu_01N17LDBTJF5qkVqe6SCPAgV:result",
+      "sequence": 34,
+      "timestampOffsetMs": 22043,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Bash: result received",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:84"
+      ],
+      "attemptId": "105231-08cba367",
+      "toolName": "Bash",
+      "toolUseId": "105231-08cba367:toolu_01N17LDBTJF5qkVqe6SCPAgV"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_01EGwGGrZHmPmCwEzdxhDWBs",
+      "sequence": 35,
+      "timestampOffsetMs": 22382,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:90"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "caseId": "explicit-static-behavior",
+      "toolName": "Read",
+      "toolUseId": "105308-beb0e51a:toolu_01EGwGGrZHmPmCwEzdxhDWBs"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_01EGwGGrZHmPmCwEzdxhDWBs:result",
+      "sequence": 36,
+      "timestampOffsetMs": 22383,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:92"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "toolName": "Read",
+      "toolUseId": "105308-beb0e51a:toolu_01EGwGGrZHmPmCwEzdxhDWBs"
+    },
+    {
+      "id": "105308-beb0e51a:message_stop",
+      "sequence": 37,
+      "timestampOffsetMs": 22398,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:94"
+      ],
+      "attemptId": "105308-beb0e51a"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_01UiPTfDZHXmffJpUYe9DpRJ",
+      "sequence": 38,
+      "timestampOffsetMs": 26214,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Edit {}",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:114"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "caseId": "explicit-static-behavior",
+      "toolName": "Edit",
+      "toolUseId": "105308-beb0e51a:toolu_01UiPTfDZHXmffJpUYe9DpRJ"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_01UiPTfDZHXmffJpUYe9DpRJ:result",
+      "sequence": 39,
+      "timestampOffsetMs": 26217,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Edit: result received",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:116"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "toolName": "Edit",
+      "toolUseId": "105308-beb0e51a:toolu_01UiPTfDZHXmffJpUYe9DpRJ"
+    },
+    {
+      "id": "105308-beb0e51a:message_stop",
+      "sequence": 40,
+      "timestampOffsetMs": 26228,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:118"
+      ],
+      "attemptId": "105308-beb0e51a"
+    },
+    {
+      "id": "105231-08cba367:message_stop",
+      "sequence": 41,
+      "timestampOffsetMs": 26782,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:99"
+      ],
+      "attemptId": "105231-08cba367"
+    },
+    {
+      "id": "105231-08cba367:result",
+      "sequence": 42,
+      "timestampOffsetMs": 26785,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:100"
+      ],
+      "attemptId": "105231-08cba367"
+    },
+    {
+      "id": "105231-08cba367:process:101",
+      "sequence": 43,
+      "timestampOffsetMs": 27108,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:105231-08cba367:process-event:101"
+      ],
+      "attemptId": "105231-08cba367"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_01XDe46FtnBiorSQWjmNTJDW",
+      "sequence": 44,
+      "timestampOffsetMs": 28823,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Bash {'description': 'Run check.py verification script'}",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:128"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "caseId": "explicit-static-behavior",
+      "toolName": "Bash",
+      "toolUseId": "105308-beb0e51a:toolu_01XDe46FtnBiorSQWjmNTJDW"
+    },
+    {
+      "id": "105308-beb0e51a:message_stop",
+      "sequence": 45,
+      "timestampOffsetMs": 28825,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:131"
+      ],
+      "attemptId": "105308-beb0e51a"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_01XDe46FtnBiorSQWjmNTJDW:result",
+      "sequence": 46,
+      "timestampOffsetMs": 28852,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Bash: result received",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:132"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "toolName": "Bash",
+      "toolUseId": "105308-beb0e51a:toolu_01XDe46FtnBiorSQWjmNTJDW"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_014FhxTY5sKdcFGdXP3aXVGg",
+      "sequence": 47,
+      "timestampOffsetMs": 31052,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Bash {'description': 'Confirm which files changed'}",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:140"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "caseId": "explicit-static-behavior",
+      "toolName": "Bash",
+      "toolUseId": "105308-beb0e51a:toolu_014FhxTY5sKdcFGdXP3aXVGg"
+    },
+    {
+      "id": "105308-beb0e51a:message_stop",
+      "sequence": 48,
+      "timestampOffsetMs": 31061,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:143"
+      ],
+      "attemptId": "105308-beb0e51a"
+    },
+    {
+      "id": "105308-beb0e51a:toolu_014FhxTY5sKdcFGdXP3aXVGg:result",
+      "sequence": 49,
+      "timestampOffsetMs": 31083,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Bash: result received",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:144"
+      ],
+      "attemptId": "105308-beb0e51a",
+      "toolName": "Bash",
+      "toolUseId": "105308-beb0e51a:toolu_014FhxTY5sKdcFGdXP3aXVGg"
+    },
+    {
+      "id": "105308-beb0e51a:result",
+      "sequence": 50,
+      "timestampOffsetMs": 31084,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "error_max_turns; terminal_reason=max_turns",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:145"
+      ],
+      "attemptId": "105308-beb0e51a"
+    },
+    {
+      "id": "105308-beb0e51a:process:146",
+      "sequence": 51,
+      "timestampOffsetMs": 31487,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:process-event:146"
+      ],
+      "attemptId": "105308-beb0e51a"
+    },
+    {
+      "id": "claim:matched-task-tool-surface-and-model",
+      "sequence": 52,
+      "timestampOffsetMs": 32187,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "두 attempt는 장 원문과 user prompt hash, before snapshot, init의 Bash/Edit/Read·default permission·Opus 5가 같고 prompt kind가 preset과 explicit으로 구성됐다.",
+      "sourceRefs": [
+        "attempt:105231-08cba367:manifest:option_summary",
+        "attempt:105308-beb0e51a:manifest:option_summary",
+        "attempt:105231-08cba367:sdk-message:1",
+        "attempt:105308-beb0e51a:sdk-message:1"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:preset-minimal-edit-pass-and-complete-report",
+      "sequence": 53,
+      "timestampOffsetMs": 32587,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "preset run은 workspace를 나열하고 calculator/check를 읽은 뒤 한 줄 Edit, 실제 PASS, 실행·미실행 검증을 분리한 final, success Result까지 완료했다.",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:20",
+        "attempt:105231-08cba367:sdk-message:28",
+        "attempt:105231-08cba367:sdk-message:47",
+        "attempt:105231-08cba367:sdk-message:66",
+        "attempt:105231-08cba367:sdk-message:84",
+        "attempt:105231-08cba367:sdk-message:100"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:explicit-read-errors-and-cwd-recovery",
+      "sequence": 54,
+      "timestampOffsetMs": 32987,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "explicit run은 이미 상대 경로를 찾았지만 잘못된 홈 절대경로 Read 세 번을 실패하고, 오류가 알려 준 cwd로 복구해 세 파일을 읽었다.",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:28",
+        "attempt:105308-beb0e51a:sdk-message:45",
+        "attempt:105308-beb0e51a:sdk-message:52",
+        "attempt:105308-beb0e51a:sdk-message:56",
+        "attempt:105308-beb0e51a:sdk-message:67",
+        "attempt:105308-beb0e51a:sdk-message:92"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:explicit-minimal-edit-pass-but-terminal-failure",
+      "sequence": 55,
+      "timestampOffsetMs": 33387,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "explicit run은 calculator 한 줄을 수정하고 check PASS를 받았지만 final report 없이 error_max_turns로 종료됐다.",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:114",
+        "attempt:105308-beb0e51a:sdk-message:132",
+        "attempt:105308-beb0e51a:sdk-message:145"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:filtered-snapshots-preserve-source-scope",
+      "sequence": 56,
+      "timestampOffsetMs": 33787,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "host의 __pycache__ 제외 snapshot에서 두 run 모두 calculator.py만 바뀌고 check.py와 unrelated.md hash는 유지됐다.",
+      "sourceRefs": [
+        "attempt:105231-08cba367:process-event:101",
+        "attempt:105308-beb0e51a:process-event:146"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:explicit-post-test-pycache-observed",
+      "sequence": 57,
+      "timestampOffsetMs": 34187,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "explicit run의 테스트 후 fallback ls에는 새 __pycache__ 디렉터리가 실제로 나타났다.",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:140",
+        "attempt:105308-beb0e51a:sdk-message:144"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:terminal-metrics-and-tool-counts-differ",
+      "sequence": 58,
+      "timestampOffsetMs": 34587,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "preset은 5 tool use와 success, explicit은 11 tool use와 max-turns였고 duration과 비용도 서로 달랐다.",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:100",
+        "attempt:105308-beb0e51a:sdk-message:145"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:passing-check-is-not-run-success",
+      "sequence": 59,
+      "timestampOffsetMs": 34987,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "check PASS는 mutation 검증 성공이지 run 성공이 아니다. explicit Result는 is_error=true, terminal_reason=max_turns다.",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:132",
+        "attempt:105308-beb0e51a:sdk-message:145"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:preset-path-was-not-direct-read",
+      "sequence": 60,
+      "timestampOffsetMs": 35387,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "preset도 calculator/check를 곧바로 Read한 것이 아니라 먼저 Bash로 workspace를 나열했다.",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:20",
+        "attempt:105231-08cba367:sdk-message:25",
+        "attempt:105231-08cba367:sdk-message:28"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:filtered-snapshot-is-not-total-filesystem",
+      "sequence": 61,
+      "timestampOffsetMs": 35787,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "changed_paths는 __pycache__를 제외한 source snapshot이다. 이를 전체 파일시스템에 새 파일이 없었다는 증거로 사용하면 안 된다.",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:process-event:146",
+        "attempt:105308-beb0e51a:sdk-message:144"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:user-prompt-confounds-static-policy-attribution",
+      "sequence": 62,
+      "timestampOffsetMs": 36187,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "공통 user prompt가 최소 수정, unrelated 보존, check 실행, 실행·미실행 보고를 직접 요구해 해당 행동을 system prompt 단독 효과로 귀속할 수 없다.",
+      "sourceRefs": [
+        "attempt:105231-08cba367:manifest:option_summary",
+        "attempt:105308-beb0e51a:manifest:option_summary"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:primary-opus-is-not-only-provider-usage",
+      "sequence": 63,
+      "timestampOffsetMs": 36587,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "두 primary assistant는 Opus 5지만 두 Result model_usage에는 Haiku 4.5 보조 사용도 기록됐다.",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:100",
+        "attempt:105308-beb0e51a:sdk-message:145"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:max-turns-option-and-result-count-boundary",
+      "sequence": 64,
+      "timestampOffsetMs": 36987,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "host option의 max_turns는 6이지만 explicit Result의 num_turns는 7이다. 내부 카운팅 의미를 추측하지 않고 두 관찰값을 함께 보존한다.",
+      "sourceRefs": [
+        "attempt:105308-beb0e51a:sdk-message:145",
+        "spec:claims:max-turns-option-and-result-count-boundary"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:single-pair-does-not-prove-preset-superiority",
+      "sequence": 65,
+      "timestampOffsetMs": 37387,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "preset만 final까지 완료했지만 더 오래 걸리고 비용도 컸다. fixed-order 한 쌍으로 일반 우월성이나 단일 승자를 만들 수 없다.",
+      "sourceRefs": [
+        "attempt:105231-08cba367:sdk-message:100",
+        "attempt:105308-beb0e51a:sdk-message:145"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:exact-prompt-and-probe-not-provenance-bound",
+      "sequence": 66,
+      "timestampOffsetMs": 37787,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "manifest provenance는 장 원문과 prompt_kind option summary를 묶지만 exact policy, preset object, probe source, fixture hash를 묶지 않았다.",
+      "sourceRefs": [
+        "attempt:105231-08cba367:manifest:option_summary",
+        "attempt:105308-beb0e51a:manifest:option_summary"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:exact-system-prompt-provider-receipt-not-observed",
+      "sequence": 67,
+      "timestampOffsetMs": 38187,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "raw init에는 exact system prompt text가 없어 provider가 받은 직렬화 payload를 직접 확인하지 못했다.",
+      "sourceRefs": [
+        "spec:claims:exact-system-prompt-provider-receipt-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:hidden-preset-text-not-observed",
+      "sequence": 68,
+      "timestampOffsetMs": 38587,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "preset object와 행동은 확인했지만 Claude Code preset 내부 전문이나 특정 숨은 문장을 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:hidden-preset-text-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:repeated-counterbalanced-distribution-not-observed",
+      "sequence": 69,
+      "timestampOffsetMs": 38987,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "preset 후 explicit의 고정 순서로 한 번씩 실행했으므로 순서 교차 반복 분포는 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:repeated-counterbalanced-distribution-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:permission-and-safety-behavior-not-observed",
+      "sequence": 70,
+      "timestampOffsetMs": 39387,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "permission callback과 hook callback은 두 run 모두 0개라 static policy의 안전·승인 행동을 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:permission-and-safety-behavior-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:typescript-dynamic-boundary-not-observed",
+      "sequence": 71,
+      "timestampOffsetMs": 39787,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "TypeScript 배열형 system prompt와 SYSTEM_PROMPT_DYNAMIC_BOUNDARY는 이 Python 0.2.128 실행에서 사용하거나 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:typescript-dynamic-boundary-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    }
+  ]
+}
