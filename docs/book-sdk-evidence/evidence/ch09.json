@@ -1,0 +1,1292 @@
+{
+  "schemaVersion": "pixel-book-evidence.v1",
+  "generatedAt": "2026-08-03T21:18:52.755Z",
+  "title": "9장 컴팩션: summary 보존과 fresh evidence의 분리",
+  "description": "Education Shell의 검증된 Book SDK 실행을 Pixel Agents 상태 문법으로 재생한 공개 projection",
+  "boundary": "Pixel Agents 제품이 이 실행을 수집했다는 뜻이 아니며, renderer는 source 판정을 변경하지 않는다.",
+  "source": {
+    "courseId": "book-sdk-ko",
+    "chapterSlug": "ch09",
+    "campaignId": "book-sdk-live-20260803",
+    "traceId": "recorded:book-sdk-ko:ch09:book-sdk-live-20260803:2026-08-03T21:35:00.000Z",
+    "traceSha256": "55db37e6a90cfa57761d176af26bcd350b7ccbd058d2dd5b73b40e5e0ef067c2",
+    "summarySha256": "0aaf92a3530e1544a8783bfa646b52a145ae2da0a21d8c7e1b5ac2869ae5cb2d",
+    "sourceEventCount": 170,
+    "publicEventCount": 67,
+    "model": "claude-opus-5",
+    "attemptIds": [
+      "110843-ff84b440",
+      "111119-271bcafe"
+    ],
+    "proofGate": "accepted_with_notes",
+    "secretScan": "passed"
+  },
+  "actors": [
+    {
+      "id": "user",
+      "label": "검증 프롬프트",
+      "role": "briefing",
+      "station": 0
+    },
+    {
+      "id": "runtime",
+      "label": "Python SDK 런타임",
+      "role": "control",
+      "station": 1
+    },
+    {
+      "id": "claude",
+      "label": "Claude Opus 5",
+      "role": "model",
+      "station": 2
+    },
+    {
+      "id": "tool",
+      "label": "SDK 도구 실행",
+      "role": "execution",
+      "station": 3
+    },
+    {
+      "id": "evaluator",
+      "label": "증거 판정기",
+      "role": "verification",
+      "station": 4
+    }
+  ],
+  "counts": {
+    "observedClaims": 8,
+    "correctionRequired": 9,
+    "additionalObservationRequired": 6,
+    "invalidAttempts": 0
+  },
+  "claims": [
+    {
+      "id": "both-attempt-integrity-files-match",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "두 attempt의 integrity manifest에 기록된 14개 evidence file SHA-256을 현재 파일에서 다시 계산해 모두 일치했다.",
+      "sourceRefs": [
+        "spec:claims:both-attempt-integrity-files-match"
+      ]
+    },
+    {
+      "id": "manual-compact-boundary-is-observed-twice",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "두 persistent session은 각각 manual trigger의 generic compact_boundary와 token/duration metadata를 한 번 남겼다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:50",
+        "attempt:111119-271bcafe:sdk-message:59"
+      ]
+    },
+    {
+      "id": "same-session-is-kept-across-three-phases",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "각 case는 before, compact, after phase에서 하나의 session ID를 유지했고 같은 ID의 init을 세 번 방출했다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:2",
+        "attempt:110843-ff84b440:sdk-message:49",
+        "attempt:110843-ff84b440:sdk-message:56",
+        "attempt:111119-271bcafe:sdk-message:2",
+        "attempt:111119-271bcafe:sdk-message:58",
+        "attempt:111119-271bcafe:sdk-message:65"
+      ]
+    },
+    {
+      "id": "post-token-count-increases-in-both-short-runs",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "reread case는 2134에서 2352로, memory-only case는 2267에서 2381로 post token이 증가했다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:50",
+        "attempt:111119-271bcafe:sdk-message:59"
+      ]
+    },
+    {
+      "id": "continuation-summary-preserves-all-five-fields",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "두 경계 직후 continuation summary에는 목표, 마커, 가역 결정, 다음 검증, 폐기 가능 숫자가 모두 포함됐다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:51",
+        "attempt:111119-271bcafe:sdk-message:60"
+      ]
+    },
+    {
+      "id": "reread-request-has-no-post-boundary-tool-block",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "재조회 요구 case는 boundary 뒤 Read ToolUse와 연결 ToolResult가 0건인데 final은 fresh Read가 있었다고 주장했다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:50",
+        "attempt:110843-ff84b440:sdk-message:51",
+        "attempt:110843-ff84b440:sdk-message:71"
+      ]
+    },
+    {
+      "id": "memory-only-answer-comes-from-summary-not-new-read",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "memory-only case는 새 tool block 없이 summary의 세 값을 재현했지만 final은 존재하지 않는 현재-turn Read result를 자기보고했다.",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:sdk-message:59",
+        "attempt:111119-271bcafe:sdk-message:60",
+        "attempt:111119-271bcafe:sdk-message:93"
+      ]
+    },
+    {
+      "id": "compact-phase-success-has-zero-turns-and-empty-result",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "두 compact phase의 terminal Result는 success지만 num_turns 0과 빈 result여서 실제 성공 근거는 status와 boundary 사건이다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:53",
+        "attempt:111119-271bcafe:sdk-message:62"
+      ]
+    },
+    {
+      "id": "primary-opus-is-not-only-provider-usage",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "init과 primary assistant는 Opus 5지만 모든 terminal Result model_usage에는 Haiku 4.5 보조 사용도 있다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:44",
+        "attempt:110843-ff84b440:sdk-message:53",
+        "attempt:110843-ff84b440:sdk-message:71",
+        "attempt:111119-271bcafe:sdk-message:53",
+        "attempt:111119-271bcafe:sdk-message:62",
+        "attempt:111119-271bcafe:sdk-message:93"
+      ]
+    },
+    {
+      "id": "compact-boundary-is-generic-system-message-in-python-sdk",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "Python SDK 0.2.128은 SDKCompactBoundaryMessage를 export하지 않고 이 subtype을 generic SystemMessage로 제공한다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:50",
+        "attempt:111119-271bcafe:sdk-message:59"
+      ]
+    },
+    {
+      "id": "token-decrease-is-not-a-compaction-invariant",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "두 실제 수동 압축에서 post token이 증가했으므로 pre-post를 항상 절감량으로 계산할 수 없다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:50",
+        "attempt:111119-271bcafe:sdk-message:59"
+      ]
+    },
+    {
+      "id": "model-self-report-is-not-tool-evidence",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "모델 final의 fresh Read 자기보고는 boundary 뒤 ToolUse/ToolResult 부재와 모순되므로 raw tool event를 우선해야 한다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:71",
+        "attempt:111119-271bcafe:sdk-message:93"
+      ]
+    },
+    {
+      "id": "accurate-values-do-not-prove-fresh-evidence",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "정확한 값은 continuation summary에도 있었으므로 답의 정확성만으로 파일을 다시 읽었다고 판정할 수 없다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:51",
+        "attempt:110843-ff84b440:sdk-message:71",
+        "attempt:111119-271bcafe:sdk-message:60",
+        "attempt:111119-271bcafe:sdk-message:93"
+      ]
+    },
+    {
+      "id": "manual-trigger-does-not-prove-auto-compaction",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "이번 두 실행은 host가 직접 /compact를 보낸 manual trigger이므로 자동 threshold 동작의 증거가 아니다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:process-event:46",
+        "attempt:110843-ff84b440:sdk-message:50",
+        "attempt:111119-271bcafe:process-event:55",
+        "attempt:111119-271bcafe:sdk-message:59"
+      ]
+    },
+    {
+      "id": "captured-is-not-claim-pass",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "CAPTURED와 assertion count 0은 raw 수집 완료 표식이며 컴팩션 주장의 합격 판정이 아니다.",
+      "sourceRefs": [
+        "spec:claims:captured-is-not-claim-pass"
+      ]
+    },
+    {
+      "id": "otel-is-a-projection-not-independent-provider-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "이 OTel은 raw SDK와 host event를 투영하며 별도 tool.execution가 없으므로 built-in Read 판정은 raw tool block을 사용해야 한다.",
+      "sourceRefs": [
+        "spec:claims:otel-is-a-projection-not-independent-provider-proof"
+      ]
+    },
+    {
+      "id": "probe-runtime-source-is-not-fully-provenance-bound",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "manifest는 장 source와 fixture/prompt hash를 보존하지만 exact probe, case, runtime source hash를 묶지 않았다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:manifest:option_summary",
+        "attempt:111119-271bcafe:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "automatic-threshold-boundary-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "실제 context pressure에서 trigger auto인 boundary와 threshold 근처 사용량은 아직 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:automatic-threshold-boundary-not-observed"
+      ]
+    },
+    {
+      "id": "successful-post-boundary-reread-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "boundary 뒤 새 Read ToolUse와 연결된 성공 ToolResult를 모두 가진 실행은 아직 없다.",
+      "sourceRefs": [
+        "spec:claims:successful-post-boundary-reread-not-observed"
+      ]
+    },
+    {
+      "id": "circuit-breaker-and-rapid-refill-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "circuit breaker와 rapid refill 보호를 식별할 Agent SDK 사건은 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:circuit-breaker-and-rapid-refill-not-observed"
+      ]
+    },
+    {
+      "id": "ptl-retry-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "긴 summary를 다시 압축하는 PTL retry를 식별할 raw payload는 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:ptl-retry-not-observed"
+      ]
+    },
+    {
+      "id": "long-session-loss-rate-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "짧은 두 manual run으로 장기 세션 summary의 정보 손실 또는 왜곡 비율을 일반화할 수 없다.",
+      "sourceRefs": [
+        "spec:claims:long-session-loss-rate-not-observed"
+      ]
+    },
+    {
+      "id": "full-source-provenance-not-observed",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "chapter, probe, case, runtime source hash를 모두 attempt에 묶는 provenance가 필요하다.",
+      "sourceRefs": [
+        "spec:claims:full-source-provenance-not-observed"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "book-sdk-live-20260803:prompt",
+      "sequence": 0,
+      "timestampOffsetMs": 0,
+      "actor": "user",
+      "eventType": "prompt.submitted",
+      "pixelState": "briefing",
+      "evidenceLevel": "Configured",
+      "summary": "같은 persistent session에서 파일을 읽고 수동 compaction을 실행한 뒤, continuation summary와 post-boundary tool event를 분리해 값의 보존과 fresh evidence를 판정한다.",
+      "sourceRefs": [
+        "publication-spec:public_prompt"
+      ]
+    },
+    {
+      "id": "110843-ff84b440:process:0",
+      "sequence": 1,
+      "timestampOffsetMs": 1000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:process-event:0"
+      ],
+      "attemptId": "110843-ff84b440"
+    },
+    {
+      "id": "110843-ff84b440:process:1",
+      "sequence": 2,
+      "timestampOffsetMs": 2052,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.started",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:process-event:1"
+      ],
+      "attemptId": "110843-ff84b440"
+    },
+    {
+      "id": "110843-ff84b440:sdk.init",
+      "sequence": 3,
+      "timestampOffsetMs": 2068,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "재조회 요구 뒤 fresh Read 부재: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:2"
+      ],
+      "attemptId": "110843-ff84b440",
+      "caseId": "manual-boundary-reread"
+    },
+    {
+      "id": "111119-271bcafe:process:0",
+      "sequence": 4,
+      "timestampOffsetMs": 11000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:process-event:0"
+      ],
+      "attemptId": "111119-271bcafe"
+    },
+    {
+      "id": "111119-271bcafe:process:1",
+      "sequence": 5,
+      "timestampOffsetMs": 11866,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.started",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:process-event:1"
+      ],
+      "attemptId": "111119-271bcafe"
+    },
+    {
+      "id": "111119-271bcafe:sdk.init",
+      "sequence": 6,
+      "timestampOffsetMs": 11885,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "continuation summary 기반 기억-only 응답: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:sdk-message:2"
+      ],
+      "attemptId": "111119-271bcafe",
+      "caseId": "manual-boundary-memory-only"
+    },
+    {
+      "id": "111119-271bcafe:toolu_01PPsSHXnnt5m3C57F7p15MD",
+      "sequence": 7,
+      "timestampOffsetMs": 19658,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:sdk-message:23"
+      ],
+      "attemptId": "111119-271bcafe",
+      "caseId": "manual-boundary-memory-only",
+      "toolName": "Read",
+      "toolUseId": "111119-271bcafe:toolu_01PPsSHXnnt5m3C57F7p15MD"
+    },
+    {
+      "id": "111119-271bcafe:toolu_01PPsSHXnnt5m3C57F7p15MD:result",
+      "sequence": 8,
+      "timestampOffsetMs": 19664,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: error",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:sdk-message:25"
+      ],
+      "attemptId": "111119-271bcafe",
+      "toolName": "Read",
+      "toolUseId": "111119-271bcafe:toolu_01PPsSHXnnt5m3C57F7p15MD"
+    },
+    {
+      "id": "111119-271bcafe:message_stop",
+      "sequence": 9,
+      "timestampOffsetMs": 19719,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:sdk-message:27"
+      ],
+      "attemptId": "111119-271bcafe"
+    },
+    {
+      "id": "111119-271bcafe:toolu_01R2rtr9qzSPYfgVBfQC7y4C",
+      "sequence": 10,
+      "timestampOffsetMs": 23349,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:sdk-message:35"
+      ],
+      "attemptId": "111119-271bcafe",
+      "caseId": "manual-boundary-memory-only",
+      "toolName": "Read",
+      "toolUseId": "111119-271bcafe:toolu_01R2rtr9qzSPYfgVBfQC7y4C"
+    },
+    {
+      "id": "111119-271bcafe:toolu_01R2rtr9qzSPYfgVBfQC7y4C:result",
+      "sequence": 11,
+      "timestampOffsetMs": 23352,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:sdk-message:37"
+      ],
+      "attemptId": "111119-271bcafe",
+      "toolName": "Read",
+      "toolUseId": "111119-271bcafe:toolu_01R2rtr9qzSPYfgVBfQC7y4C"
+    },
+    {
+      "id": "111119-271bcafe:message_stop",
+      "sequence": 12,
+      "timestampOffsetMs": 23365,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:sdk-message:39"
+      ],
+      "attemptId": "111119-271bcafe"
+    },
+    {
+      "id": "111119-271bcafe:message_stop",
+      "sequence": 13,
+      "timestampOffsetMs": 28369,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:sdk-message:52"
+      ],
+      "attemptId": "111119-271bcafe"
+    },
+    {
+      "id": "111119-271bcafe:process:54",
+      "sequence": 14,
+      "timestampOffsetMs": 28373,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.finished",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:process-event:54"
+      ],
+      "attemptId": "111119-271bcafe"
+    },
+    {
+      "id": "111119-271bcafe:result",
+      "sequence": 15,
+      "timestampOffsetMs": 28373,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:sdk-message:53"
+      ],
+      "attemptId": "111119-271bcafe"
+    },
+    {
+      "id": "111119-271bcafe:process:55",
+      "sequence": 16,
+      "timestampOffsetMs": 28374,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.started",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:process-event:55"
+      ],
+      "attemptId": "111119-271bcafe"
+    },
+    {
+      "id": "110843-ff84b440:toolu_01BdovfVzoiPQoqNrUETKVaS",
+      "sequence": 17,
+      "timestampOffsetMs": 39732,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:6"
+      ],
+      "attemptId": "110843-ff84b440",
+      "caseId": "manual-boundary-reread",
+      "toolName": "Read",
+      "toolUseId": "110843-ff84b440:toolu_01BdovfVzoiPQoqNrUETKVaS"
+    },
+    {
+      "id": "110843-ff84b440:toolu_01BdovfVzoiPQoqNrUETKVaS:result",
+      "sequence": 18,
+      "timestampOffsetMs": 39737,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: error",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:7"
+      ],
+      "attemptId": "110843-ff84b440",
+      "toolName": "Read",
+      "toolUseId": "110843-ff84b440:toolu_01BdovfVzoiPQoqNrUETKVaS"
+    },
+    {
+      "id": "110843-ff84b440:toolu_01NMhv7VfHxb9FadtupFbK1p",
+      "sequence": 19,
+      "timestampOffsetMs": 44414,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:19"
+      ],
+      "attemptId": "110843-ff84b440",
+      "caseId": "manual-boundary-reread",
+      "toolName": "Read",
+      "toolUseId": "110843-ff84b440:toolu_01NMhv7VfHxb9FadtupFbK1p"
+    },
+    {
+      "id": "110843-ff84b440:toolu_01NMhv7VfHxb9FadtupFbK1p:result",
+      "sequence": 20,
+      "timestampOffsetMs": 44417,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:21"
+      ],
+      "attemptId": "110843-ff84b440",
+      "toolName": "Read",
+      "toolUseId": "110843-ff84b440:toolu_01NMhv7VfHxb9FadtupFbK1p"
+    },
+    {
+      "id": "110843-ff84b440:message_stop",
+      "sequence": 21,
+      "timestampOffsetMs": 44424,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:23"
+      ],
+      "attemptId": "110843-ff84b440"
+    },
+    {
+      "id": "110843-ff84b440:message_stop",
+      "sequence": 22,
+      "timestampOffsetMs": 52068,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:43"
+      ],
+      "attemptId": "110843-ff84b440"
+    },
+    {
+      "id": "110843-ff84b440:process:45",
+      "sequence": 23,
+      "timestampOffsetMs": 52070,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.finished",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:process-event:45"
+      ],
+      "attemptId": "110843-ff84b440"
+    },
+    {
+      "id": "110843-ff84b440:result",
+      "sequence": 24,
+      "timestampOffsetMs": 52070,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:44"
+      ],
+      "attemptId": "110843-ff84b440"
+    },
+    {
+      "id": "110843-ff84b440:process:46",
+      "sequence": 25,
+      "timestampOffsetMs": 52071,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.started",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:process-event:46"
+      ],
+      "attemptId": "110843-ff84b440"
+    },
+    {
+      "id": "111119-271bcafe:sdk.init:58",
+      "sequence": 26,
+      "timestampOffsetMs": 75702,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "continuation summary 기반 기억-only 응답: init boundary 2, claude-opus-5",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:sdk-message:58"
+      ],
+      "attemptId": "111119-271bcafe",
+      "caseId": "manual-boundary-memory-only"
+    },
+    {
+      "id": "111119-271bcafe:process:63",
+      "sequence": 27,
+      "timestampOffsetMs": 75705,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.finished",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:process-event:63"
+      ],
+      "attemptId": "111119-271bcafe"
+    },
+    {
+      "id": "111119-271bcafe:result",
+      "sequence": 28,
+      "timestampOffsetMs": 75705,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=None",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:sdk-message:62"
+      ],
+      "attemptId": "111119-271bcafe"
+    },
+    {
+      "id": "111119-271bcafe:process:64",
+      "sequence": 29,
+      "timestampOffsetMs": 75706,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.started",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:process-event:64"
+      ],
+      "attemptId": "111119-271bcafe"
+    },
+    {
+      "id": "111119-271bcafe:sdk.init:65",
+      "sequence": 30,
+      "timestampOffsetMs": 75708,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "continuation summary 기반 기억-only 응답: init boundary 3, claude-opus-5",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:sdk-message:65"
+      ],
+      "attemptId": "111119-271bcafe",
+      "caseId": "manual-boundary-memory-only"
+    },
+    {
+      "id": "111119-271bcafe:message_stop",
+      "sequence": 31,
+      "timestampOffsetMs": 86873,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:sdk-message:92"
+      ],
+      "attemptId": "111119-271bcafe"
+    },
+    {
+      "id": "111119-271bcafe:result",
+      "sequence": 32,
+      "timestampOffsetMs": 86873,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:sdk-message:93"
+      ],
+      "attemptId": "111119-271bcafe"
+    },
+    {
+      "id": "111119-271bcafe:process:94",
+      "sequence": 33,
+      "timestampOffsetMs": 86874,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.finished",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:process-event:94"
+      ],
+      "attemptId": "111119-271bcafe"
+    },
+    {
+      "id": "111119-271bcafe:process:95",
+      "sequence": 34,
+      "timestampOffsetMs": 87164,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:process-event:95"
+      ],
+      "attemptId": "111119-271bcafe"
+    },
+    {
+      "id": "110843-ff84b440:sdk.init:49",
+      "sequence": 35,
+      "timestampOffsetMs": 97741,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "재조회 요구 뒤 fresh Read 부재: init boundary 2, claude-opus-5",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:49"
+      ],
+      "attemptId": "110843-ff84b440",
+      "caseId": "manual-boundary-reread"
+    },
+    {
+      "id": "110843-ff84b440:result",
+      "sequence": 36,
+      "timestampOffsetMs": 97744,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=None",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:53"
+      ],
+      "attemptId": "110843-ff84b440"
+    },
+    {
+      "id": "110843-ff84b440:process:54",
+      "sequence": 37,
+      "timestampOffsetMs": 97745,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.finished",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:process-event:54"
+      ],
+      "attemptId": "110843-ff84b440"
+    },
+    {
+      "id": "110843-ff84b440:process:55",
+      "sequence": 38,
+      "timestampOffsetMs": 97745,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.started",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:process-event:55"
+      ],
+      "attemptId": "110843-ff84b440"
+    },
+    {
+      "id": "110843-ff84b440:sdk.init:56",
+      "sequence": 39,
+      "timestampOffsetMs": 97748,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "재조회 요구 뒤 fresh Read 부재: init boundary 3, claude-opus-5",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:56"
+      ],
+      "attemptId": "110843-ff84b440",
+      "caseId": "manual-boundary-reread"
+    },
+    {
+      "id": "110843-ff84b440:message_stop",
+      "sequence": 40,
+      "timestampOffsetMs": 105833,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:70"
+      ],
+      "attemptId": "110843-ff84b440"
+    },
+    {
+      "id": "110843-ff84b440:process:72",
+      "sequence": 41,
+      "timestampOffsetMs": 105842,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.phase.finished",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:process-event:72"
+      ],
+      "attemptId": "110843-ff84b440"
+    },
+    {
+      "id": "110843-ff84b440:result",
+      "sequence": 42,
+      "timestampOffsetMs": 105842,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:71"
+      ],
+      "attemptId": "110843-ff84b440"
+    },
+    {
+      "id": "110843-ff84b440:process:73",
+      "sequence": 43,
+      "timestampOffsetMs": 106179,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:process-event:73"
+      ],
+      "attemptId": "110843-ff84b440"
+    },
+    {
+      "id": "claim:both-attempt-integrity-files-match",
+      "sequence": 44,
+      "timestampOffsetMs": 106879,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "두 attempt의 integrity manifest에 기록된 14개 evidence file SHA-256을 현재 파일에서 다시 계산해 모두 일치했다.",
+      "sourceRefs": [
+        "spec:claims:both-attempt-integrity-files-match"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:manual-compact-boundary-is-observed-twice",
+      "sequence": 45,
+      "timestampOffsetMs": 107279,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "두 persistent session은 각각 manual trigger의 generic compact_boundary와 token/duration metadata를 한 번 남겼다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:50",
+        "attempt:111119-271bcafe:sdk-message:59"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:same-session-is-kept-across-three-phases",
+      "sequence": 46,
+      "timestampOffsetMs": 107679,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "각 case는 before, compact, after phase에서 하나의 session ID를 유지했고 같은 ID의 init을 세 번 방출했다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:2",
+        "attempt:110843-ff84b440:sdk-message:49",
+        "attempt:110843-ff84b440:sdk-message:56",
+        "attempt:111119-271bcafe:sdk-message:2",
+        "attempt:111119-271bcafe:sdk-message:58",
+        "attempt:111119-271bcafe:sdk-message:65"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:post-token-count-increases-in-both-short-runs",
+      "sequence": 47,
+      "timestampOffsetMs": 108079,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "reread case는 2134에서 2352로, memory-only case는 2267에서 2381로 post token이 증가했다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:50",
+        "attempt:111119-271bcafe:sdk-message:59"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:continuation-summary-preserves-all-five-fields",
+      "sequence": 48,
+      "timestampOffsetMs": 108479,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "두 경계 직후 continuation summary에는 목표, 마커, 가역 결정, 다음 검증, 폐기 가능 숫자가 모두 포함됐다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:51",
+        "attempt:111119-271bcafe:sdk-message:60"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:reread-request-has-no-post-boundary-tool-block",
+      "sequence": 49,
+      "timestampOffsetMs": 108879,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "재조회 요구 case는 boundary 뒤 Read ToolUse와 연결 ToolResult가 0건인데 final은 fresh Read가 있었다고 주장했다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:50",
+        "attempt:110843-ff84b440:sdk-message:51",
+        "attempt:110843-ff84b440:sdk-message:71"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:memory-only-answer-comes-from-summary-not-new-read",
+      "sequence": 50,
+      "timestampOffsetMs": 109279,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "memory-only case는 새 tool block 없이 summary의 세 값을 재현했지만 final은 존재하지 않는 현재-turn Read result를 자기보고했다.",
+      "sourceRefs": [
+        "attempt:111119-271bcafe:sdk-message:59",
+        "attempt:111119-271bcafe:sdk-message:60",
+        "attempt:111119-271bcafe:sdk-message:93"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:compact-phase-success-has-zero-turns-and-empty-result",
+      "sequence": 51,
+      "timestampOffsetMs": 109679,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "두 compact phase의 terminal Result는 success지만 num_turns 0과 빈 result여서 실제 성공 근거는 status와 boundary 사건이다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:53",
+        "attempt:111119-271bcafe:sdk-message:62"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:primary-opus-is-not-only-provider-usage",
+      "sequence": 52,
+      "timestampOffsetMs": 110079,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "init과 primary assistant는 Opus 5지만 모든 terminal Result model_usage에는 Haiku 4.5 보조 사용도 있다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:44",
+        "attempt:110843-ff84b440:sdk-message:53",
+        "attempt:110843-ff84b440:sdk-message:71",
+        "attempt:111119-271bcafe:sdk-message:53",
+        "attempt:111119-271bcafe:sdk-message:62",
+        "attempt:111119-271bcafe:sdk-message:93"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:compact-boundary-is-generic-system-message-in-python-sdk",
+      "sequence": 53,
+      "timestampOffsetMs": 110479,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "Python SDK 0.2.128은 SDKCompactBoundaryMessage를 export하지 않고 이 subtype을 generic SystemMessage로 제공한다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:50",
+        "attempt:111119-271bcafe:sdk-message:59"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:token-decrease-is-not-a-compaction-invariant",
+      "sequence": 54,
+      "timestampOffsetMs": 110879,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "두 실제 수동 압축에서 post token이 증가했으므로 pre-post를 항상 절감량으로 계산할 수 없다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:50",
+        "attempt:111119-271bcafe:sdk-message:59"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:model-self-report-is-not-tool-evidence",
+      "sequence": 55,
+      "timestampOffsetMs": 111279,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "모델 final의 fresh Read 자기보고는 boundary 뒤 ToolUse/ToolResult 부재와 모순되므로 raw tool event를 우선해야 한다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:71",
+        "attempt:111119-271bcafe:sdk-message:93"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:accurate-values-do-not-prove-fresh-evidence",
+      "sequence": 56,
+      "timestampOffsetMs": 111679,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "정확한 값은 continuation summary에도 있었으므로 답의 정확성만으로 파일을 다시 읽었다고 판정할 수 없다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:sdk-message:51",
+        "attempt:110843-ff84b440:sdk-message:71",
+        "attempt:111119-271bcafe:sdk-message:60",
+        "attempt:111119-271bcafe:sdk-message:93"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:manual-trigger-does-not-prove-auto-compaction",
+      "sequence": 57,
+      "timestampOffsetMs": 112079,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "이번 두 실행은 host가 직접 /compact를 보낸 manual trigger이므로 자동 threshold 동작의 증거가 아니다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:process-event:46",
+        "attempt:110843-ff84b440:sdk-message:50",
+        "attempt:111119-271bcafe:process-event:55",
+        "attempt:111119-271bcafe:sdk-message:59"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:captured-is-not-claim-pass",
+      "sequence": 58,
+      "timestampOffsetMs": 112479,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "CAPTURED와 assertion count 0은 raw 수집 완료 표식이며 컴팩션 주장의 합격 판정이 아니다.",
+      "sourceRefs": [
+        "spec:claims:captured-is-not-claim-pass"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:otel-is-a-projection-not-independent-provider-proof",
+      "sequence": 59,
+      "timestampOffsetMs": 112879,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "이 OTel은 raw SDK와 host event를 투영하며 별도 tool.execution가 없으므로 built-in Read 판정은 raw tool block을 사용해야 한다.",
+      "sourceRefs": [
+        "spec:claims:otel-is-a-projection-not-independent-provider-proof"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:probe-runtime-source-is-not-fully-provenance-bound",
+      "sequence": 60,
+      "timestampOffsetMs": 113279,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "manifest는 장 source와 fixture/prompt hash를 보존하지만 exact probe, case, runtime source hash를 묶지 않았다.",
+      "sourceRefs": [
+        "attempt:110843-ff84b440:manifest:option_summary",
+        "attempt:111119-271bcafe:manifest:option_summary"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:automatic-threshold-boundary-not-observed",
+      "sequence": 61,
+      "timestampOffsetMs": 113679,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "실제 context pressure에서 trigger auto인 boundary와 threshold 근처 사용량은 아직 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:automatic-threshold-boundary-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:successful-post-boundary-reread-not-observed",
+      "sequence": 62,
+      "timestampOffsetMs": 114079,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "boundary 뒤 새 Read ToolUse와 연결된 성공 ToolResult를 모두 가진 실행은 아직 없다.",
+      "sourceRefs": [
+        "spec:claims:successful-post-boundary-reread-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:circuit-breaker-and-rapid-refill-not-observed",
+      "sequence": 63,
+      "timestampOffsetMs": 114479,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "circuit breaker와 rapid refill 보호를 식별할 Agent SDK 사건은 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:circuit-breaker-and-rapid-refill-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:ptl-retry-not-observed",
+      "sequence": 64,
+      "timestampOffsetMs": 114879,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "긴 summary를 다시 압축하는 PTL retry를 식별할 raw payload는 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:ptl-retry-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:long-session-loss-rate-not-observed",
+      "sequence": 65,
+      "timestampOffsetMs": 115279,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "짧은 두 manual run으로 장기 세션 summary의 정보 손실 또는 왜곡 비율을 일반화할 수 없다.",
+      "sourceRefs": [
+        "spec:claims:long-session-loss-rate-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:full-source-provenance-not-observed",
+      "sequence": 66,
+      "timestampOffsetMs": 115679,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "chapter, probe, case, runtime source hash를 모두 attempt에 묶는 provenance가 필요하다.",
+      "sourceRefs": [
+        "spec:claims:full-source-provenance-not-observed"
+      ],
+      "claimStatus": "additional_observation_required"
+    }
+  ]
+}
