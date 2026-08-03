@@ -1,0 +1,788 @@
+{
+  "schemaVersion": "pixel-book-evidence.v1",
+  "generatedAt": "2026-08-03T17:30:26.312Z",
+  "title": "3장 에이전트 루프: session, turn, tool result, terminal result",
+  "description": "Education Shell의 검증된 Book SDK 실행을 Pixel Agents 상태 문법으로 재생한 공개 projection",
+  "boundary": "Pixel Agents 제품이 이 실행을 수집했다는 뜻이 아니며, renderer는 source 판정을 변경하지 않는다.",
+  "source": {
+    "courseId": "book-sdk-ko",
+    "chapterSlug": "ch03",
+    "campaignId": "book-sdk-live-20260803",
+    "traceId": "recorded:book-sdk-ko:ch03:book-sdk-live-20260803:2026-08-03T05:02:55.525Z",
+    "traceSha256": "ed77e98e832b054b323636352881f9e960025e9ba3447a81c1c31dace33ea16d",
+    "summarySha256": "561a781410208e263a18f538fea74f5c63e30ca9da293e0ed6743ef2256c5484",
+    "sourceEventCount": 104,
+    "publicEventCount": 43,
+    "model": "claude-opus-5",
+    "attemptIds": [
+      "045357-39114649",
+      "045504-b1bb05a0",
+      "050250-58c61dd6"
+    ],
+    "proofGate": "accepted_with_notes",
+    "secretScan": "passed"
+  },
+  "actors": [
+    {
+      "id": "user",
+      "label": "검증 프롬프트",
+      "role": "briefing",
+      "station": 0
+    },
+    {
+      "id": "runtime",
+      "label": "Python SDK 런타임",
+      "role": "control",
+      "station": 1
+    },
+    {
+      "id": "claude",
+      "label": "Claude Opus 5",
+      "role": "model",
+      "station": 2
+    },
+    {
+      "id": "tool",
+      "label": "SDK 도구 실행",
+      "role": "execution",
+      "station": 3
+    },
+    {
+      "id": "evaluator",
+      "label": "증거 판정기",
+      "role": "verification",
+      "station": 4
+    }
+  ],
+  "counts": {
+    "observedClaims": 5,
+    "correctionRequired": 2,
+    "additionalObservationRequired": 1,
+    "invalidAttempts": 0
+  },
+  "claims": [
+    {
+      "id": "persistent-client-preserves-session-context",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "동일 ClaudeSDKClient의 두 turn은 같은 session ID를 유지했고, 두 번째 결과가 첫 turn에만 주입한 controlled nonce를 반환했다.",
+      "sourceRefs": [
+        "attempt:045357-39114649:sdk-message:2",
+        "attempt:045357-39114649:sdk-message:13",
+        "attempt:045357-39114649:sdk-message:16",
+        "attempt:045357-39114649:sdk-message:26"
+      ]
+    },
+    {
+      "id": "init-reemits-per-client-turn",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "현재 Python SDK와 CLI 조합에서는 같은 client의 다음 질의에도 SystemMessage.init이 다시 방출됐다. init은 session 전체에서 한 번뿐인 사건이 아니다.",
+      "sourceRefs": [
+        "attempt:045357-39114649:sdk-message:2",
+        "attempt:045357-39114649:sdk-message:16"
+      ]
+    },
+    {
+      "id": "stateless-query-opens-independent-sessions",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "독립 query 두 번은 서로 다른 session ID를 만들었고, 두 번째 결과에는 첫 query의 controlled nonce가 없었다.",
+      "sourceRefs": [
+        "attempt:045504-b1bb05a0:sdk-message:2",
+        "attempt:045504-b1bb05a0:sdk-message:24",
+        "attempt:045504-b1bb05a0:sdk-message:27",
+        "attempt:045504-b1bb05a0:sdk-message:47"
+      ]
+    },
+    {
+      "id": "tool-result-precedes-max-turn-terminal",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "max_turns=1에서도 Assistant tool_use, Python handler 실행, UserMessage tool_result가 끝난 뒤 error_max_turns와 num_turns=2인 ResultMessage가 종료했다.",
+      "sourceRefs": [
+        "attempt:050250-58c61dd6:sdk-message:16",
+        "attempt:050250-58c61dd6:process-event:17",
+        "attempt:050250-58c61dd6:sdk-message:21",
+        "attempt:050250-58c61dd6:sdk-message:22",
+        "attempt:050250-58c61dd6:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "five-core-loop-roles-appear-in-tape",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "한 max-turn run에서 SystemMessage, StreamEvent, AssistantMessage, UserMessage, ResultMessage가 같은 session의 순차 evidence tape로 나타났다.",
+      "sourceRefs": [
+        "attempt:050250-58c61dd6:sdk-message:2",
+        "attempt:050250-58c61dd6:sdk-message:5",
+        "attempt:050250-58c61dd6:sdk-message:16",
+        "attempt:050250-58c61dd6:sdk-message:21",
+        "attempt:050250-58c61dd6:sdk-message:22"
+      ]
+    },
+    {
+      "id": "five-core-roles-are-not-complete-message-union",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "세 Python run에는 RateLimitEvent도 실제 방출됐다. 다섯 메시지는 강의의 핵심 역할이지 SDK 전체 Message union이 아니다.",
+      "sourceRefs": [
+        "attempt:045357-39114649:sdk-message:4",
+        "attempt:045504-b1bb05a0:sdk-message:4",
+        "attempt:050250-58c61dd6:sdk-message:4"
+      ]
+    },
+    {
+      "id": "hook-surface-is-language-and-version-specific",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "Python SDK 0.2.128 HookEvent는 10종이고 TypeScript SDK 0.3.177 표면은 더 넓다. SessionStart, PostCompact, PermissionDenied 등을 공통 Python 목록으로 쓰면 안 된다.",
+      "sourceRefs": [
+        "python-sdk:0.2.128:types.py:HookEvent:sha256:de495a6fa20136b0dd0528865e94c5f429eef5ad5ba197e214a2e597e4601e2a",
+        "typescript-sdk:0.3.177:sdk.d.ts:HookEvent:sha256:3dcd0551702fc970c7dc78adc115f6083ebdd23cddba1bd087fec3713182cb18"
+      ]
+    },
+    {
+      "id": "compact-resume-recovery-and-hook-runtime",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "resume, compact boundary, max output/budget/structured-output terminal 경로와 실제 hook lifecycle 순서는 별도 순차 live run이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:compact-resume-recovery-and-hook-runtime"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "book-sdk-live-20260803:prompt",
+      "sequence": 0,
+      "timestampOffsetMs": 0,
+      "actor": "user",
+      "eventType": "prompt.submitted",
+      "pixelState": "briefing",
+      "evidenceLevel": "Configured",
+      "summary": "Python Claude Agent SDK에서 persistent client와 독립 query의 session 경계를 비교하고, 실제 tool result 뒤 max_turns terminal result가 닫히는 순서를 관찰한다.",
+      "sourceRefs": [
+        "publication-spec:public_prompt"
+      ]
+    },
+    {
+      "id": "045357-39114649:process:0",
+      "sequence": 1,
+      "timestampOffsetMs": 1000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:045357-39114649:process-event:0"
+      ],
+      "attemptId": "045357-39114649"
+    },
+    {
+      "id": "045357-39114649:process:1",
+      "sequence": 2,
+      "timestampOffsetMs": 1956,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.started",
+      "sourceRefs": [
+        "attempt:045357-39114649:process-event:1"
+      ],
+      "attemptId": "045357-39114649"
+    },
+    {
+      "id": "045357-39114649:sdk.init",
+      "sequence": 3,
+      "timestampOffsetMs": 1976,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "동일 ClaudeSDKClient의 두 turn과 같은 session context: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:045357-39114649:sdk-message:2"
+      ],
+      "attemptId": "045357-39114649",
+      "caseId": "persistent-client-two-turns"
+    },
+    {
+      "id": "045357-39114649:message_stop",
+      "sequence": 4,
+      "timestampOffsetMs": 4834,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:045357-39114649:sdk-message:12"
+      ],
+      "attemptId": "045357-39114649"
+    },
+    {
+      "id": "045357-39114649:result",
+      "sequence": 5,
+      "timestampOffsetMs": 4837,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:045357-39114649:sdk-message:13"
+      ],
+      "attemptId": "045357-39114649"
+    },
+    {
+      "id": "045357-39114649:process:14",
+      "sequence": 6,
+      "timestampOffsetMs": 4838,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.finished",
+      "sourceRefs": [
+        "attempt:045357-39114649:process-event:14"
+      ],
+      "attemptId": "045357-39114649"
+    },
+    {
+      "id": "045357-39114649:process:15",
+      "sequence": 7,
+      "timestampOffsetMs": 4839,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.started",
+      "sourceRefs": [
+        "attempt:045357-39114649:process-event:15"
+      ],
+      "attemptId": "045357-39114649"
+    },
+    {
+      "id": "045357-39114649:sdk.init:16",
+      "sequence": 8,
+      "timestampOffsetMs": 4844,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "동일 ClaudeSDKClient의 두 turn과 같은 session context: init boundary 2, claude-opus-5",
+      "sourceRefs": [
+        "attempt:045357-39114649:sdk-message:16"
+      ],
+      "attemptId": "045357-39114649",
+      "caseId": "persistent-client-two-turns"
+    },
+    {
+      "id": "045357-39114649:message_stop",
+      "sequence": 9,
+      "timestampOffsetMs": 7665,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:045357-39114649:sdk-message:25"
+      ],
+      "attemptId": "045357-39114649"
+    },
+    {
+      "id": "045357-39114649:result",
+      "sequence": 10,
+      "timestampOffsetMs": 7666,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:045357-39114649:sdk-message:26"
+      ],
+      "attemptId": "045357-39114649"
+    },
+    {
+      "id": "045357-39114649:process:27",
+      "sequence": 11,
+      "timestampOffsetMs": 7667,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.finished",
+      "sourceRefs": [
+        "attempt:045357-39114649:process-event:27"
+      ],
+      "attemptId": "045357-39114649"
+    },
+    {
+      "id": "045357-39114649:process:28",
+      "sequence": 12,
+      "timestampOffsetMs": 8195,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:045357-39114649:process-event:28"
+      ],
+      "attemptId": "045357-39114649"
+    },
+    {
+      "id": "045504-b1bb05a0:process:0",
+      "sequence": 13,
+      "timestampOffsetMs": 11000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:045504-b1bb05a0:process-event:0"
+      ],
+      "attemptId": "045504-b1bb05a0"
+    },
+    {
+      "id": "045504-b1bb05a0:process:1",
+      "sequence": 14,
+      "timestampOffsetMs": 11001,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.started",
+      "sourceRefs": [
+        "attempt:045504-b1bb05a0:process-event:1"
+      ],
+      "attemptId": "045504-b1bb05a0"
+    },
+    {
+      "id": "045504-b1bb05a0:sdk.init",
+      "sequence": 15,
+      "timestampOffsetMs": 12015,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "독립 query 두 번의 서로 다른 session: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:045504-b1bb05a0:sdk-message:2"
+      ],
+      "attemptId": "045504-b1bb05a0",
+      "caseId": "stateless-query-two-sessions"
+    },
+    {
+      "id": "045504-b1bb05a0:message_stop",
+      "sequence": 16,
+      "timestampOffsetMs": 17770,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:045504-b1bb05a0:sdk-message:23"
+      ],
+      "attemptId": "045504-b1bb05a0"
+    },
+    {
+      "id": "045504-b1bb05a0:result",
+      "sequence": 17,
+      "timestampOffsetMs": 17772,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:045504-b1bb05a0:sdk-message:24"
+      ],
+      "attemptId": "045504-b1bb05a0"
+    },
+    {
+      "id": "045504-b1bb05a0:process:25",
+      "sequence": 18,
+      "timestampOffsetMs": 18286,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.finished",
+      "sourceRefs": [
+        "attempt:045504-b1bb05a0:process-event:25"
+      ],
+      "attemptId": "045504-b1bb05a0"
+    },
+    {
+      "id": "045504-b1bb05a0:process:26",
+      "sequence": 19,
+      "timestampOffsetMs": 18287,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.started",
+      "sourceRefs": [
+        "attempt:045504-b1bb05a0:process-event:26"
+      ],
+      "attemptId": "045504-b1bb05a0"
+    },
+    {
+      "id": "045504-b1bb05a0:sdk.init:27",
+      "sequence": 20,
+      "timestampOffsetMs": 18652,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "독립 query 두 번의 서로 다른 session: init boundary 2, claude-opus-5",
+      "sourceRefs": [
+        "attempt:045504-b1bb05a0:sdk-message:27"
+      ],
+      "attemptId": "045504-b1bb05a0",
+      "caseId": "stateless-query-two-sessions"
+    },
+    {
+      "id": "050250-58c61dd6:process:0",
+      "sequence": 21,
+      "timestampOffsetMs": 21000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:050250-58c61dd6:process-event:0"
+      ],
+      "attemptId": "050250-58c61dd6"
+    },
+    {
+      "id": "050250-58c61dd6:process:1",
+      "sequence": 22,
+      "timestampOffsetMs": 21940,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.started",
+      "sourceRefs": [
+        "attempt:050250-58c61dd6:process-event:1"
+      ],
+      "attemptId": "050250-58c61dd6"
+    },
+    {
+      "id": "050250-58c61dd6:sdk.init",
+      "sequence": 23,
+      "timestampOffsetMs": 21978,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "실제 MCP tool result 뒤 error_max_turns terminal result: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:050250-58c61dd6:sdk-message:2"
+      ],
+      "attemptId": "050250-58c61dd6",
+      "caseId": "max-turns-after-tool-result"
+    },
+    {
+      "id": "045504-b1bb05a0:message_stop",
+      "sequence": 24,
+      "timestampOffsetMs": 24041,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:045504-b1bb05a0:sdk-message:46"
+      ],
+      "attemptId": "045504-b1bb05a0"
+    },
+    {
+      "id": "045504-b1bb05a0:result",
+      "sequence": 25,
+      "timestampOffsetMs": 24048,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:045504-b1bb05a0:sdk-message:47"
+      ],
+      "attemptId": "045504-b1bb05a0"
+    },
+    {
+      "id": "045504-b1bb05a0:process:48",
+      "sequence": 26,
+      "timestampOffsetMs": 24577,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.finished",
+      "sourceRefs": [
+        "attempt:045504-b1bb05a0:process-event:48"
+      ],
+      "attemptId": "045504-b1bb05a0"
+    },
+    {
+      "id": "045504-b1bb05a0:process:49",
+      "sequence": 27,
+      "timestampOffsetMs": 24580,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:045504-b1bb05a0:process-event:49"
+      ],
+      "attemptId": "045504-b1bb05a0"
+    },
+    {
+      "id": "050250-58c61dd6:toolu_01EMc4zKXTV5qH7hTrBkqN89",
+      "sequence": 28,
+      "timestampOffsetMs": 25656,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__proof__return_observation {}",
+      "sourceRefs": [
+        "attempt:050250-58c61dd6:sdk-message:16"
+      ],
+      "attemptId": "050250-58c61dd6",
+      "caseId": "max-turns-after-tool-result",
+      "toolName": "mcp__proof__return_observation",
+      "toolUseId": "050250-58c61dd6:toolu_01EMc4zKXTV5qH7hTrBkqN89"
+    },
+    {
+      "id": "050250-58c61dd6:process:17",
+      "sequence": 29,
+      "timestampOffsetMs": 25661,
+      "actor": "tool",
+      "eventType": "tool.execution",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host executed mcp__proof__return_observation: matched",
+      "sourceRefs": [
+        "attempt:050250-58c61dd6:process-event:17"
+      ],
+      "attemptId": "050250-58c61dd6",
+      "toolName": "mcp__proof__return_observation",
+      "outcome": "matched"
+    },
+    {
+      "id": "050250-58c61dd6:message_stop",
+      "sequence": 30,
+      "timestampOffsetMs": 25666,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:050250-58c61dd6:sdk-message:20"
+      ],
+      "attemptId": "050250-58c61dd6"
+    },
+    {
+      "id": "050250-58c61dd6:toolu_01EMc4zKXTV5qH7hTrBkqN89:result",
+      "sequence": 31,
+      "timestampOffsetMs": 25670,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__proof__return_observation: result received",
+      "sourceRefs": [
+        "attempt:050250-58c61dd6:sdk-message:21"
+      ],
+      "attemptId": "050250-58c61dd6",
+      "toolName": "mcp__proof__return_observation",
+      "toolUseId": "050250-58c61dd6:toolu_01EMc4zKXTV5qH7hTrBkqN89"
+    },
+    {
+      "id": "050250-58c61dd6:result",
+      "sequence": 32,
+      "timestampOffsetMs": 25672,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "error_max_turns; terminal_reason=max_turns",
+      "sourceRefs": [
+        "attempt:050250-58c61dd6:sdk-message:22"
+      ],
+      "attemptId": "050250-58c61dd6"
+    },
+    {
+      "id": "050250-58c61dd6:process:23",
+      "sequence": 33,
+      "timestampOffsetMs": 25673,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.turn.finished",
+      "sourceRefs": [
+        "attempt:050250-58c61dd6:process-event:23"
+      ],
+      "attemptId": "050250-58c61dd6"
+    },
+    {
+      "id": "050250-58c61dd6:process:24",
+      "sequence": 34,
+      "timestampOffsetMs": 26203,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:050250-58c61dd6:process-event:24"
+      ],
+      "attemptId": "050250-58c61dd6"
+    },
+    {
+      "id": "claim:persistent-client-preserves-session-context",
+      "sequence": 35,
+      "timestampOffsetMs": 26903,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "동일 ClaudeSDKClient의 두 turn은 같은 session ID를 유지했고, 두 번째 결과가 첫 turn에만 주입한 controlled nonce를 반환했다.",
+      "sourceRefs": [
+        "attempt:045357-39114649:sdk-message:2",
+        "attempt:045357-39114649:sdk-message:13",
+        "attempt:045357-39114649:sdk-message:16",
+        "attempt:045357-39114649:sdk-message:26"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:init-reemits-per-client-turn",
+      "sequence": 36,
+      "timestampOffsetMs": 27303,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "현재 Python SDK와 CLI 조합에서는 같은 client의 다음 질의에도 SystemMessage.init이 다시 방출됐다. init은 session 전체에서 한 번뿐인 사건이 아니다.",
+      "sourceRefs": [
+        "attempt:045357-39114649:sdk-message:2",
+        "attempt:045357-39114649:sdk-message:16"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:stateless-query-opens-independent-sessions",
+      "sequence": 37,
+      "timestampOffsetMs": 27703,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "독립 query 두 번은 서로 다른 session ID를 만들었고, 두 번째 결과에는 첫 query의 controlled nonce가 없었다.",
+      "sourceRefs": [
+        "attempt:045504-b1bb05a0:sdk-message:2",
+        "attempt:045504-b1bb05a0:sdk-message:24",
+        "attempt:045504-b1bb05a0:sdk-message:27",
+        "attempt:045504-b1bb05a0:sdk-message:47"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:tool-result-precedes-max-turn-terminal",
+      "sequence": 38,
+      "timestampOffsetMs": 28103,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "max_turns=1에서도 Assistant tool_use, Python handler 실행, UserMessage tool_result가 끝난 뒤 error_max_turns와 num_turns=2인 ResultMessage가 종료했다.",
+      "sourceRefs": [
+        "attempt:050250-58c61dd6:sdk-message:16",
+        "attempt:050250-58c61dd6:process-event:17",
+        "attempt:050250-58c61dd6:sdk-message:21",
+        "attempt:050250-58c61dd6:sdk-message:22",
+        "attempt:050250-58c61dd6:manifest:option_summary"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:five-core-loop-roles-appear-in-tape",
+      "sequence": 39,
+      "timestampOffsetMs": 28503,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "한 max-turn run에서 SystemMessage, StreamEvent, AssistantMessage, UserMessage, ResultMessage가 같은 session의 순차 evidence tape로 나타났다.",
+      "sourceRefs": [
+        "attempt:050250-58c61dd6:sdk-message:2",
+        "attempt:050250-58c61dd6:sdk-message:5",
+        "attempt:050250-58c61dd6:sdk-message:16",
+        "attempt:050250-58c61dd6:sdk-message:21",
+        "attempt:050250-58c61dd6:sdk-message:22"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:five-core-roles-are-not-complete-message-union",
+      "sequence": 40,
+      "timestampOffsetMs": 28903,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "세 Python run에는 RateLimitEvent도 실제 방출됐다. 다섯 메시지는 강의의 핵심 역할이지 SDK 전체 Message union이 아니다.",
+      "sourceRefs": [
+        "attempt:045357-39114649:sdk-message:4",
+        "attempt:045504-b1bb05a0:sdk-message:4",
+        "attempt:050250-58c61dd6:sdk-message:4"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:hook-surface-is-language-and-version-specific",
+      "sequence": 41,
+      "timestampOffsetMs": 29303,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "Python SDK 0.2.128 HookEvent는 10종이고 TypeScript SDK 0.3.177 표면은 더 넓다. SessionStart, PostCompact, PermissionDenied 등을 공통 Python 목록으로 쓰면 안 된다.",
+      "sourceRefs": [
+        "python-sdk:0.2.128:types.py:HookEvent:sha256:de495a6fa20136b0dd0528865e94c5f429eef5ad5ba197e214a2e597e4601e2a",
+        "typescript-sdk:0.3.177:sdk.d.ts:HookEvent:sha256:3dcd0551702fc970c7dc78adc115f6083ebdd23cddba1bd087fec3713182cb18"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:compact-resume-recovery-and-hook-runtime",
+      "sequence": 42,
+      "timestampOffsetMs": 29703,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "resume, compact boundary, max output/budget/structured-output terminal 경로와 실제 hook lifecycle 순서는 별도 순차 live run이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:compact-resume-recovery-and-hook-runtime"
+      ],
+      "claimStatus": "additional_observation_required"
+    }
+  ]
+}
