@@ -20,6 +20,15 @@ const traceText = await fs.readFile(tracePath, 'utf8')
 const summaryText = await fs.readFile(summaryPath, 'utf8')
 const trace = JSON.parse(traceText)
 const summary = JSON.parse(summaryText)
+const citedModels = Array.isArray(summary.actual_models)
+  ? [...new Set(summary.actual_models.filter((value) => typeof value === 'string'))]
+  : []
+const replayModels = Array.isArray(summary.source_attempts)
+  ? [...new Set(summary.source_attempts
+    .filter((attempt) => attempt?.projection_role === 'replayed')
+    .map((attempt) => attempt?.actual_model)
+    .filter((value) => typeof value === 'string'))]
+  : []
 
 if (trace.chapterSlug !== summary.chapter_id) {
   throw new Error(`pixel_book_evidence_chapter_mismatch: ${trace.chapterSlug} != ${summary.chapter_id}`)
@@ -62,6 +71,14 @@ const events = trace.events.map((event, sequence) => ({
   phase: optionalString(event?.attributes?.phase),
   marker: optionalString(event?.attributes?.marker),
   sha256: optionalString(event?.attributes?.sha256),
+  characters: Number.isInteger(event?.attributes?.characters)
+    ? event.attributes.characters
+    : undefined,
+  containsU202E: typeof event?.attributes?.containsU202E === 'boolean'
+    ? event.attributes.containsU202E
+    : undefined,
+  originalModel: optionalString(event?.attributes?.originalModel),
+  fallbackModel: optionalString(event?.attributes?.fallbackModel),
   warningCategory: optionalString(event?.attributes?.category),
   decisionReasonType: optionalString(event?.attributes?.decisionReasonType),
   targetExists: typeof event?.attributes?.targetExists === 'boolean'
@@ -88,7 +105,9 @@ const projection = {
     summarySha256: sha256(summaryText),
     sourceEventCount: finiteNumber(summary.source_event_count, trace.events.length),
     publicEventCount: trace.events.length,
-    model: Array.isArray(summary.actual_models) ? summary.actual_models[0] : undefined,
+    model: replayModels[0] || citedModels[0],
+    replayModels,
+    citedModels,
     attemptIds: Array.isArray(summary.source_attempts)
       ? summary.source_attempts.map((attempt) => attempt.attempt_id).filter(Boolean)
       : [],

@@ -131,7 +131,14 @@ function claimElement(claim) {
   const item = document.createElement('li')
   item.dataset.status = claim.status
   item.title = claim.sourceRefs.join('\n')
-  const label = claim.status === 'observed' ? 'OBSERVED' : 'MORE EVIDENCE'
+  const label = {
+    configured: 'CONFIGURED',
+    observed: 'OBSERVED',
+    inferred: 'INFERRED',
+    correction_required: 'CORRECTION',
+    not_observed: 'NOT OBSERVED',
+    additional_observation_required: 'MORE EVIDENCE',
+  }[claim.status] ?? 'UNKNOWN'
   item.innerHTML = `
     <header><b>${escapeHtml(claim.id)}</b><em>${label}</em></header>
     <p>${escapeHtml(claim.summary)}</p>
