@@ -283,6 +283,22 @@
       "artifactSha256": "00f5ff9cea8b52df0538327946d3a2fe51ec2a48938e2f4fa2796f0c46bf3546"
     },
     {
+      "chapterSlug": "ch16",
+      "title": "16장 권한 시스템: callback shadow, 실행, 명시적 거부",
+      "path": "./evidence/ch16.json",
+      "campaignId": "book-sdk-live-20260804",
+      "model": "claude-opus-5",
+      "sourceEventCount": 287,
+      "publicEventCount": 89,
+      "configuredClaims": 1,
+      "observedClaims": 13,
+      "inferredClaims": 2,
+      "notObservedClaims": 6,
+      "correctionRequired": 5,
+      "additionalObservationRequired": 3,
+      "artifactSha256": "e6d830dbe60d175c95fe6a6df6a5ee67a5273c661ebf0ac764b0e93b2090358f"
+    },
+    {
       "chapterSlug": "ch30",
       "title": "30장 나만의 AI 에이전트: 권한, 산출물, 재개, 메모리",
       "path": "./evidence/ch30.json",
@@ -295,5 +311,5 @@
       "artifactSha256": "382b00bba5a43e4bbba618bbff1b531e191d986458b237ab3eadaa0c015c10b0"
     }
   ],
-  "generatedAt": "2026-08-04T00:47:55.754Z"
+  "generatedAt": "2026-08-04T02:15:00.339Z"
 }

@@ -216,7 +216,11 @@ a { color: inherit; }
 .actor[data-state='working'] .actor__sprite { animation: work 0.5s steps(2) infinite; }
 .actor[data-state='completed'] { border-color: var(--green); }
 .actor[data-state='cancelled'],
-.actor[data-state='interrupted'] { border-color: var(--coral); }
+.actor[data-state='interrupted'],
+.actor[data-state='denied'] { border-color: var(--coral); }
+.actor[data-state='baseline'] { border-color: var(--cyan); }
+.actor[data-state='mutated'] { border-color: var(--green); }
+.actor[data-state='shadowed'] { border-color: var(--gold); }
 .actor[data-state='verified'] { border-color: var(--violet); }
 .actor[data-state='needs-evidence'] { border-color: var(--gold); }
 .actor[data-state='correction'] { border-color: #ff6b6b; }

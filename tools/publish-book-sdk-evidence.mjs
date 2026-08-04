@@ -59,6 +59,17 @@ const events = trace.events.map((event, sequence) => ({
   toolName: optionalString(event?.attributes?.toolName),
   toolUseId: optionalString(event?.attributes?.toolUseId),
   outcome: optionalString(event?.attributes?.outcome),
+  phase: optionalString(event?.attributes?.phase),
+  marker: optionalString(event?.attributes?.marker),
+  sha256: optionalString(event?.attributes?.sha256),
+  warningCategory: optionalString(event?.attributes?.category),
+  decisionReasonType: optionalString(event?.attributes?.decisionReasonType),
+  targetExists: typeof event?.attributes?.targetExists === 'boolean'
+    ? event.attributes.targetExists
+    : undefined,
+  isError: typeof event?.attributes?.isError === 'boolean'
+    ? event.attributes.isError
+    : undefined,
   claimStatus: optionalString(event?.attributes?.status),
 }))
 
@@ -193,8 +204,14 @@ function chapterOrder(value) {
 function pixelState(event) {
   if (event.eventType === 'prompt.submitted') return 'briefing'
   if (event.eventType === 'sdk.init') return 'ready'
+  if (event.eventType === 'permission.denied') return 'denied'
+  if (event.eventType === 'runtime.warning') return 'shadowed'
+  if (event.eventType === 'workspace.snapshot') {
+    return event?.attributes?.phase === 'after' ? 'mutated' : 'baseline'
+  }
   if (event.eventType === 'tool.use') return 'working'
   if (event.eventType === 'tool.result') {
+    if (event?.attributes?.isError === true) return 'denied'
     return event?.attributes?.outcome === 'cancelled' ? 'cancelled' : 'completed'
   }
   if (event.eventType === 'assistant.claim') {
