@@ -1,0 +1,1528 @@
+{
+  "schemaVersion": "pixel-book-evidence.v1",
+  "generatedAt": "2026-08-04T09:35:26.750Z",
+  "title": "29장 raw SDK에서 bounded OTel까지: redaction과 lineage 감사",
+  "description": "Education Shell의 검증된 Book SDK 실행을 Pixel Agents 상태 문법으로 재생한 공개 projection",
+  "boundary": "Pixel Agents 제품이 이 실행을 수집했다는 뜻이 아니며, renderer는 source 판정을 변경하지 않는다.",
+  "source": {
+    "courseId": "book-sdk-ko",
+    "chapterSlug": "ch29",
+    "campaignId": "book-sdk-live-20260803",
+    "traceId": "recorded:book-sdk-ko:ch29:book-sdk-live-20260803:2026-08-04T09:14:24Z",
+    "traceSha256": "4ca4e07fd1723cbe917ac0f2725d2b0e785bdc08683fb64bbe01d328fca4cbeb",
+    "summarySha256": "448264c266a1c988eeacae676bcf7b0fe945a361a291fc58871e6520195151ec",
+    "sourceEventCount": 36,
+    "publicEventCount": 67,
+    "model": "claude-opus-5",
+    "replayModels": [
+      "claude-opus-5"
+    ],
+    "citedModels": [
+      "claude-opus-5"
+    ],
+    "attemptIds": [
+      "152259-0e968386"
+    ],
+    "proofGate": "accepted_with_notes",
+    "secretScan": "passed"
+  },
+  "actors": [
+    {
+      "id": "user",
+      "label": "검증 프롬프트",
+      "role": "briefing",
+      "station": 0
+    },
+    {
+      "id": "runtime",
+      "label": "Python SDK 런타임",
+      "role": "control",
+      "station": 1
+    },
+    {
+      "id": "claude",
+      "label": "Claude Opus 5",
+      "role": "model",
+      "station": 2
+    },
+    {
+      "id": "tool",
+      "label": "SDK 도구 실행",
+      "role": "execution",
+      "station": 3
+    },
+    {
+      "id": "evaluator",
+      "label": "증거 판정기",
+      "role": "verification",
+      "station": 4
+    }
+  ],
+  "counts": {
+    "configuredClaims": 4,
+    "observedClaims": 22,
+    "inferredClaims": 2,
+    "notObservedClaims": 8,
+    "correctionRequired": 14,
+    "additionalObservationRequired": 5,
+    "invalidAttempts": 0
+  },
+  "claims": [
+    {
+      "id": "controlled-tool-contract-configured",
+      "status": "configured",
+      "evidenceLevel": "Configured",
+      "summary": "host는 실제 read-only mcp__telemetry_lab__lookup을 정확히 한 번 호출하고 marker ToolResult 뒤 exact final marker를 반환하도록 구성했다. api_key 값은 실제 credential이 아니라 attempt별 합성 redaction canary였다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "durable-redaction-recorder-configured",
+      "status": "configured",
+      "evidenceLevel": "Configured",
+      "summary": "AttemptRecorder는 SDK, hook, permission, host process 사건에 하나의 monotonic sequence를 부여하고 저장 전에 credential pattern과 민감 key를 redaction하도록 구현됐다. writer와 atomic commit 경로는 fsync를 호출한다.",
+      "sourceRefs": [
+        "spec:claims:durable-redaction-recorder-configured"
+      ]
+    },
+    {
+      "id": "bounded-local-otel-projection-configured",
+      "status": "configured",
+      "evidenceLevel": "Configured",
+      "summary": "장 전용 proof는 같은 recorder 사건에서 sequence, message type, session/tool link와 terminal 운영 수치만 남기는 로컬 JsonlSpanExporter projection을 구성했다. prompt, content, payload 본문은 span attribute allowlist에 넣지 않았다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "single-run-permission-boundary-configured",
+      "status": "configured",
+      "evidenceLevel": "Configured",
+      "summary": "provider run concurrency는 1, permission_mode는 dontAsk, fallback_model은 None으로 구성했고 lookup 외 built-in 변경·탐색 도구를 disallow했다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "all-assistant-messages-used-opus5",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 9, 18, 29의 세 AssistantMessage.model은 모두 claude-opus-5였다. 실제 응답 모델 판정은 init 설정값이 아니라 이 원시 assistant message에서 재판독했다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:9",
+        "attempt:152259-0e968386:sdk-message:18",
+        "attempt:152259-0e968386:sdk-message:29"
+      ]
+    },
+    {
+      "id": "init-exposed-connected-mcp-tool",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 2 init은 claude-opus-5, permissionMode dontAsk, telemetry_lab connected와 tools=[mcp__telemetry_lab__lookup]을 기록했다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:2"
+      ]
+    },
+    {
+      "id": "actual-mcp-tool-use-observed",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 18 AssistantMessage에는 mcp__telemetry_lab__lookup ToolUseBlock이 한 건 있었고 tool_use_id toolu_019A8PTzENKthALmz3BGsnFH와 redacted input을 보존했다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:18"
+      ]
+    },
+    {
+      "id": "host-handler-execution-observed",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 19 host process event는 lookup handler가 실제 입력을 검사하고 marker-returned outcome을 기록했음을 보여 준다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:19"
+      ]
+    },
+    {
+      "id": "tool-result-id-linked",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 23 UserMessage의 ToolResultBlock은 sequence 18과 같은 tool_use_id를 보존하고 TELEMETRY_TOOL_RESULT marker를 반환했다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:18",
+        "attempt:152259-0e968386:sdk-message:23"
+      ]
+    },
+    {
+      "id": "terminal-result-succeeded",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 33 ResultMessage는 subtype success, is_error false, num_turns 2였고 실제 ToolResult 뒤 요구한 TELEMETRY_FINAL marker로 종료했다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:33"
+      ]
+    },
+    {
+      "id": "host-prompt-redacted-on-storage",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 1 host.actor.prompt의 합성 canary 본문은 저장 전에 [REDACTED]로 바뀌고 event.payload.prompt redacted path가 남았다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:1"
+      ]
+    },
+    {
+      "id": "streaming-partial-json-redacted",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 15 input_json_delta.partial_json의 api_key 값은 [REDACTED]로 저장되고 payload.event.delta.partial_json 경로가 기록됐다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:15"
+      ]
+    },
+    {
+      "id": "completed-tool-input-redacted",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 18 완성 ToolUseBlock input의 api_key는 [REDACTED]였고 payload와 event alias 양쪽 redacted path가 기록됐다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:18"
+      ]
+    },
+    {
+      "id": "handler-input-redacted-on-storage",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 19 handler process event의 tool_input.api_key도 [REDACTED]로 저장됐지만 handler outcome은 marker-returned로 남았다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:19"
+      ]
+    },
+    {
+      "id": "synthetic-secret-absent-from-attempt-files",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "출판 전 attempt 전체를 다시 검색했으며 합성 credential canary와 credential 환경 변수 값은 0건이었다. 네 redaction sequence에는 [REDACTED]와 경로 receipt가 남았다.",
+      "sourceRefs": [
+        "spec:claims:synthetic-secret-absent-from-attempt-files"
+      ]
+    },
+    {
+      "id": "frozen-raw-sequences-unique-and-ordered",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "freeze를 포함한 actor scope의 raw sequence는 중복 없이 0부터 34까지 정렬돼 있었다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:34"
+      ]
+    },
+    {
+      "id": "every-frozen-raw-event-had-carrier",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "독립 재판독에서 raw sequence 0..34 모두 sdk.event.sequence 또는 process.event.sequence carrier span을 한 개 이상 가졌고 missing sequence는 없었다.",
+      "sourceRefs": [
+        "spec:claims:every-frozen-raw-event-had-carrier"
+      ]
+    },
+    {
+      "id": "scoped-spans-shared-one-trace-id",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "frozen scope의 36 span은 trace ID 364f6cd5afd822b09f164eea2911752e 하나를 공유했다.",
+      "sourceRefs": [
+        "spec:claims:scoped-spans-shared-one-trace-id"
+      ]
+    },
+    {
+      "id": "one-process-event-created-two-span-views",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "raw process sequence 19 하나는 carrier process.event span과 tool.execution span을 만들었다. 따라서 scoped raw 35와 span 36의 차이는 누락이 아니라 선언된 다중 관점이다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:19"
+      ]
+    },
+    {
+      "id": "final-files-include-post-freeze-bookkeeping",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "freeze 뒤 sdk.capture.finished process event, oracle.verdict와 root proof.attempt span이 추가되어 최종 파일은 raw 36개와 OTel 39개였다. scoped audit 분모와 사후 bookkeeping 분모를 분리했다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:35"
+      ]
+    },
+    {
+      "id": "terminal-metrics-match-raw-and-otel",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 33 raw Result와 대응 span은 cost 0.016301 USD, duration 7443ms, turns 2, model count 2, input/output 714/202, cache read/creation 842/1038을 정확히 같게 기록했다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:33"
+      ]
+    },
+    {
+      "id": "tool-id-survived-raw-and-otel",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "동일 tool_use_id가 raw ToolUse sequence 18, raw ToolResult sequence 23과 OTel sequence 11, 18, 23의 link attribute에 남았다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:18",
+        "attempt:152259-0e968386:sdk-message:23"
+      ]
+    },
+    {
+      "id": "otel-attributes-were-bounded",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "최종 OTel JSONL의 attribute key에는 payload, prompt, content가 없었고 합성 secret도 없었다. sequence, type, session/tool link와 terminal 수치만 남았다.",
+      "sourceRefs": [
+        "spec:claims:otel-attributes-were-bounded"
+      ]
+    },
+    {
+      "id": "auxiliary-haiku-usage-recorded",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 33 Result.model_usage에는 claude-opus-5와 claude-haiku-4-5-20251001이 함께 있었다. visible assistant response model과 provider billing labels를 분리해야 한다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:33"
+      ]
+    },
+    {
+      "id": "attempt-integrity-files-match",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "출판 전 integrity manifest가 선언한 manifest, verdict, raw SDK/process/callback, OTel, derived audit 8개 파일의 SHA-256을 직접 재계산했고 모두 일치했다.",
+      "sourceRefs": [
+        "spec:claims:attempt-integrity-files-match"
+      ]
+    },
+    {
+      "id": "empty-hook-and-permission-files-observed",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "hook-callbacks.jsonl과 permission-callbacks.jsonl은 빈 파일 SHA e3b0...를 가졌다. 이번 dontAsk read-only MCP roundtrip에서 해당 callback 사건은 발생하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:empty-hook-and-permission-files-observed"
+      ]
+    },
+    {
+      "id": "sequence-index-supports-gated-raw-lookup",
+      "status": "inferred",
+      "evidenceLevel": "Inferred",
+      "summary": "bounded span의 source sequence와 tool ID는 별도 권한이 있는 시스템이 durable raw envelope를 찾아가는 index로 사용할 수 있다. 실제 접근 제어 시스템 자체는 이번 run에서 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:sequence-index-supports-gated-raw-lookup"
+      ]
+    },
+    {
+      "id": "dashboard-is-a-consumer-not-source",
+      "status": "inferred",
+      "evidenceLevel": "Inferred",
+      "summary": "이번 사슬은 대시보드 없이 raw와 projection을 대조해 판정했다. 따라서 교육적으로 대시보드는 증거 생산자가 아니라 검증된 source chain의 소비자로 설명하는 편이 타당하다.",
+      "sourceRefs": [
+        "spec:claims:dashboard-is-a-consumer-not-source"
+      ]
+    },
+    {
+      "id": "redacted-raw-is-not-byte-identical-provider-payload",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "이 저장소의 raw archive는 provider bytes를 무가공 보존한 파일이 아니다. 공개 SDK shape와 순서를 유지하되 credential을 저장 전에 제거한 durable redacted envelope라고 불러야 한다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:15",
+        "attempt:152259-0e968386:sdk-message:18"
+      ]
+    },
+    {
+      "id": "local-jsonl-otel-is-not-native-sdk-otel-export",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "이번 OTel은 book_sdk_proof의 JsonlSpanExporter와 ProofTrace가 raw recorder 사건을 투영한 application instrumentation이다. CLAUDE_CODE_ENABLE_TELEMETRY와 OTLP exporter를 사용하는 native Claude runtime OTel을 실행한 증거로 이름 바꾸면 안 된다.",
+      "sourceRefs": [
+        "spec:claims:local-jsonl-otel-is-not-native-sdk-otel-export"
+      ]
+    },
+    {
+      "id": "init-model-is-not-response-model-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "역사적 chapter29 capture_facts는 manifest actual_model을 init.model에서 계산했다. 실제 응답 모델 판정은 sequence 9, 18, 29 AssistantMessage.model을 사용해야 하며 현재 probe를 그 기준으로 수정했다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:2",
+        "attempt:152259-0e968386:sdk-message:9"
+      ]
+    },
+    {
+      "id": "opus-response-is-not-opus-only-provider-run",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "세 AssistantMessage가 Opus 5였다는 관찰을 provider run 전체가 Opus만 사용했다는 주장으로 확대하면 안 된다. Result model_usage에는 보조 Haiku가 있다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:33"
+      ]
+    },
+    {
+      "id": "raw-count-need-not-equal-span-count",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "raw count와 span count의 수치 일치만 완전성 조건으로 사용하면 sequence 19의 합법적인 다중 관점을 실패로 오판한다. carrier coverage와 projection cardinality 규칙을 함께 검사해야 한다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:19"
+      ]
+    },
+    {
+      "id": "carrier-coverage-is-not-semantic-completeness",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "모든 raw sequence에 carrier가 있다는 사실은 projector가 사건을 누락하지 않았다는 조건일 뿐 각 span이 충분한 의미를 담거나 provider 동작 전체를 포착했다는 증명은 아니다.",
+      "sourceRefs": [
+        "spec:claims:carrier-coverage-is-not-semantic-completeness"
+      ]
+    },
+    {
+      "id": "otel-is-not-independent-provider-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "OTel span은 같은 AttemptRecorder가 redacted raw event를 받은 직후 만든 projection이다. raw와 sequence가 맞는 것은 수집 파이프라인 검증이지 독립 provider 관측 두 개가 일치한 것이 아니다.",
+      "sourceRefs": [
+        "spec:claims:otel-is-not-independent-provider-proof"
+      ]
+    },
+    {
+      "id": "fsync-code-path-is-not-syscall-trace",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "writer와 exporter 구현이 os.fsync를 호출하고 최종 artifact가 남은 것은 구현·정상 경로 증거다. 이번 raw/OTel에는 fsync syscall receipt가 없으므로 fsync 자체를 runtime event로 직접 관찰했다고 표현하면 안 된다.",
+      "sourceRefs": [
+        "spec:claims:fsync-code-path-is-not-syscall-trace"
+      ]
+    },
+    {
+      "id": "normal-flush-does-not-prove-failure-recovery",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "proof_trace finally가 force_flush와 shutdown을 호출하고 최종 span 파일이 완성됐지만 exporter failure, disk full, process kill 뒤 retry나 recovery를 증명하지 않는다.",
+      "sourceRefs": [
+        "spec:claims:normal-flush-does-not-prove-failure-recovery"
+      ]
+    },
+    {
+      "id": "historical-source-hash-did-not-bind-probe-code",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "historical manifest source_hash는 당시 ch29.md bytes만 묶었고 chapter29.py, runtime, audit, redaction implementation hash를 option_summary에 보존하지 않았다. 현재 코드를 당시 실행 인과로 소급 확정하면 안 된다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:0"
+      ]
+    },
+    {
+      "id": "canary-redaction-is-not-general-pii-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "Anthropic 형식의 합성 canary와 api_key 민감 key의 네 경로 제거는 관찰됐지만 모든 credential 형식, 자유문 PII, nested binary attachment까지 탐지한다고 일반화하면 안 된다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:35"
+      ]
+    },
+    {
+      "id": "billing-labels-do-not-reveal-auxiliary-role",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "Haiku와 Opus token/cost 합계는 raw Result에 있지만 Haiku가 어떤 내부 작업을 맡았는지는 event에 없다. 비용 label을 내부 역할 설명으로 바꾸면 안 된다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:33"
+      ]
+    },
+    {
+      "id": "empty-callback-file-is-not-global-policy-absence",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "이번 attempt에 hook/permission callback row가 없었다는 사실은 Claude runtime 전체에 권한 정책이나 내부 gate가 없었다는 뜻이 아니다. 이 case에 등록·발생한 callback이 없었다는 범위만 말해야 한다.",
+      "sourceRefs": [
+        "spec:claims:empty-callback-file-is-not-global-policy-absence"
+      ]
+    },
+    {
+      "id": "eight-pass-audit-is-not-complete-observability-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "8개 audit check PASS는 이 장이 선언한 frozen scope와 schema에 대한 판정이다. 누락된 event family, 외부 exporter, access control, 장애 복구까지 프로덕션 옵저버빌리티 전체가 완성됐다는 인증은 아니다.",
+      "sourceRefs": [
+        "spec:claims:eight-pass-audit-is-not-complete-observability-proof"
+      ]
+    },
+    {
+      "id": "native-claude-otel-export-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "CLAUDE_CODE_ENABLE_TELEMETRY, OTEL_* exporter 환경 변수와 collector를 사용한 Claude runtime native OTel export는 이번 case에서 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:native-claude-otel-export-not-observed"
+      ]
+    },
+    {
+      "id": "exporter-failure-disk-retry-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "JsonlSpanExporter write/fsync 실패, disk full, retry queue와 재전송은 정상 성공 case에서 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:exporter-failure-disk-retry-not-observed"
+      ]
+    },
+    {
+      "id": "remote-datadog-allowlist-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "Datadog 또는 다른 원격 collector exporter와 production attribute allowlist는 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:remote-datadog-allowlist-not-observed"
+      ]
+    },
+    {
+      "id": "perfetto-projection-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "Perfetto trace 생성, 로드, 타임라인 readback은 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:perfetto-projection-not-observed"
+      ]
+    },
+    {
+      "id": "genkit-projection-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "이 attempt를 Genkit evidence graph로 변환하고 graph node lineage를 재조회하는 과정은 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:genkit-projection-not-observed"
+      ]
+    },
+    {
+      "id": "opik-remote-evaluation-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "이 attempt의 trajectory 또는 claim evaluation을 Opik 원격 저장소에 올리고 readback하는 과정은 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:opik-remote-evaluation-not-observed"
+      ]
+    },
+    {
+      "id": "abnormal-shutdown-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "SIGKILL, process crash, interpreter abort 같은 비정상 종료에서 raw writer와 OTel exporter가 어떤 상태를 보존하는지는 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:abnormal-shutdown-not-observed"
+      ]
+    },
+    {
+      "id": "access-control-readback-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "OTel sequence로 권한이 통제된 raw archive를 조회하는 실제 사용자·서비스 authorization flow는 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:access-control-readback-not-observed"
+      ]
+    },
+    {
+      "id": "native-otel-comparison-required",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "cookbook이 설명하는 native Claude OTel을 가르치려면 로컬 OTLP collector를 붙인 순차 run을 별도로 실행하고 native event schema를 application ProofTrace와 나란히 비교해야 한다.",
+      "sourceRefs": [
+        "spec:claims:native-otel-comparison-required"
+      ]
+    },
+    {
+      "id": "source-bound-probe-rerun-required",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "완전한 provenance를 위해 ch29.md뿐 아니라 chapter29.py, runtime, audit, redaction, telemetry source hash와 public prompt hash를 manifest에 묶은 새 bounded run이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:source-bound-probe-rerun-required"
+      ]
+    },
+    {
+      "id": "crash-and-disk-failure-matrix-required",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "durability를 프로덕션 수준으로 말하려면 exporter write failure, fsync failure, disk full, process termination, recovery scan을 각각 통제된 child process case로 관찰해야 한다.",
+      "sourceRefs": [
+        "spec:claims:crash-and-disk-failure-matrix-required"
+      ]
+    },
+    {
+      "id": "redaction-matrix-required",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "일반 비밀·PII 보호 범위를 말하려면 여러 credential prefix, 민감 key, nested arrays, free text, unicode, binary metadata를 포함한 저장 경로별 redaction matrix가 필요하다.",
+      "sourceRefs": [
+        "spec:claims:redaction-matrix-required"
+      ]
+    },
+    {
+      "id": "external-lineage-readback-required",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "Genkit, Opik 또는 production collector lineage를 가르치려면 raw sequence -> OTel span -> external node -> claim -> evaluation ID를 실제 업로드와 readback으로 다시 연결해야 한다.",
+      "sourceRefs": [
+        "spec:claims:external-lineage-readback-required"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "book-sdk-live-20260803:prompt",
+      "sequence": 0,
+      "timestampOffsetMs": 0,
+      "actor": "user",
+      "eventType": "prompt.submitted",
+      "pixelState": "briefing",
+      "evidenceLevel": "Configured",
+      "summary": "실제 read-only MCP tool roundtrip 하나를 실행하고 합성 credential canary가 prompt, streaming delta, 완성 ToolUse, host handler 저장 경로에서 제거되는지 확인한다. frozen raw sequence마다 bounded OTel carrier가 있는지, tool ID와 terminal 비용·캐시 수치가 raw와 projection에서 같은지 독립 재판독한다.",
+      "sourceRefs": [
+        "publication-spec:public_prompt"
+      ]
+    },
+    {
+      "id": "152259-0e968386:process:0",
+      "sequence": 1,
+      "timestampOffsetMs": 1000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:0"
+      ],
+      "attemptId": "152259-0e968386"
+    },
+    {
+      "id": "152259-0e968386:process:1",
+      "sequence": 2,
+      "timestampOffsetMs": 1001,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.actor.prompt",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:1"
+      ],
+      "attemptId": "152259-0e968386"
+    },
+    {
+      "id": "152259-0e968386:sdk.init",
+      "sequence": 3,
+      "timestampOffsetMs": 2316,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "합성 canary가 포함된 실제 MCP roundtrip과 raw-to-OTel 감사: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:2"
+      ],
+      "attemptId": "152259-0e968386",
+      "caseId": "raw-otel-redaction-lineage"
+    },
+    {
+      "id": "152259-0e968386:toolu_019A8PTzENKthALmz3BGsnFH",
+      "sequence": 4,
+      "timestampOffsetMs": 6051,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__telemetry_lab__lookup {}",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:18"
+      ],
+      "attemptId": "152259-0e968386",
+      "caseId": "raw-otel-redaction-lineage",
+      "toolName": "mcp__telemetry_lab__lookup",
+      "toolUseId": "152259-0e968386:toolu_019A8PTzENKthALmz3BGsnFH"
+    },
+    {
+      "id": "152259-0e968386:process:19",
+      "sequence": 5,
+      "timestampOffsetMs": 6055,
+      "actor": "tool",
+      "eventType": "tool.execution",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host executed mcp__telemetry_lab__lookup: marker-returned",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:19"
+      ],
+      "attemptId": "152259-0e968386",
+      "toolName": "mcp__telemetry_lab__lookup",
+      "outcome": "marker-returned"
+    },
+    {
+      "id": "152259-0e968386:message_stop:22",
+      "sequence": 6,
+      "timestampOffsetMs": 6061,
+      "actor": "runtime",
+      "eventType": "stream.lifecycle",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:22"
+      ],
+      "attemptId": "152259-0e968386"
+    },
+    {
+      "id": "152259-0e968386:toolu_019A8PTzENKthALmz3BGsnFH:result",
+      "sequence": 7,
+      "timestampOffsetMs": 6065,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "mcp__telemetry_lab__lookup: result received",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:23"
+      ],
+      "attemptId": "152259-0e968386",
+      "toolName": "mcp__telemetry_lab__lookup",
+      "toolUseId": "152259-0e968386:toolu_019A8PTzENKthALmz3BGsnFH",
+      "isError": false
+    },
+    {
+      "id": "152259-0e968386:message_stop:32",
+      "sequence": 8,
+      "timestampOffsetMs": 9752,
+      "actor": "runtime",
+      "eventType": "stream.lifecycle",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:32"
+      ],
+      "attemptId": "152259-0e968386"
+    },
+    {
+      "id": "152259-0e968386:result",
+      "sequence": 9,
+      "timestampOffsetMs": 9754,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:33"
+      ],
+      "attemptId": "152259-0e968386",
+      "isError": false
+    },
+    {
+      "id": "152259-0e968386:process:34",
+      "sequence": 10,
+      "timestampOffsetMs": 10290,
+      "actor": "runtime",
+      "eventType": "evidence.frozen",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "raw observation scope frozen",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:34"
+      ],
+      "attemptId": "152259-0e968386"
+    },
+    {
+      "id": "152259-0e968386:process:35",
+      "sequence": 11,
+      "timestampOffsetMs": 10293,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:35"
+      ],
+      "attemptId": "152259-0e968386"
+    },
+    {
+      "id": "claim:controlled-tool-contract-configured",
+      "sequence": 12,
+      "timestampOffsetMs": 10993,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Configured",
+      "summary": "host는 실제 read-only mcp__telemetry_lab__lookup을 정확히 한 번 호출하고 marker ToolResult 뒤 exact final marker를 반환하도록 구성했다. api_key 값은 실제 credential이 아니라 attempt별 합성 redaction canary였다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:manifest:option_summary"
+      ],
+      "claimStatus": "configured"
+    },
+    {
+      "id": "claim:durable-redaction-recorder-configured",
+      "sequence": 13,
+      "timestampOffsetMs": 11393,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Configured",
+      "summary": "AttemptRecorder는 SDK, hook, permission, host process 사건에 하나의 monotonic sequence를 부여하고 저장 전에 credential pattern과 민감 key를 redaction하도록 구현됐다. writer와 atomic commit 경로는 fsync를 호출한다.",
+      "sourceRefs": [
+        "spec:claims:durable-redaction-recorder-configured"
+      ],
+      "claimStatus": "configured"
+    },
+    {
+      "id": "claim:bounded-local-otel-projection-configured",
+      "sequence": 14,
+      "timestampOffsetMs": 11793,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Configured",
+      "summary": "장 전용 proof는 같은 recorder 사건에서 sequence, message type, session/tool link와 terminal 운영 수치만 남기는 로컬 JsonlSpanExporter projection을 구성했다. prompt, content, payload 본문은 span attribute allowlist에 넣지 않았다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:manifest:option_summary"
+      ],
+      "claimStatus": "configured"
+    },
+    {
+      "id": "claim:single-run-permission-boundary-configured",
+      "sequence": 15,
+      "timestampOffsetMs": 12193,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Configured",
+      "summary": "provider run concurrency는 1, permission_mode는 dontAsk, fallback_model은 None으로 구성했고 lookup 외 built-in 변경·탐색 도구를 disallow했다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:manifest:option_summary"
+      ],
+      "claimStatus": "configured"
+    },
+    {
+      "id": "claim:all-assistant-messages-used-opus5",
+      "sequence": 16,
+      "timestampOffsetMs": 12593,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 9, 18, 29의 세 AssistantMessage.model은 모두 claude-opus-5였다. 실제 응답 모델 판정은 init 설정값이 아니라 이 원시 assistant message에서 재판독했다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:9",
+        "attempt:152259-0e968386:sdk-message:18",
+        "attempt:152259-0e968386:sdk-message:29"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:init-exposed-connected-mcp-tool",
+      "sequence": 17,
+      "timestampOffsetMs": 12993,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 2 init은 claude-opus-5, permissionMode dontAsk, telemetry_lab connected와 tools=[mcp__telemetry_lab__lookup]을 기록했다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:2"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:actual-mcp-tool-use-observed",
+      "sequence": 18,
+      "timestampOffsetMs": 13393,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 18 AssistantMessage에는 mcp__telemetry_lab__lookup ToolUseBlock이 한 건 있었고 tool_use_id toolu_019A8PTzENKthALmz3BGsnFH와 redacted input을 보존했다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:18"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:host-handler-execution-observed",
+      "sequence": 19,
+      "timestampOffsetMs": 13793,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 19 host process event는 lookup handler가 실제 입력을 검사하고 marker-returned outcome을 기록했음을 보여 준다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:19"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:tool-result-id-linked",
+      "sequence": 20,
+      "timestampOffsetMs": 14193,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 23 UserMessage의 ToolResultBlock은 sequence 18과 같은 tool_use_id를 보존하고 TELEMETRY_TOOL_RESULT marker를 반환했다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:18",
+        "attempt:152259-0e968386:sdk-message:23"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:terminal-result-succeeded",
+      "sequence": 21,
+      "timestampOffsetMs": 14593,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 33 ResultMessage는 subtype success, is_error false, num_turns 2였고 실제 ToolResult 뒤 요구한 TELEMETRY_FINAL marker로 종료했다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:33"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:host-prompt-redacted-on-storage",
+      "sequence": 22,
+      "timestampOffsetMs": 14993,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 1 host.actor.prompt의 합성 canary 본문은 저장 전에 [REDACTED]로 바뀌고 event.payload.prompt redacted path가 남았다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:1"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:streaming-partial-json-redacted",
+      "sequence": 23,
+      "timestampOffsetMs": 15393,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 15 input_json_delta.partial_json의 api_key 값은 [REDACTED]로 저장되고 payload.event.delta.partial_json 경로가 기록됐다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:15"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:completed-tool-input-redacted",
+      "sequence": 24,
+      "timestampOffsetMs": 15793,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 18 완성 ToolUseBlock input의 api_key는 [REDACTED]였고 payload와 event alias 양쪽 redacted path가 기록됐다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:18"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:handler-input-redacted-on-storage",
+      "sequence": 25,
+      "timestampOffsetMs": 16193,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 19 handler process event의 tool_input.api_key도 [REDACTED]로 저장됐지만 handler outcome은 marker-returned로 남았다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:19"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:synthetic-secret-absent-from-attempt-files",
+      "sequence": 26,
+      "timestampOffsetMs": 16593,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "출판 전 attempt 전체를 다시 검색했으며 합성 credential canary와 credential 환경 변수 값은 0건이었다. 네 redaction sequence에는 [REDACTED]와 경로 receipt가 남았다.",
+      "sourceRefs": [
+        "spec:claims:synthetic-secret-absent-from-attempt-files"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:frozen-raw-sequences-unique-and-ordered",
+      "sequence": 27,
+      "timestampOffsetMs": 16993,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "freeze를 포함한 actor scope의 raw sequence는 중복 없이 0부터 34까지 정렬돼 있었다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:34"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:every-frozen-raw-event-had-carrier",
+      "sequence": 28,
+      "timestampOffsetMs": 17393,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "독립 재판독에서 raw sequence 0..34 모두 sdk.event.sequence 또는 process.event.sequence carrier span을 한 개 이상 가졌고 missing sequence는 없었다.",
+      "sourceRefs": [
+        "spec:claims:every-frozen-raw-event-had-carrier"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:scoped-spans-shared-one-trace-id",
+      "sequence": 29,
+      "timestampOffsetMs": 17793,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "frozen scope의 36 span은 trace ID 364f6cd5afd822b09f164eea2911752e 하나를 공유했다.",
+      "sourceRefs": [
+        "spec:claims:scoped-spans-shared-one-trace-id"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:one-process-event-created-two-span-views",
+      "sequence": 30,
+      "timestampOffsetMs": 18193,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "raw process sequence 19 하나는 carrier process.event span과 tool.execution span을 만들었다. 따라서 scoped raw 35와 span 36의 차이는 누락이 아니라 선언된 다중 관점이다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:19"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:final-files-include-post-freeze-bookkeeping",
+      "sequence": 31,
+      "timestampOffsetMs": 18593,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "freeze 뒤 sdk.capture.finished process event, oracle.verdict와 root proof.attempt span이 추가되어 최종 파일은 raw 36개와 OTel 39개였다. scoped audit 분모와 사후 bookkeeping 분모를 분리했다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:35"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:terminal-metrics-match-raw-and-otel",
+      "sequence": 32,
+      "timestampOffsetMs": 18993,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 33 raw Result와 대응 span은 cost 0.016301 USD, duration 7443ms, turns 2, model count 2, input/output 714/202, cache read/creation 842/1038을 정확히 같게 기록했다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:33"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:tool-id-survived-raw-and-otel",
+      "sequence": 33,
+      "timestampOffsetMs": 19393,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "동일 tool_use_id가 raw ToolUse sequence 18, raw ToolResult sequence 23과 OTel sequence 11, 18, 23의 link attribute에 남았다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:18",
+        "attempt:152259-0e968386:sdk-message:23"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:otel-attributes-were-bounded",
+      "sequence": 34,
+      "timestampOffsetMs": 19793,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "최종 OTel JSONL의 attribute key에는 payload, prompt, content가 없었고 합성 secret도 없었다. sequence, type, session/tool link와 terminal 수치만 남았다.",
+      "sourceRefs": [
+        "spec:claims:otel-attributes-were-bounded"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:auxiliary-haiku-usage-recorded",
+      "sequence": 35,
+      "timestampOffsetMs": 20193,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 33 Result.model_usage에는 claude-opus-5와 claude-haiku-4-5-20251001이 함께 있었다. visible assistant response model과 provider billing labels를 분리해야 한다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:33"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:attempt-integrity-files-match",
+      "sequence": 36,
+      "timestampOffsetMs": 20593,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "출판 전 integrity manifest가 선언한 manifest, verdict, raw SDK/process/callback, OTel, derived audit 8개 파일의 SHA-256을 직접 재계산했고 모두 일치했다.",
+      "sourceRefs": [
+        "spec:claims:attempt-integrity-files-match"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:empty-hook-and-permission-files-observed",
+      "sequence": 37,
+      "timestampOffsetMs": 20993,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "hook-callbacks.jsonl과 permission-callbacks.jsonl은 빈 파일 SHA e3b0...를 가졌다. 이번 dontAsk read-only MCP roundtrip에서 해당 callback 사건은 발생하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:empty-hook-and-permission-files-observed"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:sequence-index-supports-gated-raw-lookup",
+      "sequence": 38,
+      "timestampOffsetMs": 21393,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Inferred",
+      "summary": "bounded span의 source sequence와 tool ID는 별도 권한이 있는 시스템이 durable raw envelope를 찾아가는 index로 사용할 수 있다. 실제 접근 제어 시스템 자체는 이번 run에서 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:sequence-index-supports-gated-raw-lookup"
+      ],
+      "claimStatus": "inferred"
+    },
+    {
+      "id": "claim:dashboard-is-a-consumer-not-source",
+      "sequence": 39,
+      "timestampOffsetMs": 21793,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Inferred",
+      "summary": "이번 사슬은 대시보드 없이 raw와 projection을 대조해 판정했다. 따라서 교육적으로 대시보드는 증거 생산자가 아니라 검증된 source chain의 소비자로 설명하는 편이 타당하다.",
+      "sourceRefs": [
+        "spec:claims:dashboard-is-a-consumer-not-source"
+      ],
+      "claimStatus": "inferred"
+    },
+    {
+      "id": "claim:redacted-raw-is-not-byte-identical-provider-payload",
+      "sequence": 40,
+      "timestampOffsetMs": 22193,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "이 저장소의 raw archive는 provider bytes를 무가공 보존한 파일이 아니다. 공개 SDK shape와 순서를 유지하되 credential을 저장 전에 제거한 durable redacted envelope라고 불러야 한다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:15",
+        "attempt:152259-0e968386:sdk-message:18"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:local-jsonl-otel-is-not-native-sdk-otel-export",
+      "sequence": 41,
+      "timestampOffsetMs": 22593,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "이번 OTel은 book_sdk_proof의 JsonlSpanExporter와 ProofTrace가 raw recorder 사건을 투영한 application instrumentation이다. CLAUDE_CODE_ENABLE_TELEMETRY와 OTLP exporter를 사용하는 native Claude runtime OTel을 실행한 증거로 이름 바꾸면 안 된다.",
+      "sourceRefs": [
+        "spec:claims:local-jsonl-otel-is-not-native-sdk-otel-export"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:init-model-is-not-response-model-proof",
+      "sequence": 42,
+      "timestampOffsetMs": 22993,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "역사적 chapter29 capture_facts는 manifest actual_model을 init.model에서 계산했다. 실제 응답 모델 판정은 sequence 9, 18, 29 AssistantMessage.model을 사용해야 하며 현재 probe를 그 기준으로 수정했다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:2",
+        "attempt:152259-0e968386:sdk-message:9"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:opus-response-is-not-opus-only-provider-run",
+      "sequence": 43,
+      "timestampOffsetMs": 23393,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "세 AssistantMessage가 Opus 5였다는 관찰을 provider run 전체가 Opus만 사용했다는 주장으로 확대하면 안 된다. Result model_usage에는 보조 Haiku가 있다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:33"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:raw-count-need-not-equal-span-count",
+      "sequence": 44,
+      "timestampOffsetMs": 23793,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "raw count와 span count의 수치 일치만 완전성 조건으로 사용하면 sequence 19의 합법적인 다중 관점을 실패로 오판한다. carrier coverage와 projection cardinality 규칙을 함께 검사해야 한다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:19"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:carrier-coverage-is-not-semantic-completeness",
+      "sequence": 45,
+      "timestampOffsetMs": 24193,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "모든 raw sequence에 carrier가 있다는 사실은 projector가 사건을 누락하지 않았다는 조건일 뿐 각 span이 충분한 의미를 담거나 provider 동작 전체를 포착했다는 증명은 아니다.",
+      "sourceRefs": [
+        "spec:claims:carrier-coverage-is-not-semantic-completeness"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:otel-is-not-independent-provider-proof",
+      "sequence": 46,
+      "timestampOffsetMs": 24593,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "OTel span은 같은 AttemptRecorder가 redacted raw event를 받은 직후 만든 projection이다. raw와 sequence가 맞는 것은 수집 파이프라인 검증이지 독립 provider 관측 두 개가 일치한 것이 아니다.",
+      "sourceRefs": [
+        "spec:claims:otel-is-not-independent-provider-proof"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:fsync-code-path-is-not-syscall-trace",
+      "sequence": 47,
+      "timestampOffsetMs": 24993,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "writer와 exporter 구현이 os.fsync를 호출하고 최종 artifact가 남은 것은 구현·정상 경로 증거다. 이번 raw/OTel에는 fsync syscall receipt가 없으므로 fsync 자체를 runtime event로 직접 관찰했다고 표현하면 안 된다.",
+      "sourceRefs": [
+        "spec:claims:fsync-code-path-is-not-syscall-trace"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:normal-flush-does-not-prove-failure-recovery",
+      "sequence": 48,
+      "timestampOffsetMs": 25393,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "proof_trace finally가 force_flush와 shutdown을 호출하고 최종 span 파일이 완성됐지만 exporter failure, disk full, process kill 뒤 retry나 recovery를 증명하지 않는다.",
+      "sourceRefs": [
+        "spec:claims:normal-flush-does-not-prove-failure-recovery"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:historical-source-hash-did-not-bind-probe-code",
+      "sequence": 49,
+      "timestampOffsetMs": 25793,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "historical manifest source_hash는 당시 ch29.md bytes만 묶었고 chapter29.py, runtime, audit, redaction implementation hash를 option_summary에 보존하지 않았다. 현재 코드를 당시 실행 인과로 소급 확정하면 안 된다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:0"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:canary-redaction-is-not-general-pii-proof",
+      "sequence": 50,
+      "timestampOffsetMs": 26193,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "Anthropic 형식의 합성 canary와 api_key 민감 key의 네 경로 제거는 관찰됐지만 모든 credential 형식, 자유문 PII, nested binary attachment까지 탐지한다고 일반화하면 안 된다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:process-event:35"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:billing-labels-do-not-reveal-auxiliary-role",
+      "sequence": 51,
+      "timestampOffsetMs": 26593,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "Haiku와 Opus token/cost 합계는 raw Result에 있지만 Haiku가 어떤 내부 작업을 맡았는지는 event에 없다. 비용 label을 내부 역할 설명으로 바꾸면 안 된다.",
+      "sourceRefs": [
+        "attempt:152259-0e968386:sdk-message:33"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:empty-callback-file-is-not-global-policy-absence",
+      "sequence": 52,
+      "timestampOffsetMs": 26993,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "이번 attempt에 hook/permission callback row가 없었다는 사실은 Claude runtime 전체에 권한 정책이나 내부 gate가 없었다는 뜻이 아니다. 이 case에 등록·발생한 callback이 없었다는 범위만 말해야 한다.",
+      "sourceRefs": [
+        "spec:claims:empty-callback-file-is-not-global-policy-absence"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:eight-pass-audit-is-not-complete-observability-proof",
+      "sequence": 53,
+      "timestampOffsetMs": 27393,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "8개 audit check PASS는 이 장이 선언한 frozen scope와 schema에 대한 판정이다. 누락된 event family, 외부 exporter, access control, 장애 복구까지 프로덕션 옵저버빌리티 전체가 완성됐다는 인증은 아니다.",
+      "sourceRefs": [
+        "spec:claims:eight-pass-audit-is-not-complete-observability-proof"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:native-claude-otel-export-not-observed",
+      "sequence": 54,
+      "timestampOffsetMs": 27793,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "CLAUDE_CODE_ENABLE_TELEMETRY, OTEL_* exporter 환경 변수와 collector를 사용한 Claude runtime native OTel export는 이번 case에서 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:native-claude-otel-export-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:exporter-failure-disk-retry-not-observed",
+      "sequence": 55,
+      "timestampOffsetMs": 28193,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "JsonlSpanExporter write/fsync 실패, disk full, retry queue와 재전송은 정상 성공 case에서 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:exporter-failure-disk-retry-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:remote-datadog-allowlist-not-observed",
+      "sequence": 56,
+      "timestampOffsetMs": 28593,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "Datadog 또는 다른 원격 collector exporter와 production attribute allowlist는 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:remote-datadog-allowlist-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:perfetto-projection-not-observed",
+      "sequence": 57,
+      "timestampOffsetMs": 28993,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "Perfetto trace 생성, 로드, 타임라인 readback은 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:perfetto-projection-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:genkit-projection-not-observed",
+      "sequence": 58,
+      "timestampOffsetMs": 29393,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "이 attempt를 Genkit evidence graph로 변환하고 graph node lineage를 재조회하는 과정은 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:genkit-projection-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:opik-remote-evaluation-not-observed",
+      "sequence": 59,
+      "timestampOffsetMs": 29793,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "이 attempt의 trajectory 또는 claim evaluation을 Opik 원격 저장소에 올리고 readback하는 과정은 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:opik-remote-evaluation-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:abnormal-shutdown-not-observed",
+      "sequence": 60,
+      "timestampOffsetMs": 30193,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "SIGKILL, process crash, interpreter abort 같은 비정상 종료에서 raw writer와 OTel exporter가 어떤 상태를 보존하는지는 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:abnormal-shutdown-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:access-control-readback-not-observed",
+      "sequence": 61,
+      "timestampOffsetMs": 30593,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "OTel sequence로 권한이 통제된 raw archive를 조회하는 실제 사용자·서비스 authorization flow는 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:access-control-readback-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:native-otel-comparison-required",
+      "sequence": 62,
+      "timestampOffsetMs": 30993,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "cookbook이 설명하는 native Claude OTel을 가르치려면 로컬 OTLP collector를 붙인 순차 run을 별도로 실행하고 native event schema를 application ProofTrace와 나란히 비교해야 한다.",
+      "sourceRefs": [
+        "spec:claims:native-otel-comparison-required"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:source-bound-probe-rerun-required",
+      "sequence": 63,
+      "timestampOffsetMs": 31393,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "완전한 provenance를 위해 ch29.md뿐 아니라 chapter29.py, runtime, audit, redaction, telemetry source hash와 public prompt hash를 manifest에 묶은 새 bounded run이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:source-bound-probe-rerun-required"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:crash-and-disk-failure-matrix-required",
+      "sequence": 64,
+      "timestampOffsetMs": 31793,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "durability를 프로덕션 수준으로 말하려면 exporter write failure, fsync failure, disk full, process termination, recovery scan을 각각 통제된 child process case로 관찰해야 한다.",
+      "sourceRefs": [
+        "spec:claims:crash-and-disk-failure-matrix-required"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:redaction-matrix-required",
+      "sequence": 65,
+      "timestampOffsetMs": 32193,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "일반 비밀·PII 보호 범위를 말하려면 여러 credential prefix, 민감 key, nested arrays, free text, unicode, binary metadata를 포함한 저장 경로별 redaction matrix가 필요하다.",
+      "sourceRefs": [
+        "spec:claims:redaction-matrix-required"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:external-lineage-readback-required",
+      "sequence": 66,
+      "timestampOffsetMs": 32593,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "Genkit, Opik 또는 production collector lineage를 가르치려면 raw sequence -> OTel span -> external node -> claim -> evaluation ID를 실제 업로드와 readback으로 다시 연결해야 한다.",
+      "sourceRefs": [
+        "spec:claims:external-lineage-readback-required"
+      ],
+      "claimStatus": "additional_observation_required"
+    }
+  ]
+}
