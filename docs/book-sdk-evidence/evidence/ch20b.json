@@ -1,0 +1,1595 @@
+{
+  "schemaVersion": "pixel-book-evidence.v1",
+  "generatedAt": "2026-08-04T08:47:32.340Z",
+  "title": "20b장 두 worker의 순차 handoff: leader 경유와 native Team의 경계",
+  "description": "Education Shell의 검증된 Book SDK 실행을 Pixel Agents 상태 문법으로 재생한 공개 projection",
+  "boundary": "Pixel Agents 제품이 이 실행을 수집했다는 뜻이 아니며, renderer는 source 판정을 변경하지 않는다.",
+  "source": {
+    "courseId": "book-sdk-ko",
+    "chapterSlug": "ch20b",
+    "campaignId": "book-sdk-live-20260803",
+    "traceId": "recorded:book-sdk-ko:ch20b:book-sdk-live-20260803:2026-08-04T08:19:14Z",
+    "traceSha256": "05227261d06be37b9253238fa5b3f616805c4731cd53a05d5ada1b2f165d86a4",
+    "summarySha256": "3932d510b7f6bc2cbf14a3251bf0d9f63e4a73b39b6b755d894b15e669a4875e",
+    "sourceEventCount": 82,
+    "publicEventCount": 69,
+    "model": "claude-opus-5",
+    "replayModels": [
+      "claude-opus-5"
+    ],
+    "citedModels": [
+      "claude-opus-5"
+    ],
+    "attemptIds": [
+      "132134-ef857460"
+    ],
+    "proofGate": "accepted_with_notes",
+    "secretScan": "passed"
+  },
+  "actors": [
+    {
+      "id": "user",
+      "label": "검증 프롬프트",
+      "role": "briefing",
+      "station": 0
+    },
+    {
+      "id": "runtime",
+      "label": "Python SDK 런타임",
+      "role": "control",
+      "station": 1
+    },
+    {
+      "id": "claude",
+      "label": "Claude Opus 5",
+      "role": "model",
+      "station": 2
+    },
+    {
+      "id": "tool",
+      "label": "SDK 도구 실행",
+      "role": "execution",
+      "station": 3
+    },
+    {
+      "id": "evaluator",
+      "label": "증거 판정기",
+      "role": "verification",
+      "station": 4
+    }
+  ],
+  "counts": {
+    "configuredClaims": 3,
+    "observedClaims": 22,
+    "inferredClaims": 1,
+    "notObservedClaims": 9,
+    "correctionRequired": 12,
+    "additionalObservationRequired": 5,
+    "invalidAttempts": 0
+  },
+  "claims": [
+    {
+      "id": "two-readonly-workers-configured",
+      "status": "configured",
+      "evidenceLevel": "Configured",
+      "summary": "research-reader와 handoff-reviewer는 모두 model inherit, tools Read, maxTurns 3, background false, permissionMode dontAsk로 구성됐고 Agent, Bash, Edit, Write를 disallow했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "sequential-leader-contract-configured",
+      "status": "configured",
+      "evidenceLevel": "Configured",
+      "summary": "leader stimulus는 첫 foreground Agent의 complete result를 기다린 뒤 그 결과 원문을 두 번째 foreground Agent prompt에 넣도록 구성됐고 provider run concurrency는 1로 설정됐다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "runtime-marker-host-boundary-configured",
+      "status": "configured",
+      "evidenceLevel": "Configured",
+      "summary": "host는 attempt마다 CH20B_RUNTIME_ 접두사의 새 값을 만들고 hash와 host.handoff-inputs event를 기록한 뒤 research.txt에 저장하도록 설계됐다. 이는 host 구성 사실이며 모델의 실제 Read와 구분한다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:process-event:1"
+      ]
+    },
+    {
+      "id": "all-assistant-messages-used-opus5",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 9, 21, 28, 40, 45, 58, 65, 76의 여덟 AssistantMessage.model은 모두 claude-opus-5였다. actual response model은 init 설정값이 아니라 원시 AssistantMessage에서 재판독했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:9",
+        "attempt:132134-ef857460:sdk-message:21",
+        "attempt:132134-ef857460:sdk-message:28",
+        "attempt:132134-ef857460:sdk-message:40",
+        "attempt:132134-ef857460:sdk-message:45",
+        "attempt:132134-ef857460:sdk-message:58",
+        "attempt:132134-ef857460:sdk-message:65",
+        "attempt:132134-ef857460:sdk-message:76"
+      ]
+    },
+    {
+      "id": "init-exposed-two-custom-workers",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 2 init은 research-reader와 handoff-reviewer를 agent 목록에 노출하고 tools에는 Task와 Read를 기록했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:2"
+      ]
+    },
+    {
+      "id": "first-agent-tool-use-observed",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 21에서 leader는 research-reader를 대상으로 run_in_background false인 첫 Agent ToolUse를 생성했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:21"
+      ]
+    },
+    {
+      "id": "first-task-start-linked",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 22 TaskStartedMessage는 첫 Agent tool_use_id와 research-reader, task_type local_agent, 고유 task_id를 연결했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:22"
+      ]
+    },
+    {
+      "id": "first-worker-prompt-had-no-marker",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 24의 nested research-reader prompt에는 RESEARCH_RESULT 형식 지시만 있고 runtime marker 값 자체는 없었다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:24"
+      ]
+    },
+    {
+      "id": "first-worker-read-linked",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 28의 research-reader AssistantMessage는 첫 Agent ID를 parent_tool_use_id로 보존한 Read ToolUse를 한 번 생성했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:28"
+      ]
+    },
+    {
+      "id": "first-read-returned-runtime-marker",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 29 ToolResult는 첫 worker Read ID와 첫 Agent parent ID 아래 CH20B_RUNTIME_69f13d30acdb420f 값을 반환했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:29"
+      ]
+    },
+    {
+      "id": "first-task-terminal-surfaces-observed",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 30 TaskUpdatedMessage와 sequence 31 TaskNotificationMessage는 같은 첫 task를 completed로 종료했고 notification summary에 research result를 보존했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:30",
+        "attempt:132134-ef857460:sdk-message:31"
+      ]
+    },
+    {
+      "id": "first-agent-result-returned-marker",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 32의 첫 Agent ToolResult는 research result, agentType research-reader, status completed, resolvedModel claude-opus-5, readCount 1을 기록했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:32"
+      ]
+    },
+    {
+      "id": "second-agent-started-after-first-terminal",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "첫 task terminal과 Agent result가 sequence 30~32에서 끝난 뒤 sequence 58에서 두 번째 Agent ToolUse가 시작됐다. 이번 run의 두 위임은 stream 순서상 순차였다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:30",
+        "attempt:132134-ef857460:sdk-message:32",
+        "attempt:132134-ef857460:sdk-message:58"
+      ]
+    },
+    {
+      "id": "second-agent-input-contained-first-result",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 58의 handoff-reviewer Agent input과 sequence 61 nested prompt에는 sequence 32의 RESEARCH_RESULT 원문이 그대로 포함됐다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:32",
+        "attempt:132134-ef857460:sdk-message:58",
+        "attempt:132134-ef857460:sdk-message:61"
+      ]
+    },
+    {
+      "id": "second-task-start-linked",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 59 TaskStartedMessage는 두 번째 Agent ID와 handoff-reviewer, 별도 task_id를 연결했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:59"
+      ]
+    },
+    {
+      "id": "second-worker-read-linked",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 65의 handoff-reviewer AssistantMessage는 두 번째 Agent ID 아래 review.txt Read ToolUse를 한 번 생성했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:65"
+      ]
+    },
+    {
+      "id": "second-read-returned-review-marker",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 66 ToolResult는 두 번째 worker Read ID와 parent Agent ID 아래 CH20B_REVIEW_FILE_CONFIRMED를 반환했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:66"
+      ]
+    },
+    {
+      "id": "second-task-terminal-surfaces-observed",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 67 TaskUpdatedMessage와 sequence 68 TaskNotificationMessage는 같은 두 번째 task를 completed로 종료했고 research marker와 review marker를 합친 summary를 보존했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:67",
+        "attempt:132134-ef857460:sdk-message:68"
+      ]
+    },
+    {
+      "id": "second-agent-result-returned-combined-review",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 69의 두 번째 Agent ToolResult는 두 marker를 합친 REVIEW_RESULT, agentType handoff-reviewer, resolvedModel claude-opus-5, readCount 1을 기록했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:69"
+      ]
+    },
+    {
+      "id": "leader-synthesis-and-success-observed",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 76 leader AssistantMessage와 sequence 80 Result는 combined review를 LEADER_TEAM_SYNTHESIS로 보존했고 subtype success, is_error false로 끝났다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:76",
+        "attempt:132134-ef857460:sdk-message:80"
+      ]
+    },
+    {
+      "id": "two-distinct-agent-and-task-identities",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "두 Agent ToolUse ID, 두 task ID, 두 agentId는 서로 달랐고 각 nested Read와 terminal event가 해당 parent에 분리 연결됐다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:21",
+        "attempt:132134-ef857460:sdk-message:22",
+        "attempt:132134-ef857460:sdk-message:58",
+        "attempt:132134-ef857460:sdk-message:59"
+      ]
+    },
+    {
+      "id": "observed-tool-inventory-was-agent-and-read-only",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "79개 raw SDK message의 ToolUseBlock은 Agent 2회와 Read 2회뿐이었다. Bash, Edit, Write, SendMessage, TeamCreate ToolUse는 없었다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:21",
+        "attempt:132134-ef857460:sdk-message:28",
+        "attempt:132134-ef857460:sdk-message:58",
+        "attempt:132134-ef857460:sdk-message:65"
+      ]
+    },
+    {
+      "id": "attempt-integrity-files-match",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "출판 전 재검증에서 integrity manifest가 선언한 manifest, verdict, raw SDK/process/callback, OTel 파일 7개의 SHA-256이 모두 일치했다.",
+      "sourceRefs": [
+        "spec:claims:attempt-integrity-files-match"
+      ]
+    },
+    {
+      "id": "raw-and-otel-sequences-align",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "원본에는 SDK message 79개와 host process event 3개가 있고 같은 AttemptRecorder가 만든 OTel span 84개는 단일 trace 1c64771cff603eaf8728f772e537ce90와 source sequence를 보존했다.",
+      "sourceRefs": [
+        "spec:claims:raw-and-otel-sequences-align"
+      ]
+    },
+    {
+      "id": "auxiliary-haiku-usage-recorded",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 80 Result.model_usage에는 claude-opus-5와 claude-haiku-4-5-20251001이 함께 있었다. 보이는 AssistantMessage 모델과 provider 내부 보조 사용량을 분리해야 한다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:80"
+      ]
+    },
+    {
+      "id": "initial-leader-prompt-marker-absence-inferred",
+      "status": "inferred",
+      "evidenceLevel": "Inferred",
+      "summary": "현재 저장소의 CH20b probe 소스에는 runtime marker literal이 없고 실행 시 uuid로 생성한다. 그러나 역사적 attempt는 당시 USER_PROMPT와 system prompt의 hash를 보존하지 않아 initial leader context의 marker 부재는 raw artifact만으로 직접 관찰되지 않는다.",
+      "sourceRefs": [
+        "spec:claims:initial-leader-prompt-marker-absence-inferred"
+      ]
+    },
+    {
+      "id": "runtime-only-causality-not-fully-proven",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "첫 worker prompt에는 marker가 없고 Read 뒤 두 번째 Agent input에 나타난 것은 관찰됐다. 하지만 initial leader/system prompt 부재가 provenance-bound되지 않았으므로 marker가 오직 첫 worker 결과 때문에 전달됐다고 완전한 인과로 단정하면 안 된다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:24",
+        "attempt:132134-ef857460:sdk-message:29",
+        "attempt:132134-ef857460:sdk-message:58"
+      ]
+    },
+    {
+      "id": "two-agent-definitions-are-not-native-team-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "두 AgentDefinition과 두 local_agent task를 실행한 사실을 Claude Code native Team, mailbox, shared claim loop 실행으로 이름 바꾸면 안 된다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:21",
+        "attempt:132134-ef857460:sdk-message:58"
+      ]
+    },
+    {
+      "id": "sendmessage-hint-is-not-tool-execution",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 32와 69 Agent ToolResult의 continuation 안내에는 SendMessage 문자열이 있지만 SendMessage ToolUseBlock은 한 건도 없다. capability hint와 실행 증거를 합치면 안 된다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:32",
+        "attempt:132134-ef857460:sdk-message:69"
+      ]
+    },
+    {
+      "id": "leader-mediated-edge-is-not-direct-worker-edge",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "첫 Agent result와 두 번째 Agent input은 모두 parent가 없는 leader lane에 있다. 시각화에서 worker A가 worker B에게 직접 메시지를 보낸 화살표로 그리면 안 된다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:32",
+        "attempt:132134-ef857460:sdk-message:58"
+      ]
+    },
+    {
+      "id": "terminal-success-alone-is-not-handoff-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "Result success와 최종 marker만으로 handoff를 증명할 수 없다. 첫 Agent result, 두 번째 Agent input, 각 parent_tool_use_id와 terminal 순서를 함께 연결해야 한다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:32",
+        "attempt:132134-ef857460:sdk-message:58",
+        "attempt:132134-ef857460:sdk-message:80"
+      ]
+    },
+    {
+      "id": "init-model-is-not-response-model-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "역사적 probe는 manifest actual_model을 init.model에서 계산했다. 실제 응답 모델 판정은 여덟 AssistantMessage.model을 재판독해야 하며 향후 probe를 그 기준으로 수정했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:2",
+        "attempt:132134-ef857460:sdk-message:9"
+      ]
+    },
+    {
+      "id": "opus-response-is-not-opus-only-provider-run",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "모든 AssistantMessage가 Opus 5였다는 관찰을 provider run 전체가 Opus만 사용했다는 주장으로 확대하면 안 된다. Result model_usage에는 보조 Haiku가 있다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:80"
+      ]
+    },
+    {
+      "id": "python-task-classes-have-no-sdk-prefix",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "현재 Python SDK 0.2.128의 class는 TaskStartedMessage, TaskProgressMessage, TaskUpdatedMessage, TaskNotificationMessage다. SDKTask*Message라고 가르치면 안 된다.",
+      "sourceRefs": [
+        "spec:claims:python-task-classes-have-no-sdk-prefix"
+      ]
+    },
+    {
+      "id": "agent-task-names-must-not-be-collapsed",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "ClaudeAgentOptions와 실제 ToolUse는 Agent를 사용했지만 init tools에는 Task가 기록됐다. Cookbook의 이전 Task 표면과 현재 raw Agent 실행을 하나의 고정 이름으로 합치면 안 된다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:2",
+        "attempt:132134-ef857460:sdk-message:21"
+      ]
+    },
+    {
+      "id": "otel-is-not-independent-provider-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "OTel 84개 span은 같은 AttemptRecorder가 raw SDK/process event를 투영한 결과다. sequence 정합성은 수집 파이프라인 검증이지 독립 provider 관측이 아니다.",
+      "sourceRefs": [
+        "spec:claims:otel-is-not-independent-provider-proof"
+      ]
+    },
+    {
+      "id": "historical-probe-source-was-not-bound",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "2026-08-03 manifest source_hash는 chapter bytes만 묶었고 chapter20b.py, cases, runtime prompt hash를 보존하지 않았다. 향후 probe는 세 source hash를 option summary에 기록하도록 수정했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:process-event:0"
+      ]
+    },
+    {
+      "id": "configured-concurrency-is-not-sequential-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "provider_run_concurrency 1과 foreground 설정은 의도일 뿐 순차 실행 증거가 아니다. 실제 순차 판정은 first terminal/result sequence 30~32가 second Agent sequence 58보다 앞선 raw stream에서 나온다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:manifest:option_summary",
+        "attempt:132134-ef857460:sdk-message:32",
+        "attempt:132134-ef857460:sdk-message:58"
+      ]
+    },
+    {
+      "id": "direct-worker-message-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "worker A가 worker B에게 직접 보낸 message event나 parent edge는 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:direct-worker-message-not-observed"
+      ]
+    },
+    {
+      "id": "sendmessage-tool-use-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "Agent ToolResult의 안내 문자열 외에 SendMessage ToolUse 또는 result는 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:sendmessage-tool-use-not-observed"
+      ]
+    },
+    {
+      "id": "native-team-mailbox-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "TeamCreate, mailbox, UDS inbox, peer mailbox delivery를 나타내는 ToolUse나 event는 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:native-team-mailbox-not-observed"
+      ]
+    },
+    {
+      "id": "shared-task-claim-loop-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "shared TaskList에서 owner를 claim하거나 release하는 협업 loop는 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:shared-task-claim-loop-not-observed"
+      ]
+    },
+    {
+      "id": "worktree-isolation-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "worker별 git worktree 생성, checkout, 파일 격리 또는 merge는 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:worktree-isolation-not-observed"
+      ]
+    },
+    {
+      "id": "team-memory-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "공유 또는 worker별 team memory write/read는 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:team-memory-not-observed"
+      ]
+    },
+    {
+      "id": "parallel-worker-overlap-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "두 worker가 동시에 실행되거나 event 구간이 겹치는 병렬 실행은 이 순차 foreground run에서 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:parallel-worker-overlap-not-observed"
+      ]
+    },
+    {
+      "id": "background-worker-lifecycle-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "background=true worker, stream close 이후 terminal TaskUpdated, stop_task 수명 경계는 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:background-worker-lifecycle-not-observed"
+      ]
+    },
+    {
+      "id": "failure-cancel-retry-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "첫 또는 두 번째 worker 실패, cancellation, maxTurns 소진, retry와 leader recovery는 성공 case에서 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:failure-cancel-retry-not-observed"
+      ]
+    },
+    {
+      "id": "source-bound-runtime-marker-rerun-required",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "runtime-only 인과를 직접 증명하려면 initial user/system/worker prompt hash와 probe source hashes를 manifest에 묶은 새 순차 run이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:source-bound-runtime-marker-rerun-required"
+      ]
+    },
+    {
+      "id": "native-team-mailbox-run-required",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "native Team을 가르치려면 TeamCreate 또는 공식 team lifecycle, mailbox delivery, peer identity, shared task claim을 원시 event로 보존하는 별도 run이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:native-team-mailbox-run-required"
+      ]
+    },
+    {
+      "id": "sendmessage-continuation-run-required",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "SendMessage continuation의 실제 의미를 가르치려면 기존 agentId에 SendMessage를 호출하고 해당 ToolUse/result와 후속 worker event를 연결하는 별도 run이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:sendmessage-continuation-run-required"
+      ]
+    },
+    {
+      "id": "parallel-versus-sequential-comparison-required",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "병렬성과 순차 handoff의 차이를 가르치려면 독립 worker 병렬 case와 의존 결과 전달 순차 case의 event overlap 및 token/context 경계를 대조해야 한다.",
+      "sourceRefs": [
+        "spec:claims:parallel-versus-sequential-comparison-required"
+      ]
+    },
+    {
+      "id": "handoff-failure-matrix-required",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "첫 worker 실패, 두 번째 worker 실패, cancellation, retry에서 무엇이 leader Result로 돌아오는지는 각각 부작용 없는 bounded case로 추가 관찰해야 한다.",
+      "sourceRefs": [
+        "spec:claims:handoff-failure-matrix-required"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "book-sdk-live-20260803:prompt",
+      "sequence": 0,
+      "timestampOffsetMs": 0,
+      "actor": "user",
+      "eventType": "prompt.submitted",
+      "pixelState": "briefing",
+      "evidenceLevel": "Configured",
+      "summary": "host가 실행마다 새 marker를 파일에 준비하고 read-only worker 두 명을 순서대로 위임한다. 첫 worker의 Read 결과가 첫 task terminal 뒤 두 번째 Agent input에 들어가고, 두 번째 worker 결과가 leader Result까지 이어지는지 ID와 원문을 대조한다.",
+      "sourceRefs": [
+        "publication-spec:public_prompt"
+      ]
+    },
+    {
+      "id": "132134-ef857460:process:0",
+      "sequence": 1,
+      "timestampOffsetMs": 1000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:132134-ef857460:process-event:0"
+      ],
+      "attemptId": "132134-ef857460"
+    },
+    {
+      "id": "132134-ef857460:process:1",
+      "sequence": 2,
+      "timestampOffsetMs": 1001,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.handoff-inputs",
+      "sourceRefs": [
+        "attempt:132134-ef857460:process-event:1"
+      ],
+      "attemptId": "132134-ef857460"
+    },
+    {
+      "id": "132134-ef857460:sdk.init",
+      "sequence": 3,
+      "timestampOffsetMs": 2193,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "두 foreground read-only worker의 leader-mediated sequential handoff: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:2"
+      ],
+      "attemptId": "132134-ef857460",
+      "caseId": "leader-mediated-handoff"
+    },
+    {
+      "id": "132134-ef857460:toolu_01EewBss6UK8MddmAgwtHiDY",
+      "sequence": 4,
+      "timestampOffsetMs": 8146,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Agent {}",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:21"
+      ],
+      "attemptId": "132134-ef857460",
+      "caseId": "leader-mediated-handoff",
+      "toolName": "Agent",
+      "toolUseId": "132134-ef857460:toolu_01EewBss6UK8MddmAgwtHiDY"
+    },
+    {
+      "id": "132134-ef857460:message_stop:26",
+      "sequence": 5,
+      "timestampOffsetMs": 8544,
+      "actor": "runtime",
+      "eventType": "stream.lifecycle",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:26"
+      ],
+      "attemptId": "132134-ef857460"
+    },
+    {
+      "id": "132134-ef857460:toolu_01NTXnzsaRsYPhWVn4t2yVe1",
+      "sequence": 6,
+      "timestampOffsetMs": 15091,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:28"
+      ],
+      "attemptId": "132134-ef857460",
+      "caseId": "leader-mediated-handoff",
+      "toolName": "Read",
+      "toolUseId": "132134-ef857460:toolu_01NTXnzsaRsYPhWVn4t2yVe1"
+    },
+    {
+      "id": "132134-ef857460:toolu_01NTXnzsaRsYPhWVn4t2yVe1:result",
+      "sequence": 7,
+      "timestampOffsetMs": 15095,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:29"
+      ],
+      "attemptId": "132134-ef857460",
+      "toolName": "Read",
+      "toolUseId": "132134-ef857460:toolu_01NTXnzsaRsYPhWVn4t2yVe1",
+      "isError": false
+    },
+    {
+      "id": "132134-ef857460:toolu_01EewBss6UK8MddmAgwtHiDY:result",
+      "sequence": 8,
+      "timestampOffsetMs": 20240,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Agent: result received",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:32"
+      ],
+      "attemptId": "132134-ef857460",
+      "toolName": "Agent",
+      "toolUseId": "132134-ef857460:toolu_01EewBss6UK8MddmAgwtHiDY",
+      "isError": false
+    },
+    {
+      "id": "132134-ef857460:toolu_017pp9zkWyH89c75m9MChdXb",
+      "sequence": 9,
+      "timestampOffsetMs": 26286,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Agent {}",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:58"
+      ],
+      "attemptId": "132134-ef857460",
+      "caseId": "leader-mediated-handoff",
+      "toolName": "Agent",
+      "toolUseId": "132134-ef857460:toolu_017pp9zkWyH89c75m9MChdXb"
+    },
+    {
+      "id": "132134-ef857460:message_stop:63",
+      "sequence": 10,
+      "timestampOffsetMs": 26341,
+      "actor": "runtime",
+      "eventType": "stream.lifecycle",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:63"
+      ],
+      "attemptId": "132134-ef857460"
+    },
+    {
+      "id": "132134-ef857460:toolu_01PeMVYX7G5VShbCTzDpayxL",
+      "sequence": 11,
+      "timestampOffsetMs": 31915,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Read {}",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:65"
+      ],
+      "attemptId": "132134-ef857460",
+      "caseId": "leader-mediated-handoff",
+      "toolName": "Read",
+      "toolUseId": "132134-ef857460:toolu_01PeMVYX7G5VShbCTzDpayxL"
+    },
+    {
+      "id": "132134-ef857460:toolu_01PeMVYX7G5VShbCTzDpayxL:result",
+      "sequence": 12,
+      "timestampOffsetMs": 31921,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Read: result received",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:66"
+      ],
+      "attemptId": "132134-ef857460",
+      "toolName": "Read",
+      "toolUseId": "132134-ef857460:toolu_01PeMVYX7G5VShbCTzDpayxL",
+      "isError": false
+    },
+    {
+      "id": "132134-ef857460:toolu_017pp9zkWyH89c75m9MChdXb:result",
+      "sequence": 13,
+      "timestampOffsetMs": 34750,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Agent: result received",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:69"
+      ],
+      "attemptId": "132134-ef857460",
+      "toolName": "Agent",
+      "toolUseId": "132134-ef857460:toolu_017pp9zkWyH89c75m9MChdXb",
+      "isError": false
+    },
+    {
+      "id": "132134-ef857460:message_stop:79",
+      "sequence": 14,
+      "timestampOffsetMs": 39607,
+      "actor": "runtime",
+      "eventType": "stream.lifecycle",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:79"
+      ],
+      "attemptId": "132134-ef857460"
+    },
+    {
+      "id": "132134-ef857460:result",
+      "sequence": 15,
+      "timestampOffsetMs": 39615,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:80"
+      ],
+      "attemptId": "132134-ef857460",
+      "isError": false
+    },
+    {
+      "id": "132134-ef857460:process:81",
+      "sequence": 16,
+      "timestampOffsetMs": 39898,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:132134-ef857460:process-event:81"
+      ],
+      "attemptId": "132134-ef857460"
+    },
+    {
+      "id": "claim:two-readonly-workers-configured",
+      "sequence": 17,
+      "timestampOffsetMs": 40598,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Configured",
+      "summary": "research-reader와 handoff-reviewer는 모두 model inherit, tools Read, maxTurns 3, background false, permissionMode dontAsk로 구성됐고 Agent, Bash, Edit, Write를 disallow했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:manifest:option_summary"
+      ],
+      "claimStatus": "configured"
+    },
+    {
+      "id": "claim:sequential-leader-contract-configured",
+      "sequence": 18,
+      "timestampOffsetMs": 40998,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Configured",
+      "summary": "leader stimulus는 첫 foreground Agent의 complete result를 기다린 뒤 그 결과 원문을 두 번째 foreground Agent prompt에 넣도록 구성됐고 provider run concurrency는 1로 설정됐다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:manifest:option_summary"
+      ],
+      "claimStatus": "configured"
+    },
+    {
+      "id": "claim:runtime-marker-host-boundary-configured",
+      "sequence": 19,
+      "timestampOffsetMs": 41398,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Configured",
+      "summary": "host는 attempt마다 CH20B_RUNTIME_ 접두사의 새 값을 만들고 hash와 host.handoff-inputs event를 기록한 뒤 research.txt에 저장하도록 설계됐다. 이는 host 구성 사실이며 모델의 실제 Read와 구분한다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:process-event:1"
+      ],
+      "claimStatus": "configured"
+    },
+    {
+      "id": "claim:all-assistant-messages-used-opus5",
+      "sequence": 20,
+      "timestampOffsetMs": 41798,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 9, 21, 28, 40, 45, 58, 65, 76의 여덟 AssistantMessage.model은 모두 claude-opus-5였다. actual response model은 init 설정값이 아니라 원시 AssistantMessage에서 재판독했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:9",
+        "attempt:132134-ef857460:sdk-message:21",
+        "attempt:132134-ef857460:sdk-message:28",
+        "attempt:132134-ef857460:sdk-message:40",
+        "attempt:132134-ef857460:sdk-message:45",
+        "attempt:132134-ef857460:sdk-message:58",
+        "attempt:132134-ef857460:sdk-message:65",
+        "attempt:132134-ef857460:sdk-message:76"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:init-exposed-two-custom-workers",
+      "sequence": 21,
+      "timestampOffsetMs": 42198,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 2 init은 research-reader와 handoff-reviewer를 agent 목록에 노출하고 tools에는 Task와 Read를 기록했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:2"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:first-agent-tool-use-observed",
+      "sequence": 22,
+      "timestampOffsetMs": 42598,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 21에서 leader는 research-reader를 대상으로 run_in_background false인 첫 Agent ToolUse를 생성했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:21"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:first-task-start-linked",
+      "sequence": 23,
+      "timestampOffsetMs": 42998,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 22 TaskStartedMessage는 첫 Agent tool_use_id와 research-reader, task_type local_agent, 고유 task_id를 연결했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:22"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:first-worker-prompt-had-no-marker",
+      "sequence": 24,
+      "timestampOffsetMs": 43398,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 24의 nested research-reader prompt에는 RESEARCH_RESULT 형식 지시만 있고 runtime marker 값 자체는 없었다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:24"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:first-worker-read-linked",
+      "sequence": 25,
+      "timestampOffsetMs": 43798,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 28의 research-reader AssistantMessage는 첫 Agent ID를 parent_tool_use_id로 보존한 Read ToolUse를 한 번 생성했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:28"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:first-read-returned-runtime-marker",
+      "sequence": 26,
+      "timestampOffsetMs": 44198,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 29 ToolResult는 첫 worker Read ID와 첫 Agent parent ID 아래 CH20B_RUNTIME_69f13d30acdb420f 값을 반환했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:29"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:first-task-terminal-surfaces-observed",
+      "sequence": 27,
+      "timestampOffsetMs": 44598,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 30 TaskUpdatedMessage와 sequence 31 TaskNotificationMessage는 같은 첫 task를 completed로 종료했고 notification summary에 research result를 보존했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:30",
+        "attempt:132134-ef857460:sdk-message:31"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:first-agent-result-returned-marker",
+      "sequence": 28,
+      "timestampOffsetMs": 44998,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 32의 첫 Agent ToolResult는 research result, agentType research-reader, status completed, resolvedModel claude-opus-5, readCount 1을 기록했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:32"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:second-agent-started-after-first-terminal",
+      "sequence": 29,
+      "timestampOffsetMs": 45398,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "첫 task terminal과 Agent result가 sequence 30~32에서 끝난 뒤 sequence 58에서 두 번째 Agent ToolUse가 시작됐다. 이번 run의 두 위임은 stream 순서상 순차였다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:30",
+        "attempt:132134-ef857460:sdk-message:32",
+        "attempt:132134-ef857460:sdk-message:58"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:second-agent-input-contained-first-result",
+      "sequence": 30,
+      "timestampOffsetMs": 45798,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 58의 handoff-reviewer Agent input과 sequence 61 nested prompt에는 sequence 32의 RESEARCH_RESULT 원문이 그대로 포함됐다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:32",
+        "attempt:132134-ef857460:sdk-message:58",
+        "attempt:132134-ef857460:sdk-message:61"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:second-task-start-linked",
+      "sequence": 31,
+      "timestampOffsetMs": 46198,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 59 TaskStartedMessage는 두 번째 Agent ID와 handoff-reviewer, 별도 task_id를 연결했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:59"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:second-worker-read-linked",
+      "sequence": 32,
+      "timestampOffsetMs": 46598,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 65의 handoff-reviewer AssistantMessage는 두 번째 Agent ID 아래 review.txt Read ToolUse를 한 번 생성했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:65"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:second-read-returned-review-marker",
+      "sequence": 33,
+      "timestampOffsetMs": 46998,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 66 ToolResult는 두 번째 worker Read ID와 parent Agent ID 아래 CH20B_REVIEW_FILE_CONFIRMED를 반환했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:66"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:second-task-terminal-surfaces-observed",
+      "sequence": 34,
+      "timestampOffsetMs": 47398,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 67 TaskUpdatedMessage와 sequence 68 TaskNotificationMessage는 같은 두 번째 task를 completed로 종료했고 research marker와 review marker를 합친 summary를 보존했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:67",
+        "attempt:132134-ef857460:sdk-message:68"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:second-agent-result-returned-combined-review",
+      "sequence": 35,
+      "timestampOffsetMs": 47798,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 69의 두 번째 Agent ToolResult는 두 marker를 합친 REVIEW_RESULT, agentType handoff-reviewer, resolvedModel claude-opus-5, readCount 1을 기록했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:69"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:leader-synthesis-and-success-observed",
+      "sequence": 36,
+      "timestampOffsetMs": 48198,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 76 leader AssistantMessage와 sequence 80 Result는 combined review를 LEADER_TEAM_SYNTHESIS로 보존했고 subtype success, is_error false로 끝났다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:76",
+        "attempt:132134-ef857460:sdk-message:80"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:two-distinct-agent-and-task-identities",
+      "sequence": 37,
+      "timestampOffsetMs": 48598,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "두 Agent ToolUse ID, 두 task ID, 두 agentId는 서로 달랐고 각 nested Read와 terminal event가 해당 parent에 분리 연결됐다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:21",
+        "attempt:132134-ef857460:sdk-message:22",
+        "attempt:132134-ef857460:sdk-message:58",
+        "attempt:132134-ef857460:sdk-message:59"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:observed-tool-inventory-was-agent-and-read-only",
+      "sequence": 38,
+      "timestampOffsetMs": 48998,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "79개 raw SDK message의 ToolUseBlock은 Agent 2회와 Read 2회뿐이었다. Bash, Edit, Write, SendMessage, TeamCreate ToolUse는 없었다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:21",
+        "attempt:132134-ef857460:sdk-message:28",
+        "attempt:132134-ef857460:sdk-message:58",
+        "attempt:132134-ef857460:sdk-message:65"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:attempt-integrity-files-match",
+      "sequence": 39,
+      "timestampOffsetMs": 49398,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "출판 전 재검증에서 integrity manifest가 선언한 manifest, verdict, raw SDK/process/callback, OTel 파일 7개의 SHA-256이 모두 일치했다.",
+      "sourceRefs": [
+        "spec:claims:attempt-integrity-files-match"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:raw-and-otel-sequences-align",
+      "sequence": 40,
+      "timestampOffsetMs": 49798,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "원본에는 SDK message 79개와 host process event 3개가 있고 같은 AttemptRecorder가 만든 OTel span 84개는 단일 trace 1c64771cff603eaf8728f772e537ce90와 source sequence를 보존했다.",
+      "sourceRefs": [
+        "spec:claims:raw-and-otel-sequences-align"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:auxiliary-haiku-usage-recorded",
+      "sequence": 41,
+      "timestampOffsetMs": 50198,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 80 Result.model_usage에는 claude-opus-5와 claude-haiku-4-5-20251001이 함께 있었다. 보이는 AssistantMessage 모델과 provider 내부 보조 사용량을 분리해야 한다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:80"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:initial-leader-prompt-marker-absence-inferred",
+      "sequence": 42,
+      "timestampOffsetMs": 50598,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Inferred",
+      "summary": "현재 저장소의 CH20b probe 소스에는 runtime marker literal이 없고 실행 시 uuid로 생성한다. 그러나 역사적 attempt는 당시 USER_PROMPT와 system prompt의 hash를 보존하지 않아 initial leader context의 marker 부재는 raw artifact만으로 직접 관찰되지 않는다.",
+      "sourceRefs": [
+        "spec:claims:initial-leader-prompt-marker-absence-inferred"
+      ],
+      "claimStatus": "inferred"
+    },
+    {
+      "id": "claim:runtime-only-causality-not-fully-proven",
+      "sequence": 43,
+      "timestampOffsetMs": 50998,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "첫 worker prompt에는 marker가 없고 Read 뒤 두 번째 Agent input에 나타난 것은 관찰됐다. 하지만 initial leader/system prompt 부재가 provenance-bound되지 않았으므로 marker가 오직 첫 worker 결과 때문에 전달됐다고 완전한 인과로 단정하면 안 된다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:24",
+        "attempt:132134-ef857460:sdk-message:29",
+        "attempt:132134-ef857460:sdk-message:58"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:two-agent-definitions-are-not-native-team-proof",
+      "sequence": 44,
+      "timestampOffsetMs": 51398,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "두 AgentDefinition과 두 local_agent task를 실행한 사실을 Claude Code native Team, mailbox, shared claim loop 실행으로 이름 바꾸면 안 된다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:21",
+        "attempt:132134-ef857460:sdk-message:58"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:sendmessage-hint-is-not-tool-execution",
+      "sequence": 45,
+      "timestampOffsetMs": 51798,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "sequence 32와 69 Agent ToolResult의 continuation 안내에는 SendMessage 문자열이 있지만 SendMessage ToolUseBlock은 한 건도 없다. capability hint와 실행 증거를 합치면 안 된다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:32",
+        "attempt:132134-ef857460:sdk-message:69"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:leader-mediated-edge-is-not-direct-worker-edge",
+      "sequence": 46,
+      "timestampOffsetMs": 52198,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "첫 Agent result와 두 번째 Agent input은 모두 parent가 없는 leader lane에 있다. 시각화에서 worker A가 worker B에게 직접 메시지를 보낸 화살표로 그리면 안 된다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:32",
+        "attempt:132134-ef857460:sdk-message:58"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:terminal-success-alone-is-not-handoff-proof",
+      "sequence": 47,
+      "timestampOffsetMs": 52598,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "Result success와 최종 marker만으로 handoff를 증명할 수 없다. 첫 Agent result, 두 번째 Agent input, 각 parent_tool_use_id와 terminal 순서를 함께 연결해야 한다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:32",
+        "attempt:132134-ef857460:sdk-message:58",
+        "attempt:132134-ef857460:sdk-message:80"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:init-model-is-not-response-model-proof",
+      "sequence": 48,
+      "timestampOffsetMs": 52998,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "역사적 probe는 manifest actual_model을 init.model에서 계산했다. 실제 응답 모델 판정은 여덟 AssistantMessage.model을 재판독해야 하며 향후 probe를 그 기준으로 수정했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:2",
+        "attempt:132134-ef857460:sdk-message:9"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:opus-response-is-not-opus-only-provider-run",
+      "sequence": 49,
+      "timestampOffsetMs": 53398,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "모든 AssistantMessage가 Opus 5였다는 관찰을 provider run 전체가 Opus만 사용했다는 주장으로 확대하면 안 된다. Result model_usage에는 보조 Haiku가 있다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:80"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:python-task-classes-have-no-sdk-prefix",
+      "sequence": 50,
+      "timestampOffsetMs": 53798,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "현재 Python SDK 0.2.128의 class는 TaskStartedMessage, TaskProgressMessage, TaskUpdatedMessage, TaskNotificationMessage다. SDKTask*Message라고 가르치면 안 된다.",
+      "sourceRefs": [
+        "spec:claims:python-task-classes-have-no-sdk-prefix"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:agent-task-names-must-not-be-collapsed",
+      "sequence": 51,
+      "timestampOffsetMs": 54198,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "ClaudeAgentOptions와 실제 ToolUse는 Agent를 사용했지만 init tools에는 Task가 기록됐다. Cookbook의 이전 Task 표면과 현재 raw Agent 실행을 하나의 고정 이름으로 합치면 안 된다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:sdk-message:2",
+        "attempt:132134-ef857460:sdk-message:21"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:otel-is-not-independent-provider-proof",
+      "sequence": 52,
+      "timestampOffsetMs": 54598,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "OTel 84개 span은 같은 AttemptRecorder가 raw SDK/process event를 투영한 결과다. sequence 정합성은 수집 파이프라인 검증이지 독립 provider 관측이 아니다.",
+      "sourceRefs": [
+        "spec:claims:otel-is-not-independent-provider-proof"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:historical-probe-source-was-not-bound",
+      "sequence": 53,
+      "timestampOffsetMs": 54998,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "2026-08-03 manifest source_hash는 chapter bytes만 묶었고 chapter20b.py, cases, runtime prompt hash를 보존하지 않았다. 향후 probe는 세 source hash를 option summary에 기록하도록 수정했다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:process-event:0"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:configured-concurrency-is-not-sequential-proof",
+      "sequence": 54,
+      "timestampOffsetMs": 55398,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "provider_run_concurrency 1과 foreground 설정은 의도일 뿐 순차 실행 증거가 아니다. 실제 순차 판정은 first terminal/result sequence 30~32가 second Agent sequence 58보다 앞선 raw stream에서 나온다.",
+      "sourceRefs": [
+        "attempt:132134-ef857460:manifest:option_summary",
+        "attempt:132134-ef857460:sdk-message:32",
+        "attempt:132134-ef857460:sdk-message:58"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:direct-worker-message-not-observed",
+      "sequence": 55,
+      "timestampOffsetMs": 55798,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "worker A가 worker B에게 직접 보낸 message event나 parent edge는 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:direct-worker-message-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:sendmessage-tool-use-not-observed",
+      "sequence": 56,
+      "timestampOffsetMs": 56198,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "Agent ToolResult의 안내 문자열 외에 SendMessage ToolUse 또는 result는 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:sendmessage-tool-use-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:native-team-mailbox-not-observed",
+      "sequence": 57,
+      "timestampOffsetMs": 56598,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "TeamCreate, mailbox, UDS inbox, peer mailbox delivery를 나타내는 ToolUse나 event는 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:native-team-mailbox-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:shared-task-claim-loop-not-observed",
+      "sequence": 58,
+      "timestampOffsetMs": 56998,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "shared TaskList에서 owner를 claim하거나 release하는 협업 loop는 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:shared-task-claim-loop-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:worktree-isolation-not-observed",
+      "sequence": 59,
+      "timestampOffsetMs": 57398,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "worker별 git worktree 생성, checkout, 파일 격리 또는 merge는 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:worktree-isolation-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:team-memory-not-observed",
+      "sequence": 60,
+      "timestampOffsetMs": 57798,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "공유 또는 worker별 team memory write/read는 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:team-memory-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:parallel-worker-overlap-not-observed",
+      "sequence": 61,
+      "timestampOffsetMs": 58198,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "두 worker가 동시에 실행되거나 event 구간이 겹치는 병렬 실행은 이 순차 foreground run에서 관찰되지 않았다.",
+      "sourceRefs": [
+        "spec:claims:parallel-worker-overlap-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:background-worker-lifecycle-not-observed",
+      "sequence": 62,
+      "timestampOffsetMs": 58598,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "background=true worker, stream close 이후 terminal TaskUpdated, stop_task 수명 경계는 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:background-worker-lifecycle-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:failure-cancel-retry-not-observed",
+      "sequence": 63,
+      "timestampOffsetMs": 58998,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "첫 또는 두 번째 worker 실패, cancellation, maxTurns 소진, retry와 leader recovery는 성공 case에서 관찰하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:failure-cancel-retry-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:source-bound-runtime-marker-rerun-required",
+      "sequence": 64,
+      "timestampOffsetMs": 59398,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "runtime-only 인과를 직접 증명하려면 initial user/system/worker prompt hash와 probe source hashes를 manifest에 묶은 새 순차 run이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:source-bound-runtime-marker-rerun-required"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:native-team-mailbox-run-required",
+      "sequence": 65,
+      "timestampOffsetMs": 59798,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "native Team을 가르치려면 TeamCreate 또는 공식 team lifecycle, mailbox delivery, peer identity, shared task claim을 원시 event로 보존하는 별도 run이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:native-team-mailbox-run-required"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:sendmessage-continuation-run-required",
+      "sequence": 66,
+      "timestampOffsetMs": 60198,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "SendMessage continuation의 실제 의미를 가르치려면 기존 agentId에 SendMessage를 호출하고 해당 ToolUse/result와 후속 worker event를 연결하는 별도 run이 필요하다.",
+      "sourceRefs": [
+        "spec:claims:sendmessage-continuation-run-required"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:parallel-versus-sequential-comparison-required",
+      "sequence": 67,
+      "timestampOffsetMs": 60598,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "병렬성과 순차 handoff의 차이를 가르치려면 독립 worker 병렬 case와 의존 결과 전달 순차 case의 event overlap 및 token/context 경계를 대조해야 한다.",
+      "sourceRefs": [
+        "spec:claims:parallel-versus-sequential-comparison-required"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:handoff-failure-matrix-required",
+      "sequence": 68,
+      "timestampOffsetMs": 60998,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "첫 worker 실패, 두 번째 worker 실패, cancellation, retry에서 무엇이 leader Result로 돌아오는지는 각각 부작용 없는 bounded case로 추가 관찰해야 한다.",
+      "sourceRefs": [
+        "spec:claims:handoff-failure-matrix-required"
+      ],
+      "claimStatus": "additional_observation_required"
+    }
+  ]
+}
