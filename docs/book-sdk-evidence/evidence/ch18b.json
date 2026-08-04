@@ -1,0 +1,1124 @@
+{
+  "schemaVersion": "pixel-book-evidence.v1",
+  "generatedAt": "2026-08-04T05:43:15.395Z",
+  "title": "18b장 샌드박스: off/on 파일 경계와 성공 envelope의 부분 실패",
+  "description": "Education Shell의 검증된 Book SDK 실행을 Pixel Agents 상태 문법으로 재생한 공개 projection",
+  "boundary": "Pixel Agents 제품이 이 실행을 수집했다는 뜻이 아니며, renderer는 source 판정을 변경하지 않는다.",
+  "source": {
+    "courseId": "book-sdk-ko",
+    "chapterSlug": "ch18b",
+    "campaignId": "book-sdk-live-20260803",
+    "traceId": "recorded:book-sdk-ko:ch18b:book-sdk-live-20260803:2026-08-04T05:32:00.765227Z",
+    "traceSha256": "38909104368b0b816395757a756c0f96073fa09526b41ed1509d66a600dcf3c3",
+    "summarySha256": "c8e437138a43ccf2b27dc261fade60a145d8fe81d51fbd373c1a0a6013773bec",
+    "sourceEventCount": 115,
+    "publicEventCount": 51,
+    "model": "claude-opus-5",
+    "replayModels": [
+      "claude-opus-5"
+    ],
+    "citedModels": [
+      "claude-opus-5"
+    ],
+    "attemptIds": [
+      "125947-4ccb1c9c",
+      "130028-cc834055"
+    ],
+    "proofGate": "accepted_with_notes",
+    "secretScan": "passed"
+  },
+  "actors": [
+    {
+      "id": "user",
+      "label": "검증 프롬프트",
+      "role": "briefing",
+      "station": 0
+    },
+    {
+      "id": "runtime",
+      "label": "Python SDK 런타임",
+      "role": "control",
+      "station": 1
+    },
+    {
+      "id": "claude",
+      "label": "Claude Opus 5",
+      "role": "model",
+      "station": 2
+    },
+    {
+      "id": "tool",
+      "label": "SDK 도구 실행",
+      "role": "execution",
+      "station": 3
+    },
+    {
+      "id": "evaluator",
+      "label": "증거 판정기",
+      "role": "verification",
+      "station": 4
+    }
+  ],
+  "counts": {
+    "configuredClaims": 2,
+    "observedClaims": 10,
+    "inferredClaims": 1,
+    "notObservedClaims": 5,
+    "correctionRequired": 9,
+    "additionalObservationRequired": 3,
+    "invalidAttempts": 0
+  },
+  "claims": [
+    {
+      "id": "sandbox-pair-configured",
+      "status": "configured",
+      "evidenceLevel": "Configured",
+      "summary": "두 attempt는 requested Opus 5, provider concurrency 1, Bash 단일 tool, autoAllowBashIfSandboxed true, allowUnsandboxedCommands false, excludedCommands empty를 사용했고 enabled만 false와 true로 나눴다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:manifest:option_summary",
+        "attempt:130028-cc834055:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "python-sandbox-surface-configured",
+      "status": "configured",
+      "evidenceLevel": "Configured",
+      "summary": "Python Agent SDK 0.2.128 SandboxSettings의 공개 필드는 enabled, autoAllowBashIfSandboxed, excludedCommands, allowUnsandboxedCommands, network, ignoreViolations, enableWeakerNestedSandbox다.",
+      "sourceRefs": [
+        "spec:claims:python-sandbox-surface-configured"
+      ]
+    },
+    {
+      "id": "assistant-messages-used-opus5",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "disabled attempt의 AssistantMessage 4건과 enabled attempt의 AssistantMessage 3건은 모두 claude-opus-5였다. requested model이나 init 설정값만으로 실제 모델을 판정하지 않았다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:sdk-message:9",
+        "attempt:125947-4ccb1c9c:sdk-message:21",
+        "attempt:125947-4ccb1c9c:sdk-message:36",
+        "attempt:125947-4ccb1c9c:sdk-message:56",
+        "attempt:130028-cc834055:sdk-message:9",
+        "attempt:130028-cc834055:sdk-message:21",
+        "attempt:130028-cc834055:sdk-message:45"
+      ]
+    },
+    {
+      "id": "one-bash-tool-use-per-attempt",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "각 attempt는 probe가 지정한 임시 경로용 marker command를 Bash ToolUse 한 번으로 실행했다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:sdk-message:21",
+        "attempt:130028-cc834055:sdk-message:21"
+      ]
+    },
+    {
+      "id": "disabled-created-both-markers",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sandbox disabled attempt는 실행 전 두 파일이 없었고 실행 뒤 cwd 내부와 sibling 파일이 모두 존재했으며 marker 내용과 SHA-256이 기록됐다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:process-event:1",
+        "attempt:125947-4ccb1c9c:process-event:61"
+      ]
+    },
+    {
+      "id": "enabled-created-inside-marker",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sandbox enabled attempt는 실행 전 파일이 없었고 실행 뒤 cwd 내부 marker가 정확한 내용과 SHA-256으로 존재했다.",
+      "sourceRefs": [
+        "attempt:130028-cc834055:process-event:1",
+        "attempt:130028-cc834055:process-event:50"
+      ]
+    },
+    {
+      "id": "enabled-blocked-sibling-marker",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sandbox enabled attempt의 ToolResult에는 sibling redirect의 operation not permitted가 있었고 host readback에서도 sibling 파일은 존재하지 않았다.",
+      "sourceRefs": [
+        "attempt:130028-cc834055:sdk-message:25",
+        "attempt:130028-cc834055:process-event:50"
+      ]
+    },
+    {
+      "id": "partial-failure-coexisted-with-tool-success",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "enabled ToolResult에는 차단 문구와 마지막 CH18B_COMMAND_FINISHED가 함께 있었지만 ToolResultBlock.is_error는 false였다.",
+      "sourceRefs": [
+        "attempt:130028-cc834055:sdk-message:25"
+      ]
+    },
+    {
+      "id": "partial-failure-coexisted-with-terminal-success",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "enabled attempt는 실제 sibling write 실패가 있었는데도 terminal Result가 success, is_error false, permission_denials empty로 끝났다.",
+      "sourceRefs": [
+        "attempt:130028-cc834055:sdk-message:25",
+        "attempt:130028-cc834055:sdk-message:49",
+        "attempt:130028-cc834055:process-event:50"
+      ]
+    },
+    {
+      "id": "attempt-integrity-files-match",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "두 attempt 모두 integrity manifest가 선언한 manifest, verdict, raw SDK/process/callback, OTel 파일 7개의 SHA-256을 출판기가 다시 계산해 일치했다.",
+      "sourceRefs": [
+        "spec:claims:attempt-integrity-files-match"
+      ]
+    },
+    {
+      "id": "raw-and-otel-sequences-align",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "두 attempt의 raw event와 같은 recorder가 만든 OTel projection은 source sequence를 보존했고 attempt별 trace ID는 각각 하나였다.",
+      "sourceRefs": [
+        "spec:claims:raw-and-otel-sequences-align"
+      ]
+    },
+    {
+      "id": "auxiliary-haiku-usage-recorded",
+      "status": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "두 terminal Result의 model_usage에는 claude-opus-5와 claude-haiku-4-5-20251001 key가 모두 있었다. AssistantMessage의 실제 응답 모델과 provider 내부 보조 사용량을 구분해야 한다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:sdk-message:60",
+        "attempt:130028-cc834055:sdk-message:49"
+      ]
+    },
+    {
+      "id": "sandbox-caused-boundary-difference-in-pair",
+      "status": "inferred",
+      "evidenceLevel": "Inferred",
+      "summary": "두 독립 temp session의 의도적 구성 차이는 sandbox enabled였고 같은 command 형태와 marker를 사용했으므로, 이 통제 pair의 sibling write 차이는 sandbox 경계 효과로 해석한다. 모든 경로와 버전에 일반화하지 않는다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:process-event:61",
+        "attempt:130028-cc834055:process-event:50"
+      ]
+    },
+    {
+      "id": "terminal-success-is-not-subcommand-success",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "terminal Result success를 command 내부 모든 subcommand 성공으로 해석하면 안 된다. enabled run은 sibling redirect가 실패했지만 마지막 printf 때문에 success로 끝났다.",
+      "sourceRefs": [
+        "attempt:130028-cc834055:sdk-message:25",
+        "attempt:130028-cc834055:sdk-message:49"
+      ]
+    },
+    {
+      "id": "toolresult-nonerror-is-not-side-effect-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "ToolResultBlock.is_error false만으로 모든 파일 side effect를 확정하면 안 된다. host readback은 enabled sibling 파일이 없음을 보여 줬다.",
+      "sourceRefs": [
+        "attempt:130028-cc834055:sdk-message:25",
+        "attempt:130028-cc834055:process-event:50"
+      ]
+    },
+    {
+      "id": "model-narrative-is-not-file-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "모델은 파일을 별도로 읽지 않았다고 제한했다. 모델 서술의 확신 여부와 무관하게 실제 file side effect는 process 종료 뒤 host readback으로 판정해야 한다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:sdk-message:56",
+        "attempt:125947-4ccb1c9c:process-event:61",
+        "attempt:130028-cc834055:sdk-message:45",
+        "attempt:130028-cc834055:process-event:50"
+      ]
+    },
+    {
+      "id": "init-model-is-not-response-model-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "System init의 configured model만 actual_model로 사용하면 보안 거부 뒤 lower-model fallback이나 synthetic-only message를 놓칠 수 있다. 실제 모델은 AssistantMessage.model의 단일성으로 판정한다.",
+      "sourceRefs": [
+        "spec:claims:init-model-is-not-response-model-proof"
+      ]
+    },
+    {
+      "id": "opus-response-is-not-opus-only-provider-run",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "모든 AssistantMessage가 Opus 5였다는 관찰을 provider run 전체가 Opus만 사용했다는 말로 확대하면 안 된다. Result model_usage에는 Haiku 보조 사용량도 있었다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:sdk-message:60",
+        "attempt:130028-cc834055:sdk-message:49"
+      ]
+    },
+    {
+      "id": "unsupported-python-sandbox-fields",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "failIfUnavailable과 managedSettings를 Python SDK 0.2.128 SandboxSettings의 현재 field처럼 가르치면 안 된다.",
+      "sourceRefs": [
+        "spec:claims:unsupported-python-sandbox-fields"
+      ]
+    },
+    {
+      "id": "exact-os-adapter-is-not-proved",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "macOS에서 차단이 관찰됐다는 사실을 정확한 Seatbelt profile, 생성 rule, 내부 adapter 구현까지 확인한 것으로 설명하면 안 된다.",
+      "sourceRefs": [
+        "spec:claims:exact-os-adapter-is-not-proved"
+      ]
+    },
+    {
+      "id": "otel-is-not-independent-runtime-proof",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "OTel은 같은 AttemptRecorder가 raw SDK와 host process event를 투영한 결과다. sequence 정합성은 수집 파이프라인 검증이지 독립 provider 관측이 아니다.",
+      "sourceRefs": [
+        "spec:claims:otel-is-not-independent-runtime-proof"
+      ]
+    },
+    {
+      "id": "historical-probe-source-not-bound",
+      "status": "correction_required",
+      "evidenceLevel": "Observed",
+      "summary": "2026-08-03 attempt manifest의 source_hash는 당시 chapter bytes만 가리키며 chapter18b.py, cases, runtime 전체를 암호학적으로 묶지 않았다. 향후 캡처는 세 probe source hash를 option summary에 기록한다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:manifest:option_summary",
+        "attempt:130028-cc834055:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "network-and-socket-boundaries-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "allowedDomains, deniedDomains, Unix socket, local bind, Mach lookup과 proxy port의 실제 허용 또는 차단은 이번 파일 case에서 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:network-and-socket-boundaries-not-observed"
+      ]
+    },
+    {
+      "id": "excluded-and-unsandboxed-bypass-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "excludedCommands와 dangerouslyDisableSandbox 요청이 실제로 sandbox 밖에서 실행되는지 또는 거절되는지는 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:excluded-and-unsandboxed-bypass-not-observed"
+      ]
+    },
+    {
+      "id": "blocked-path-callback-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "차단된 sibling redirect가 별도 blocked_path callback을 노출하지 않았고 callback input schema와 사용자-visible 결과는 관찰하지 못했다.",
+      "sourceRefs": [
+        "attempt:130028-cc834055:process-event:50"
+      ]
+    },
+    {
+      "id": "managed-policy-and-unavailable-fallback-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "enterprise managed policy hierarchy, sandbox engine unavailable 상황의 fallback, 정확한 OS adapter 선택은 raw evidence에 나타나지 않았다.",
+      "sourceRefs": [
+        "spec:claims:managed-policy-and-unavailable-fallback-not-observed"
+      ]
+    },
+    {
+      "id": "post-cleanup-scan-not-observed",
+      "status": "not_observed",
+      "evidenceLevel": "Missing",
+      "summary": "temp context가 정리된 뒤 marker 경로를 다시 scan한 host event가 없으므로 post-cleanup 부재를 증명하지 않는다.",
+      "sourceRefs": [
+        "spec:claims:post-cleanup-scan-not-observed"
+      ]
+    },
+    {
+      "id": "current-cli-replication-required",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "공개 raw run은 Claude Code 2.1.220에서 수집됐다. 현재 설치된 2.1.221 동작을 주장하려면 같은 두 case를 새 session에서 순차 재실행해야 한다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:manifest:option_summary",
+        "attempt:130028-cc834055:manifest:option_summary"
+      ]
+    },
+    {
+      "id": "network-and-bypass-matrix-required",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "network/socket 정책과 excluded/unsandboxed command 경계는 실제 외부 서비스 대신 local fixture와 temp resource를 사용해 각각 독립 session으로 추가 관찰해야 한다.",
+      "sourceRefs": [
+        "spec:claims:network-and-bypass-matrix-required"
+      ]
+    },
+    {
+      "id": "refusal-fallback-and-cleanup-evidence-required",
+      "status": "additional_observation_required",
+      "evidenceLevel": "Missing",
+      "summary": "향후 보안 거부 또는 lower-model fallback은 우회하지 않고 model_refusal_fallback attempt로 보존하며, temp 종료 뒤 cleanup scan도 별도 host event로 기록해야 한다.",
+      "sourceRefs": [
+        "spec:claims:refusal-fallback-and-cleanup-evidence-required"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "book-sdk-live-20260803:prompt",
+      "sequence": 0,
+      "timestampOffsetMs": 0,
+      "actor": "user",
+      "eventType": "prompt.submitted",
+      "pixelState": "briefing",
+      "evidenceLevel": "Configured",
+      "summary": "임시 workspace 안과 sibling 경로에 같은 형태의 marker command를 실행한 sandbox off/on 두 attempt를 비교하고, raw ToolResult와 terminal Result가 아닌 host file readback으로 실제 경계를 판정한다.",
+      "sourceRefs": [
+        "publication-spec:public_prompt"
+      ]
+    },
+    {
+      "id": "125947-4ccb1c9c:process:0",
+      "sequence": 1,
+      "timestampOffsetMs": 1000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:process-event:0"
+      ],
+      "attemptId": "125947-4ccb1c9c"
+    },
+    {
+      "id": "125947-4ccb1c9c:process:1",
+      "sequence": 2,
+      "timestampOffsetMs": 1002,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.sandbox-boundary-state",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:process-event:1"
+      ],
+      "attemptId": "125947-4ccb1c9c",
+      "phase": "before"
+    },
+    {
+      "id": "125947-4ccb1c9c:sdk.init",
+      "sequence": 3,
+      "timestampOffsetMs": 2298,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "sandbox disabled: workspace와 sibling marker 모두 생성: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:sdk-message:2"
+      ],
+      "attemptId": "125947-4ccb1c9c",
+      "caseId": "sandbox-disabled-control"
+    },
+    {
+      "id": "125947-4ccb1c9c:toolu_014Rxw2RPzPJjoiwfsLbEAcz",
+      "sequence": 4,
+      "timestampOffsetMs": 8712,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Bash {}",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:sdk-message:21"
+      ],
+      "attemptId": "125947-4ccb1c9c",
+      "caseId": "sandbox-disabled-control",
+      "toolName": "Bash",
+      "toolUseId": "125947-4ccb1c9c:toolu_014Rxw2RPzPJjoiwfsLbEAcz"
+    },
+    {
+      "id": "125947-4ccb1c9c:toolu_014Rxw2RPzPJjoiwfsLbEAcz:result",
+      "sequence": 5,
+      "timestampOffsetMs": 8821,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Bash: result received",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:sdk-message:23"
+      ],
+      "attemptId": "125947-4ccb1c9c",
+      "toolName": "Bash",
+      "toolUseId": "125947-4ccb1c9c:toolu_014Rxw2RPzPJjoiwfsLbEAcz",
+      "isError": false
+    },
+    {
+      "id": "125947-4ccb1c9c:message_stop",
+      "sequence": 6,
+      "timestampOffsetMs": 8824,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:sdk-message:25"
+      ],
+      "attemptId": "125947-4ccb1c9c"
+    },
+    {
+      "id": "130028-cc834055:process:0",
+      "sequence": 7,
+      "timestampOffsetMs": 11000,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.started",
+      "sourceRefs": [
+        "attempt:130028-cc834055:process-event:0"
+      ],
+      "attemptId": "130028-cc834055"
+    },
+    {
+      "id": "130028-cc834055:process:1",
+      "sequence": 8,
+      "timestampOffsetMs": 11001,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.sandbox-boundary-state",
+      "sourceRefs": [
+        "attempt:130028-cc834055:process-event:1"
+      ],
+      "attemptId": "130028-cc834055",
+      "phase": "before"
+    },
+    {
+      "id": "130028-cc834055:sdk.init",
+      "sequence": 9,
+      "timestampOffsetMs": 12042,
+      "actor": "runtime",
+      "eventType": "sdk.init",
+      "pixelState": "ready",
+      "evidenceLevel": "Observed",
+      "summary": "sandbox enabled: workspace marker 생성, sibling marker 차단: init boundary 1, claude-opus-5",
+      "sourceRefs": [
+        "attempt:130028-cc834055:sdk-message:2"
+      ],
+      "attemptId": "130028-cc834055",
+      "caseId": "sandbox-enabled"
+    },
+    {
+      "id": "130028-cc834055:toolu_01MfFGY7q4HR2PHPPbSPKTwz",
+      "sequence": 10,
+      "timestampOffsetMs": 17428,
+      "actor": "claude",
+      "eventType": "tool.use",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "Bash {}",
+      "sourceRefs": [
+        "attempt:130028-cc834055:sdk-message:21"
+      ],
+      "attemptId": "130028-cc834055",
+      "caseId": "sandbox-enabled",
+      "toolName": "Bash",
+      "toolUseId": "130028-cc834055:toolu_01MfFGY7q4HR2PHPPbSPKTwz"
+    },
+    {
+      "id": "130028-cc834055:message_stop",
+      "sequence": 11,
+      "timestampOffsetMs": 17467,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:130028-cc834055:sdk-message:24"
+      ],
+      "attemptId": "130028-cc834055"
+    },
+    {
+      "id": "130028-cc834055:toolu_01MfFGY7q4HR2PHPPbSPKTwz:result",
+      "sequence": 12,
+      "timestampOffsetMs": 17608,
+      "actor": "tool",
+      "eventType": "tool.result",
+      "pixelState": "completed",
+      "evidenceLevel": "Observed",
+      "summary": "Bash: result received",
+      "sourceRefs": [
+        "attempt:130028-cc834055:sdk-message:25"
+      ],
+      "attemptId": "130028-cc834055",
+      "toolName": "Bash",
+      "toolUseId": "130028-cc834055:toolu_01MfFGY7q4HR2PHPPbSPKTwz",
+      "isError": false
+    },
+    {
+      "id": "125947-4ccb1c9c:message_stop",
+      "sequence": 13,
+      "timestampOffsetMs": 22697,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:sdk-message:59"
+      ],
+      "attemptId": "125947-4ccb1c9c"
+    },
+    {
+      "id": "125947-4ccb1c9c:result",
+      "sequence": 14,
+      "timestampOffsetMs": 22699,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:sdk-message:60"
+      ],
+      "attemptId": "125947-4ccb1c9c",
+      "isError": false
+    },
+    {
+      "id": "125947-4ccb1c9c:process:61",
+      "sequence": 15,
+      "timestampOffsetMs": 22995,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.sandbox-boundary-state",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:process-event:61"
+      ],
+      "attemptId": "125947-4ccb1c9c",
+      "phase": "after"
+    },
+    {
+      "id": "125947-4ccb1c9c:process:62",
+      "sequence": 16,
+      "timestampOffsetMs": 22998,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:process-event:62"
+      ],
+      "attemptId": "125947-4ccb1c9c"
+    },
+    {
+      "id": "130028-cc834055:message_stop",
+      "sequence": 17,
+      "timestampOffsetMs": 26653,
+      "actor": "runtime",
+      "eventType": "hook.event",
+      "pixelState": "working",
+      "evidenceLevel": "Observed",
+      "summary": "assistant stream message_stop",
+      "sourceRefs": [
+        "attempt:130028-cc834055:sdk-message:48"
+      ],
+      "attemptId": "130028-cc834055"
+    },
+    {
+      "id": "130028-cc834055:result",
+      "sequence": 18,
+      "timestampOffsetMs": 26659,
+      "actor": "runtime",
+      "eventType": "result.completed",
+      "pixelState": "terminal",
+      "evidenceLevel": "Observed",
+      "summary": "success; terminal_reason=completed",
+      "sourceRefs": [
+        "attempt:130028-cc834055:sdk-message:49"
+      ],
+      "attemptId": "130028-cc834055",
+      "isError": false
+    },
+    {
+      "id": "130028-cc834055:process:50",
+      "sequence": 19,
+      "timestampOffsetMs": 27191,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "host.sandbox-boundary-state",
+      "sourceRefs": [
+        "attempt:130028-cc834055:process-event:50"
+      ],
+      "attemptId": "130028-cc834055",
+      "phase": "after"
+    },
+    {
+      "id": "130028-cc834055:process:51",
+      "sequence": 20,
+      "timestampOffsetMs": 27195,
+      "actor": "runtime",
+      "eventType": "runtime.observation",
+      "pixelState": "observed",
+      "evidenceLevel": "Observed",
+      "summary": "sdk.capture.finished",
+      "sourceRefs": [
+        "attempt:130028-cc834055:process-event:51"
+      ],
+      "attemptId": "130028-cc834055"
+    },
+    {
+      "id": "claim:sandbox-pair-configured",
+      "sequence": 21,
+      "timestampOffsetMs": 27895,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Configured",
+      "summary": "두 attempt는 requested Opus 5, provider concurrency 1, Bash 단일 tool, autoAllowBashIfSandboxed true, allowUnsandboxedCommands false, excludedCommands empty를 사용했고 enabled만 false와 true로 나눴다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:manifest:option_summary",
+        "attempt:130028-cc834055:manifest:option_summary"
+      ],
+      "claimStatus": "configured"
+    },
+    {
+      "id": "claim:python-sandbox-surface-configured",
+      "sequence": 22,
+      "timestampOffsetMs": 28295,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Configured",
+      "summary": "Python Agent SDK 0.2.128 SandboxSettings의 공개 필드는 enabled, autoAllowBashIfSandboxed, excludedCommands, allowUnsandboxedCommands, network, ignoreViolations, enableWeakerNestedSandbox다.",
+      "sourceRefs": [
+        "spec:claims:python-sandbox-surface-configured"
+      ],
+      "claimStatus": "configured"
+    },
+    {
+      "id": "claim:assistant-messages-used-opus5",
+      "sequence": 23,
+      "timestampOffsetMs": 28695,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "disabled attempt의 AssistantMessage 4건과 enabled attempt의 AssistantMessage 3건은 모두 claude-opus-5였다. requested model이나 init 설정값만으로 실제 모델을 판정하지 않았다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:sdk-message:9",
+        "attempt:125947-4ccb1c9c:sdk-message:21",
+        "attempt:125947-4ccb1c9c:sdk-message:36",
+        "attempt:125947-4ccb1c9c:sdk-message:56",
+        "attempt:130028-cc834055:sdk-message:9",
+        "attempt:130028-cc834055:sdk-message:21",
+        "attempt:130028-cc834055:sdk-message:45"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:one-bash-tool-use-per-attempt",
+      "sequence": 24,
+      "timestampOffsetMs": 29095,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "각 attempt는 probe가 지정한 임시 경로용 marker command를 Bash ToolUse 한 번으로 실행했다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:sdk-message:21",
+        "attempt:130028-cc834055:sdk-message:21"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:disabled-created-both-markers",
+      "sequence": 25,
+      "timestampOffsetMs": 29495,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sandbox disabled attempt는 실행 전 두 파일이 없었고 실행 뒤 cwd 내부와 sibling 파일이 모두 존재했으며 marker 내용과 SHA-256이 기록됐다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:process-event:1",
+        "attempt:125947-4ccb1c9c:process-event:61"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:enabled-created-inside-marker",
+      "sequence": 26,
+      "timestampOffsetMs": 29895,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sandbox enabled attempt는 실행 전 파일이 없었고 실행 뒤 cwd 내부 marker가 정확한 내용과 SHA-256으로 존재했다.",
+      "sourceRefs": [
+        "attempt:130028-cc834055:process-event:1",
+        "attempt:130028-cc834055:process-event:50"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:enabled-blocked-sibling-marker",
+      "sequence": 27,
+      "timestampOffsetMs": 30295,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "sandbox enabled attempt의 ToolResult에는 sibling redirect의 operation not permitted가 있었고 host readback에서도 sibling 파일은 존재하지 않았다.",
+      "sourceRefs": [
+        "attempt:130028-cc834055:sdk-message:25",
+        "attempt:130028-cc834055:process-event:50"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:partial-failure-coexisted-with-tool-success",
+      "sequence": 28,
+      "timestampOffsetMs": 30695,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "enabled ToolResult에는 차단 문구와 마지막 CH18B_COMMAND_FINISHED가 함께 있었지만 ToolResultBlock.is_error는 false였다.",
+      "sourceRefs": [
+        "attempt:130028-cc834055:sdk-message:25"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:partial-failure-coexisted-with-terminal-success",
+      "sequence": 29,
+      "timestampOffsetMs": 31095,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "enabled attempt는 실제 sibling write 실패가 있었는데도 terminal Result가 success, is_error false, permission_denials empty로 끝났다.",
+      "sourceRefs": [
+        "attempt:130028-cc834055:sdk-message:25",
+        "attempt:130028-cc834055:sdk-message:49",
+        "attempt:130028-cc834055:process-event:50"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:attempt-integrity-files-match",
+      "sequence": 30,
+      "timestampOffsetMs": 31495,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "두 attempt 모두 integrity manifest가 선언한 manifest, verdict, raw SDK/process/callback, OTel 파일 7개의 SHA-256을 출판기가 다시 계산해 일치했다.",
+      "sourceRefs": [
+        "spec:claims:attempt-integrity-files-match"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:raw-and-otel-sequences-align",
+      "sequence": 31,
+      "timestampOffsetMs": 31895,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "두 attempt의 raw event와 같은 recorder가 만든 OTel projection은 source sequence를 보존했고 attempt별 trace ID는 각각 하나였다.",
+      "sourceRefs": [
+        "spec:claims:raw-and-otel-sequences-align"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:auxiliary-haiku-usage-recorded",
+      "sequence": 32,
+      "timestampOffsetMs": 32295,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "verified",
+      "evidenceLevel": "Observed",
+      "summary": "두 terminal Result의 model_usage에는 claude-opus-5와 claude-haiku-4-5-20251001 key가 모두 있었다. AssistantMessage의 실제 응답 모델과 provider 내부 보조 사용량을 구분해야 한다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:sdk-message:60",
+        "attempt:130028-cc834055:sdk-message:49"
+      ],
+      "claimStatus": "observed"
+    },
+    {
+      "id": "claim:sandbox-caused-boundary-difference-in-pair",
+      "sequence": 33,
+      "timestampOffsetMs": 32695,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Inferred",
+      "summary": "두 독립 temp session의 의도적 구성 차이는 sandbox enabled였고 같은 command 형태와 marker를 사용했으므로, 이 통제 pair의 sibling write 차이는 sandbox 경계 효과로 해석한다. 모든 경로와 버전에 일반화하지 않는다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:process-event:61",
+        "attempt:130028-cc834055:process-event:50"
+      ],
+      "claimStatus": "inferred"
+    },
+    {
+      "id": "claim:terminal-success-is-not-subcommand-success",
+      "sequence": 34,
+      "timestampOffsetMs": 33095,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "terminal Result success를 command 내부 모든 subcommand 성공으로 해석하면 안 된다. enabled run은 sibling redirect가 실패했지만 마지막 printf 때문에 success로 끝났다.",
+      "sourceRefs": [
+        "attempt:130028-cc834055:sdk-message:25",
+        "attempt:130028-cc834055:sdk-message:49"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:toolresult-nonerror-is-not-side-effect-proof",
+      "sequence": 35,
+      "timestampOffsetMs": 33495,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "ToolResultBlock.is_error false만으로 모든 파일 side effect를 확정하면 안 된다. host readback은 enabled sibling 파일이 없음을 보여 줬다.",
+      "sourceRefs": [
+        "attempt:130028-cc834055:sdk-message:25",
+        "attempt:130028-cc834055:process-event:50"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:model-narrative-is-not-file-proof",
+      "sequence": 36,
+      "timestampOffsetMs": 33895,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "모델은 파일을 별도로 읽지 않았다고 제한했다. 모델 서술의 확신 여부와 무관하게 실제 file side effect는 process 종료 뒤 host readback으로 판정해야 한다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:sdk-message:56",
+        "attempt:125947-4ccb1c9c:process-event:61",
+        "attempt:130028-cc834055:sdk-message:45",
+        "attempt:130028-cc834055:process-event:50"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:init-model-is-not-response-model-proof",
+      "sequence": 37,
+      "timestampOffsetMs": 34295,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "System init의 configured model만 actual_model로 사용하면 보안 거부 뒤 lower-model fallback이나 synthetic-only message를 놓칠 수 있다. 실제 모델은 AssistantMessage.model의 단일성으로 판정한다.",
+      "sourceRefs": [
+        "spec:claims:init-model-is-not-response-model-proof"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:opus-response-is-not-opus-only-provider-run",
+      "sequence": 38,
+      "timestampOffsetMs": 34695,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "모든 AssistantMessage가 Opus 5였다는 관찰을 provider run 전체가 Opus만 사용했다는 말로 확대하면 안 된다. Result model_usage에는 Haiku 보조 사용량도 있었다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:sdk-message:60",
+        "attempt:130028-cc834055:sdk-message:49"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:unsupported-python-sandbox-fields",
+      "sequence": 39,
+      "timestampOffsetMs": 35095,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "failIfUnavailable과 managedSettings를 Python SDK 0.2.128 SandboxSettings의 현재 field처럼 가르치면 안 된다.",
+      "sourceRefs": [
+        "spec:claims:unsupported-python-sandbox-fields"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:exact-os-adapter-is-not-proved",
+      "sequence": 40,
+      "timestampOffsetMs": 35495,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "macOS에서 차단이 관찰됐다는 사실을 정확한 Seatbelt profile, 생성 rule, 내부 adapter 구현까지 확인한 것으로 설명하면 안 된다.",
+      "sourceRefs": [
+        "spec:claims:exact-os-adapter-is-not-proved"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:otel-is-not-independent-runtime-proof",
+      "sequence": 41,
+      "timestampOffsetMs": 35895,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "OTel은 같은 AttemptRecorder가 raw SDK와 host process event를 투영한 결과다. sequence 정합성은 수집 파이프라인 검증이지 독립 provider 관측이 아니다.",
+      "sourceRefs": [
+        "spec:claims:otel-is-not-independent-runtime-proof"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:historical-probe-source-not-bound",
+      "sequence": 42,
+      "timestampOffsetMs": 36295,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "correction",
+      "evidenceLevel": "Observed",
+      "summary": "2026-08-03 attempt manifest의 source_hash는 당시 chapter bytes만 가리키며 chapter18b.py, cases, runtime 전체를 암호학적으로 묶지 않았다. 향후 캡처는 세 probe source hash를 option summary에 기록한다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:manifest:option_summary",
+        "attempt:130028-cc834055:manifest:option_summary"
+      ],
+      "claimStatus": "correction_required"
+    },
+    {
+      "id": "claim:network-and-socket-boundaries-not-observed",
+      "sequence": 43,
+      "timestampOffsetMs": 36695,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "allowedDomains, deniedDomains, Unix socket, local bind, Mach lookup과 proxy port의 실제 허용 또는 차단은 이번 파일 case에서 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:network-and-socket-boundaries-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:excluded-and-unsandboxed-bypass-not-observed",
+      "sequence": 44,
+      "timestampOffsetMs": 37095,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "excludedCommands와 dangerouslyDisableSandbox 요청이 실제로 sandbox 밖에서 실행되는지 또는 거절되는지는 실행하지 않았다.",
+      "sourceRefs": [
+        "spec:claims:excluded-and-unsandboxed-bypass-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:blocked-path-callback-not-observed",
+      "sequence": 45,
+      "timestampOffsetMs": 37495,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "차단된 sibling redirect가 별도 blocked_path callback을 노출하지 않았고 callback input schema와 사용자-visible 결과는 관찰하지 못했다.",
+      "sourceRefs": [
+        "attempt:130028-cc834055:process-event:50"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:managed-policy-and-unavailable-fallback-not-observed",
+      "sequence": 46,
+      "timestampOffsetMs": 37895,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "enterprise managed policy hierarchy, sandbox engine unavailable 상황의 fallback, 정확한 OS adapter 선택은 raw evidence에 나타나지 않았다.",
+      "sourceRefs": [
+        "spec:claims:managed-policy-and-unavailable-fallback-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:post-cleanup-scan-not-observed",
+      "sequence": 47,
+      "timestampOffsetMs": 38295,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "temp context가 정리된 뒤 marker 경로를 다시 scan한 host event가 없으므로 post-cleanup 부재를 증명하지 않는다.",
+      "sourceRefs": [
+        "spec:claims:post-cleanup-scan-not-observed"
+      ],
+      "claimStatus": "not_observed"
+    },
+    {
+      "id": "claim:current-cli-replication-required",
+      "sequence": 48,
+      "timestampOffsetMs": 38695,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "공개 raw run은 Claude Code 2.1.220에서 수집됐다. 현재 설치된 2.1.221 동작을 주장하려면 같은 두 case를 새 session에서 순차 재실행해야 한다.",
+      "sourceRefs": [
+        "attempt:125947-4ccb1c9c:manifest:option_summary",
+        "attempt:130028-cc834055:manifest:option_summary"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:network-and-bypass-matrix-required",
+      "sequence": 49,
+      "timestampOffsetMs": 39095,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "network/socket 정책과 excluded/unsandboxed command 경계는 실제 외부 서비스 대신 local fixture와 temp resource를 사용해 각각 독립 session으로 추가 관찰해야 한다.",
+      "sourceRefs": [
+        "spec:claims:network-and-bypass-matrix-required"
+      ],
+      "claimStatus": "additional_observation_required"
+    },
+    {
+      "id": "claim:refusal-fallback-and-cleanup-evidence-required",
+      "sequence": 50,
+      "timestampOffsetMs": 39495,
+      "actor": "evaluator",
+      "eventType": "assistant.claim",
+      "pixelState": "needs-evidence",
+      "evidenceLevel": "Missing",
+      "summary": "향후 보안 거부 또는 lower-model fallback은 우회하지 않고 model_refusal_fallback attempt로 보존하며, temp 종료 뒤 cleanup scan도 별도 host event로 기록해야 한다.",
+      "sourceRefs": [
+        "spec:claims:refusal-fallback-and-cleanup-evidence-required"
+      ],
+      "claimStatus": "additional_observation_required"
+    }
+  ]
+}
