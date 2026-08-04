@@ -299,6 +299,22 @@
       "artifactSha256": "e6d830dbe60d175c95fe6a6df6a5ee67a5273c661ebf0ac764b0e93b2090358f"
     },
     {
+      "chapterSlug": "ch17",
+      "title": "17장 auto mode: callback을 건너뛴 실행과 명시적 거부 뒤 fallback",
+      "path": "./evidence/ch17.json",
+      "campaignId": "book-sdk-live-20260803",
+      "model": "claude-opus-5",
+      "sourceEventCount": 123,
+      "publicEventCount": 47,
+      "configuredClaims": 1,
+      "observedClaims": 9,
+      "inferredClaims": 1,
+      "notObservedClaims": 4,
+      "correctionRequired": 7,
+      "additionalObservationRequired": 2,
+      "artifactSha256": "babb08e4e57096c5567d7d21af937effbbf8e4c599be2bf7f38e9524fbff3399"
+    },
+    {
       "chapterSlug": "ch30",
       "title": "30장 나만의 AI 에이전트: 권한, 산출물, 재개, 메모리",
       "path": "./evidence/ch30.json",
@@ -311,5 +327,5 @@
       "artifactSha256": "382b00bba5a43e4bbba618bbff1b531e191d986458b237ab3eadaa0c015c10b0"
     }
   ],
-  "generatedAt": "2026-08-04T02:15:00.339Z"
+  "generatedAt": "2026-08-04T03:10:19.412Z"
 }
