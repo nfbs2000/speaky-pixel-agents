@@ -331,6 +331,22 @@
       "artifactSha256": "5ff34bd9785c2d776ad87f596db72524a4c4c8740604c963478dc6020e7e77fa"
     },
     {
+      "chapterSlug": "ch18",
+      "title": "18장 훅: 동시 callback, output rewrite, 실행 전 deny",
+      "path": "./evidence/ch18.json",
+      "campaignId": "book-sdk-live-20260803",
+      "model": "claude-opus-5",
+      "sourceEventCount": 145,
+      "publicEventCount": 81,
+      "configuredClaims": 2,
+      "observedClaims": 11,
+      "inferredClaims": 1,
+      "notObservedClaims": 5,
+      "correctionRequired": 9,
+      "additionalObservationRequired": 3,
+      "artifactSha256": "023741084b1a279bc306bc2ddc60bdf133ff61c21d5bbb6e7c2bb7f481484db0"
+    },
+    {
       "chapterSlug": "ch30",
       "title": "30장 나만의 AI 에이전트: 권한, 산출물, 재개, 메모리",
       "path": "./evidence/ch30.json",
@@ -343,5 +359,5 @@
       "artifactSha256": "382b00bba5a43e4bbba618bbff1b531e191d986458b237ab3eadaa0c015c10b0"
     }
   ],
-  "generatedAt": "2026-08-04T04:16:55.335Z"
+  "generatedAt": "2026-08-04T05:08:54.010Z"
 }
